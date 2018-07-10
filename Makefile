@@ -16,5 +16,6 @@ multarum: $(OBJECTS)
 	$(CC) -o $@ $^
 
 .PHONY: clean
+clean:
 	rm -rf multarum
 	rm -rf $(SRC)/*.o

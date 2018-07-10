@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef {
+typedef struct {
     enum {
         MT_NULL,
         MT_BOOl,
@@ -13,7 +13,7 @@ typedef {
         MT_INT,
         MT_FLOAT,
         MT_FN
-        // @TODO colletions
+        // @TODO colletions arrays mods hash
     } type;
     union {
         bool mt_bool;

@@ -4,16 +4,15 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include "var.h"
 
-typedef {
-    size_t _b_size, b_len, _f_size, f_len;
+typedef struct {
+    size_t _b_size, b_len, _e_size, e_len;
     uint8_t* bytecode;
-    uint8_t** fns;
+    struct {
+        char* name;
+        mt_var value;
+    }* exports;
 } mt_mod;
-
-typedef {
-    size_t _size, len;
-    mt_mod* modules;
-} mt_mods;
 
 #endif
