@@ -1,5 +1,6 @@
 
 #include "vm.h"
+#include <stdio.h>
 
 void mt_vm_init(mt_vm* const vm, const mt_mod* const mod) {
     vm->s_len = 0;
@@ -18,6 +19,7 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uintptr_t mt_fn;
+    uint32_t mt_jmp;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -67,6 +69,11 @@ static void mt_run_op(mt_vm* const vm) {
             } else if (mt_vm_stack_type_cmp(vm, MT_FLOAT)) {
                 mt_vm_math_op(vm, -=, mt_float);
             }
+            break;
+        case MT_JMP:
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
+            mt_vm_cur_byte(vm) += mt_jmp;
             break;
     }
 }
