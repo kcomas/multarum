@@ -15,6 +15,7 @@ typedef struct {
         MT_FN,
         // @TODO colletions arrays modules hashs
     } type;
+    int32_t ref_count;
     union {
         bool mt_bool;
         char mt_char;
@@ -24,15 +25,17 @@ typedef struct {
     } data;
 } mt_var;
 
-#define mt_var_null (mt_var) { .type = MT_NULL }
+#define mt_var_null (mt_var) { .type = MT_NULL, .ref_count = -1 }
 
-#define mt_var_bool(value) (mt_var) { .type = MT_BOOL, .data = { .mt_bool = value } }
+#define mt_var_bool(value) (mt_var) { .type = MT_BOOL, .ref_count = -1, .data = { .mt_bool = value } }
 
-#define mt_var_char(value) (mt_var) { .type = MT_CHAR, .data = { .mt_char = value } }
+#define mt_var_char(value) (mt_var) { .type = MT_CHAR, .ref_count = -1, .data = { .mt_char = value } }
 
-#define mt_var_int(value) (mt_var) { .type = MT_INT, .data = { .mt_int = value } }
+#define mt_var_int(value) (mt_var) { .type = MT_INT, .ref_count = -1, .data = { .mt_int = value } }
 
-#define mt_var_float(value) (mt_var) { .type = MT_FLOAT, .data = { .mt_float = value } }
+#define mt_var_float(value) (mt_var) { .type = MT_FLOAT, .ref_count = -1, .data = { .mt_float = value } }
+
+#define mt_var_fn(value) (mt_var) { .type = MT_FN, .ref_count = -1, .data = { .mt_fn = value } }
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 

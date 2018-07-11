@@ -17,6 +17,7 @@ void mt_vm_free(mt_vm* const vm) {
 static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
+    uintptr_t mt_fn;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -46,13 +47,26 @@ static void mt_run_op(mt_vm* const vm) {
                     mt_vm_get_bytes(vm, &mt_float, sizeof(double));
                     mt_vm_push(vm, mt_var_float(mt_float));
                     break;
+                case MT_FN:
+                    mt_vm_cur_byte(vm)++;
+                    mt_vm_get_bytes(vm, &mt_fn, sizeof(uintptr_t));
+                    mt_vm_push(vm, mt_var_fn((uint8_t*) mt_fn));
+                    break;
             }
             break;
         case MT_ADD:
-            // @TODO check types
-            mt_vm_prev_stack(vm).data.mt_int += mt_vm_cur_stack(vm).data.mt_int;
-            mt_vm_dec_stack(vm);
-            mt_vm_cur_byte(vm)++;
+            if (mt_vm_stack_type_cmp(vm, MT_INT)) {
+                mt_vm_math_op(vm, +=, mt_int);
+            } else if (mt_vm_stack_type_cmp(vm, MT_FLOAT)) {
+                mt_vm_math_op(vm, +=, mt_float);
+            }
+            break;
+        case MT_SUB:
+            if (mt_vm_stack_type_cmp(vm, MT_INT)) {
+                mt_vm_math_op(vm, -=, mt_int);
+            } else if (mt_vm_stack_type_cmp(vm, MT_FLOAT)) {
+                mt_vm_math_op(vm, -=, mt_float);
+            }
             break;
     }
 }
