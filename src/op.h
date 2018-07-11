@@ -5,9 +5,10 @@
 #include "mod.h"
 
 typedef enum {
-    NOP,
-    PUSH,
-    ADD
+    MT_NOP,
+    MT_PUSH,
+    MT_ADD,
+    MT_HALT
 } mt_op;
 
 #endif
