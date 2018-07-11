@@ -4,15 +4,15 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "var.h"
 
 typedef struct {
-    size_t _b_size, b_len, _e_size, e_len;
+    size_t _size, len;
     uint8_t* bytecode;
-    struct {
-        char* name;
-        mt_var value;
-    }* exports;
+    // @TODO hash exports
 } mt_mod;
+
+mt_mod* mt_mod_init(size_t _size);
+
+void mt_mod_free(mt_mod* const mod);
 
 #endif
