@@ -1,12 +1,11 @@
 
 #include "vm.h"
-#include <stdio.h>
 
 void mt_vm_init(mt_vm* const vm, const mt_mod* const mod) {
     vm->s_len = 0;
     vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
-    vm->rsp = (frame*) malloc(sizeof(frame) * MT_DEFAULT_FRAME_SIZE);
+    vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
     vm->rsp[vm->f_len++].rbp = vm->s_len;
     vm->rsp[vm->f_len++].rip = mod->bytes;
 }
@@ -19,7 +18,6 @@ void mt_vm_free(mt_vm* const vm) {
 static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
-    uintptr_t mt_fn;
     int32_t mt_jmp;
 
     switch (*mt_vm_cur_byte(vm)) {
@@ -49,11 +47,6 @@ static void mt_run_op(mt_vm* const vm) {
                     mt_vm_cur_byte(vm)++;
                     mt_vm_get_bytes(vm, &mt_float, sizeof(double));
                     mt_vm_push(vm, mt_var_float(mt_float));
-                    break;
-                case MT_FN:
-                    mt_vm_cur_byte(vm)++;
-                    mt_vm_get_bytes(vm, &mt_fn, sizeof(uintptr_t));
-                    mt_vm_push(vm, mt_var_fn((uint8_t*) mt_fn));
                     break;
             }
             break;

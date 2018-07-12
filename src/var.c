@@ -2,7 +2,6 @@
 #include "var.h"
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
-    uintptr_t fptr;
     mt_write_byte(mod, var->type);
     switch (var->type) {
         case MT_NULL:
@@ -19,9 +18,5 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
         case MT_FLOAT:
             mt_write_bytes(mod, &var->data.mt_float, sizeof(double));
             break;
-        case MT_FN:
-            fptr = (uintptr_t) var->data.mt_fn;
-            mt_write_bytes(mod, &fptr, sizeof(uintptr_t));
-            break;
-    }
+        }
 }

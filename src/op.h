@@ -2,8 +2,7 @@
 #ifndef MT_OP
 #define MT_OP
 
-#include <stdbool.h>
-#include "mod.h"
+#include "multarum.h"
 
 typedef enum {
     MT_NOP,

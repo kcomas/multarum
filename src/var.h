@@ -2,17 +2,15 @@
 #ifndef MT_VAR_H
 #define MT_VAR_H
 
-#include <stdbool.h>
-#include "mod.h"
+#include "multarum.h"
 
-typedef struct {
+typedef struct _mt_var {
     enum {
         MT_NULL,
         MT_BOOL,
         MT_CHAR,
         MT_INT,
         MT_FLOAT,
-        MT_FN,
         // @TODO colletions arrays modules hashs
     } type;
     int32_t ref_count;
@@ -21,7 +19,6 @@ typedef struct {
         char mt_char;
         int64_t mt_int;
         double mt_float;
-        uint8_t* mt_fn;
     } data;
 } mt_var;
 
@@ -34,8 +31,6 @@ typedef struct {
 #define mt_var_int(value) (mt_var) { .type = MT_INT, .ref_count = -1, .data = { .mt_int = value } }
 
 #define mt_var_float(value) (mt_var) { .type = MT_FLOAT, .ref_count = -1, .data = { .mt_float = value } }
-
-#define mt_var_fn(value) (mt_var) { .type = MT_FN, .ref_count = -1, .data = { .mt_fn = value } }
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 

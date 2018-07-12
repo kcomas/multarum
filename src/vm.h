@@ -2,9 +2,7 @@
 #ifndef MT_VM
 #define MT_VM
 
-#include <string.h>
-#include "var.h"
-#include "op.h"
+#include "multarum.h"
 
 #ifndef MT_DEFAULT_STACK_SIZE
     #define MT_DEFAULT_STACK_SIZE 2000
@@ -17,12 +15,12 @@
 typedef struct {
     size_t rbp;
     uint8_t* rip;
-} frame;
+} mt_frame;
 
 typedef struct {
     size_t s_len, f_len;
     mt_var* stack;
-    frame* rsp;
+    mt_frame* rsp;
 } mt_vm;
 
 #define mt_vm_cur_byte(vm) vm->rsp[vm->f_len - 1].rip
