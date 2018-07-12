@@ -4,22 +4,23 @@
 
 void mt_vm_init(mt_vm* const vm, const mt_mod* const mod) {
     vm->s_len = 0;
-    vm->r_len = 0;
+    vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
-    vm->rip = (uint8_t**) malloc(sizeof(uint8_t*) * MT_DEFAULT_FRAME_SIZE);
-    vm->rip[vm->r_len++] = mod->bytes;
+    vm->rsp = (frame*) malloc(sizeof(frame) * MT_DEFAULT_FRAME_SIZE);
+    vm->rsp[vm->f_len++].rbp = vm->s_len;
+    vm->rsp[vm->f_len++].rip = mod->bytes;
 }
 
 void mt_vm_free(mt_vm* const vm) {
     free(vm->stack);
-    free(vm->rip);
+    free(vm->rsp);
 }
 
 static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uintptr_t mt_fn;
-    uint32_t mt_jmp;
+    int32_t mt_jmp;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -72,7 +73,7 @@ static void mt_run_op(mt_vm* const vm) {
             break;
         case MT_JMP:
             mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
+            mt_vm_get_bytes(vm, &mt_jmp, sizeof(int32_t));
             mt_vm_cur_byte(vm) += mt_jmp;
             break;
     }

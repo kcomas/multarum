@@ -15,12 +15,17 @@
 #endif
 
 typedef struct {
-    size_t s_len, r_len;
+    size_t rbp;
+    uint8_t* rip;
+} frame;
+
+typedef struct {
+    size_t s_len, f_len;
     mt_var* stack;
-    uint8_t** rip;
+    frame* rsp;
 } mt_vm;
 
-#define mt_vm_cur_byte(vm) vm->rip[vm->r_len - 1]
+#define mt_vm_cur_byte(vm) vm->rsp[vm->f_len - 1].rip
 
 #define mt_vm_cur_stack(vm) vm->stack[vm->s_len - 1]
 

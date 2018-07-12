@@ -19,9 +19,9 @@ int main(void) {
     mt_var_write_bytes(mod, &mt_var_int(3));
 
     mt_write_byte(mod, MT_HALT);
-    for (size_t i = 0; i < mod->len; i++) {
-        printf("%p: %x\n", &mod->bytes[i], mod->bytes[i]);
-    }
+
+    mt_mod_dis(mod);
+
     mt_vm vm;
     mt_vm_init(&vm, mod);
     mt_var rst = mt_vm_run(&vm);
