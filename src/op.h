@@ -10,16 +10,17 @@ typedef enum {
     MT_ADD,
     MT_SUB,
     MT_JMP,
+    MT_JMPU,
     MT_CALL,
     MT_RET,
     MT_HALT,
     _MT_OP_TOTAL
 } mt_op;
 
-#define mt_write_jmp(mod, mt_jmp) \
-    mt_write_byte(mod, MT_JMP); \
-    memcpy(mod->bytes + mod->len, mt_jmp, sizeof(int32_t)); \
-    mod->len += sizeof(int32_t)
+#define mt_write_jmp(mod, type, mt_jmp) \
+    mt_write_byte(mod, type); \
+    memcpy(mod->bytes + mod->len, mt_jmp, sizeof(uint32_t)); \
+    mod->len += sizeof(uint32_t)
 
 void mt_op_str_init(void);
 

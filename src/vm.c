@@ -18,7 +18,7 @@ void mt_vm_free(mt_vm* const vm) {
 static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
-    int32_t mt_jmp;
+    uint32_t mt_jmp;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -66,8 +66,13 @@ static void mt_run_op(mt_vm* const vm) {
             break;
         case MT_JMP:
             mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_jmp, sizeof(int32_t));
+            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
             mt_vm_cur_byte(vm) += mt_jmp;
+            break;
+        case MT_JMPU:
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
+            mt_vm_cur_byte(vm) -= mt_jmp + sizeof(uint32_t) + 1;
             break;
     }
 }

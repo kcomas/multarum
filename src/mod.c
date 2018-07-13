@@ -22,7 +22,7 @@ static void mt_print_byte_hex(const mt_mod* const mod, size_t i, size_t total) {
 
 void mt_mod_dis(const mt_mod* const mod) {
     mt_op_str_init();
-    int32_t mt_jmp;
+    uint32_t mt_jmp;
     int64_t mt_int;
     double mt_float;
     size_t i = 0;
@@ -68,14 +68,15 @@ void mt_mod_dis(const mt_mod* const mod) {
                 }
                 break;
             case MT_JMP:
-                mt_print_byte_hex(mod, i, 5);
-                i++;
-                memcpy(&mt_jmp, mod->bytes + i, sizeof(int32_t));
-                i += 4;
-                printf("%s %d (%lu:)\n", mt_op_str(MT_JMP), mt_jmp, i + mt_jmp);
+                mt_mod_write_jmp(mod, mt_op_str(MT_JMP), i, i + mt_jmp);
+                break;
+            case MT_JMPU:
+                mt_mod_write_jmp(mod, mt_op_str(MT_JMPU), i, i - sizeof(uint32_t) - mt_jmp);
                 break;
             default:
+                i++;
                 printf("\n");
+                break;
         }
     }
 }
