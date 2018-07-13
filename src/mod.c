@@ -27,7 +27,7 @@ void mt_mod_dis(const mt_mod* const mod) {
     double mt_float;
     size_t i = 0;
     while (i < mod->len) {
-        printf("<%p> %lu: ", &mod->bytes[i], i);
+        printf("%lu: ", i);
         switch (mod->bytes[i]) {
             case MT_NOP:
             case MT_ADD:
@@ -72,7 +72,7 @@ void mt_mod_dis(const mt_mod* const mod) {
                 i++;
                 memcpy(&mt_jmp, mod->bytes + i, sizeof(int32_t));
                 i += 4;
-                printf("%s %lu\n", mt_op_str(MT_JMP), i + mt_jmp);
+                printf("%s %d (%lu:)\n", mt_op_str(MT_JMP), mt_jmp, i + mt_jmp);
                 break;
             default:
                 printf("\n");
