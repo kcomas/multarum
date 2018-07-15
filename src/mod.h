@@ -22,12 +22,14 @@ mt_mod* mt_mod_init(size_t _size);
 
 void mt_mod_free(mt_mod* const mod);
 
-#define mt_mod_dist_op(mod, i) printf("0x%x %s\n", mod->bytes[i], mt_op_str(mod->bytes[i]));
-
 #define mt_mod_get_bytes(mod, dest, size, i) \
     i++; \
     memcpy(dest, mod->bytes + i, size); \
     i += size
+
+#define MT_MOD_MAX_BYTES_LINE 10
+
+#define MT_MOD_BYTE_PRINT_LINE 3
 
 void mt_mod_dis(const mt_mod* const mod);
 

@@ -16,25 +16,54 @@ void mt_mod_free(mt_mod* const mod) {
 
 static void mt_print_byte_hex(const mt_mod* const mod, size_t i, size_t total) {
     for (size_t x = i; x < i + total; x++) {
-        printf("0x%x ", mod->bytes[x]);
+        printf("%02x ", mod->bytes[x]);
+    }
+}
+
+static size_t mt_mod_num_len(size_t i) {
+    if (i == 0) {
+        return 1;
+    }
+    size_t count = 0;
+    while (i >= 1) {
+        i /= 10;
+        count++;
+    }
+    return count;
+}
+
+static void mt_mod_print_even_spaces(size_t cur_len) {
+    while (cur_len < MT_MOD_MAX_BYTES_LINE) {
+        for (size_t x = 0; x < MT_MOD_BYTE_PRINT_LINE; x++) {
+            putchar(' ');
+        }
+        cur_len++;
     }
 }
 
 void mt_mod_dis(const mt_mod* const mod) {
     mt_op_str_init();
+
     uint32_t mt_jmp;
     int64_t mt_int;
     double mt_float;
+
     size_t i = 0;
+    size_t count_total = mt_mod_num_len(mod->len);
     while (i < mod->len) {
         printf("%lu: ", i);
+        for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
+            putchar(' ');
+        }
         switch (mod->bytes[i]) {
             case MT_NOP:
             case MT_ADD:
             case MT_SUB:
             case MT_RET:
             case MT_HALT:
-                mt_mod_dist_op(mod, i);
+                mt_print_byte_hex(mod, i, 1);
+                mt_mod_print_even_spaces(1);
+                printf("%s\n", mt_op_str(mod->bytes[i]));
                 i++;
                 break;
             case MT_PUSH:
@@ -72,6 +101,7 @@ void mt_mod_dis(const mt_mod* const mod) {
                 i++;
                 memcpy(&mt_jmp, mod->bytes + i, sizeof(uint32_t));
                 i += sizeof(uint32_t);
+                mt_mod_print_even_spaces(1 + sizeof(uint32_t));
                 printf("JMP %d\n", mt_jmp);
                 break;
             default:
