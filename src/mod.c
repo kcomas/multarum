@@ -68,10 +68,11 @@ void mt_mod_dis(const mt_mod* const mod) {
                 }
                 break;
             case MT_JMP:
-                mt_mod_write_jmp(mod, mt_op_str(MT_JMP), i, i + mt_jmp);
-                break;
-            case MT_JMPU:
-                mt_mod_write_jmp(mod, mt_op_str(MT_JMPU), i, i - sizeof(uint32_t) - mt_jmp);
+                mt_print_byte_hex(mod, i, 5);
+                i++;
+                memcpy(&mt_jmp, mod->bytes + i, sizeof(uint32_t));
+                i += sizeof(uint32_t);
+                printf("JMP %d\n", mt_jmp);
                 break;
             default:
                 i++;

@@ -29,13 +29,6 @@ void mt_mod_free(mt_mod* const mod);
     memcpy(dest, mod->bytes + i, size); \
     i += size
 
-#define mt_mod_write_jmp(mod, name, i, dest) \
-    mt_print_byte_hex(mod, i, 5); \
-    i++; \
-    memcpy(&mt_jmp, mod->bytes + i, sizeof(uint32_t)); \
-    i += sizeof(uint32_t); \
-    printf("%s %d (%lu:)\n", name, mt_jmp, dest)
-
 void mt_mod_dis(const mt_mod* const mod);
 
 #endif

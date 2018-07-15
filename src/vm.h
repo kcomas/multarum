@@ -15,6 +15,7 @@
 typedef struct {
     size_t rbp;
     uint8_t* rip;
+    uint8_t* code;
 } mt_frame;
 
 typedef struct {
@@ -24,6 +25,8 @@ typedef struct {
 } mt_vm;
 
 #define mt_vm_cur_byte(vm) vm->rsp[vm->f_len - 1].rip
+
+#define mt_vm_cur_code(vm) vm->rsp[vm->f_len - 1].code
 
 #define mt_vm_cur_stack(vm) vm->stack[vm->s_len - 1]
 
@@ -54,7 +57,6 @@ typedef struct {
     mt_vm_prev_stack(vm).data.v_data op mt_vm_cur_stack(vm).data.v_data; \
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
-
 
 void mt_vm_init(mt_vm* const vm, const mt_mod* const mod);
 

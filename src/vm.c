@@ -6,7 +6,8 @@ void mt_vm_init(mt_vm* const vm, const mt_mod* const mod) {
     vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
-    vm->rsp[vm->f_len++].rbp = vm->s_len;
+    vm->rsp[vm->f_len].rbp = vm->s_len;
+    vm->rsp[vm->f_len].code = mod->bytes;
     vm->rsp[vm->f_len++].rip = mod->bytes;
 }
 
@@ -67,12 +68,7 @@ static void mt_run_op(mt_vm* const vm) {
         case MT_JMP:
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
-            mt_vm_cur_byte(vm) += mt_jmp;
-            break;
-        case MT_JMPU:
-            mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
-            mt_vm_cur_byte(vm) -= mt_jmp + sizeof(uint32_t) + 1;
+            mt_vm_cur_byte(vm) = mt_vm_cur_code(vm) + mt_jmp;
             break;
     }
 }
