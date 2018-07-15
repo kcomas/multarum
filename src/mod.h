@@ -31,6 +31,11 @@ void mt_mod_free(mt_mod* const mod);
 
 #define MT_MOD_BYTE_PRINT_LINE 3
 
+#define mt_mod_copy_inc(mod, i, to, type) \
+    memcpy(&to, mod->bytes + i, sizeof(type)); \
+    i += sizeof(type)
+
+
 void mt_mod_dis(const mt_mod* const mod);
 
 #endif

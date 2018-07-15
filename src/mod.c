@@ -99,8 +99,7 @@ void mt_mod_dis(const mt_mod* const mod) {
             case MT_JMP:
                 mt_print_byte_hex(mod, i, 5);
                 i++;
-                memcpy(&mt_jmp, mod->bytes + i, sizeof(uint32_t));
-                i += sizeof(uint32_t);
+                mt_mod_copy_inc(mod, i, mt_jmp, uint32_t);
                 mt_mod_print_even_spaces(1 + sizeof(uint32_t));
                 printf("JMP %d\n", mt_jmp);
                 break;
