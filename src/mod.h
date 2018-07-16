@@ -7,6 +7,7 @@
 typedef struct _mt_mod {
     size_t _size, len;
     uint8_t* bytes;
+    uint8_t* fns;
     // @TODO hash exports
 } mt_mod;
 
@@ -34,7 +35,6 @@ void mt_mod_free(mt_mod* const mod);
 #define mt_mod_copy_inc(mod, i, to, type) \
     memcpy(&to, mod->bytes + i, sizeof(type)); \
     i += sizeof(type)
-
 
 void mt_mod_dis(const mt_mod* const mod);
 

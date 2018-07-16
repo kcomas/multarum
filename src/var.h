@@ -11,9 +11,12 @@ typedef struct _mt_var {
         MT_CHAR,
         MT_INT,
         MT_FLOAT,
+        // MT_FN,
+        // MT_MOD
         // @TODO colletions arrays modules hashs
     } type;
-    int32_t ref_count;
+    int16_t ref_count;
+    uint8_t fn_idx;
     union {
         bool mt_bool;
         char mt_char;
