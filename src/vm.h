@@ -60,4 +60,6 @@ void mt_vm_dec_stack(mt_vm* const vm);
 
 mt_var mt_vm_run(mt_vm* const vm);
 
+void mt_vm_debug_stack_print(const mt_vm* const vm);
+
 #endif

@@ -28,7 +28,7 @@ void mt_vm_dec_stack(mt_vm* const vm) {
 }
 
 static void mt_run_op(mt_vm* const vm) {
-    uint8_t num_args;
+    uint8_t num_args, mt_arg;
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp, mt_fn;
@@ -93,11 +93,16 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_push(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
             mt_vm_dec_stack_atomic(vm);
             break;
+        case MT_LD_ARG:
+            mt_vm_cur_byte(vm)++;
+            mt_arg = *mt_vm_cur_byte(vm)++;
+            mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
+            break;
         case MT_CALL:
             mt_vm_cur_byte(vm)++;
             num_args = *mt_vm_cur_byte(vm)++;
             mt_vm_inc_frame(vm);
-            mt_vm_cur_base(vm) = vm->f_len - num_args;
+            mt_vm_cur_base(vm) = vm->s_len - num_args;
             mt_vm_cur_mod(vm) = mt_vm_cur_stack(vm).data.mt_mod;
             mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_stack(vm).fn_idx]];
             mt_vm_dec_stack_atomic(vm);
@@ -115,4 +120,11 @@ mt_var mt_vm_run(mt_vm* const vm) {
         return mt_var_null;
     }
     return mt_vm_cur_stack(vm);
+}
+
+void mt_vm_debug_stack_print(const mt_vm* const vm) {
+    for (size_t i = 0; i < vm->s_len; i++) {
+        mt_var_debug_print(&vm->stack[i]);
+        printf("\n");
+    }
 }

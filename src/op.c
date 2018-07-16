@@ -18,6 +18,7 @@ void mt_op_str_init(void) {
     qname(JMP);
     qname(LD_SELF);
     qname(LD_FN);
+    qname(LD_ARG);
     qname(CALL);
     qname(RET);
     qname(HALT);

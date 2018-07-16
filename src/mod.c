@@ -118,11 +118,11 @@ void mt_mod_dis(const mt_mod* const mod) {
             case MT_LD_FN:
                 mt_mod_op_w_data(mod, i, uint32_t, mt_fn, "LD_FN %d\n");
                 break;
+            case MT_LD_ARG:
+                mt_mod_op2(mod, i, "LD_ARG %d\n");
+                break;
             case MT_CALL:
-                mt_print_byte_hex(mod, i, 2);
-                i++;
-                mt_mod_print_even_spaces(2);
-                printf("CALL %d\n", mod->bytes[i++]);
+                mt_mod_op2(mod, i, "CALL %d\n");
                 break;
             default:
                 i++;

@@ -41,4 +41,6 @@ typedef struct _mt_var {
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 
+void mt_var_debug_print(const mt_var* const var);
+
 #endif
