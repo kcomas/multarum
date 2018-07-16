@@ -1,13 +1,13 @@
 
 #include "vm.h"
 
-void mt_vm_init(mt_vm* const vm, const mt_mod* const mod) {
+void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
     vm->s_len = 0;
     vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
     vm->rsp[vm->f_len].rbp = vm->s_len;
-    vm->rsp[vm->f_len].code = mod->bytes;
+    vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
 }
 
@@ -78,7 +78,12 @@ static void mt_run_op(mt_vm* const vm) {
         case MT_JMP:
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
-            mt_vm_cur_byte(vm) = mt_vm_cur_code(vm) + mt_jmp;
+            mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp;
+            break;
+        case MT_LD_SELF:
+            mt_vm_cur_mod(vm)->ref_count++;
+            mt_vm_push(vm, mt_var_mod(mt_vm_cur_mod(vm)));
+            mt_vm_cur_byte(vm)++;
             break;
     }
 }

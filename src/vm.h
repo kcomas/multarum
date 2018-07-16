@@ -15,7 +15,7 @@
 typedef struct {
     size_t rbp;
     uint8_t* rip;
-    uint8_t* code;
+    mt_mod* mod;
 } mt_frame;
 
 typedef struct {
@@ -26,7 +26,7 @@ typedef struct {
 
 #define mt_vm_cur_byte(vm) vm->rsp[vm->f_len - 1].rip
 
-#define mt_vm_cur_code(vm) vm->rsp[vm->f_len - 1].code
+#define mt_vm_cur_mod(vm) vm->rsp[vm->f_len - 1].mod
 
 #define mt_vm_cur_stack(vm) vm->stack[vm->s_len - 1]
 
@@ -46,7 +46,7 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
-void mt_vm_init(mt_vm* const vm, const mt_mod* const mod);
+void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
 
