@@ -19,6 +19,7 @@ void mt_vm_free(mt_vm* const vm) {
 void mt_vm_dec_stack(mt_vm* const vm) {
     switch (vm->stack[--vm->s_len].type) {
         case MT_MODULE:
+        case MT_FN:
             mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
             break;
         default:
@@ -27,9 +28,10 @@ void mt_vm_dec_stack(mt_vm* const vm) {
 }
 
 static void mt_run_op(mt_vm* const vm) {
+    uint8_t num_args;
     int64_t mt_int;
     double mt_float;
-    uint32_t mt_jmp;
+    uint32_t mt_jmp, mt_fn;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -84,6 +86,23 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_mod(vm)->ref_count++;
             mt_vm_push(vm, mt_var_mod(mt_vm_cur_mod(vm)));
             mt_vm_cur_byte(vm)++;
+            break;
+        case MT_LD_FN:
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_fn, sizeof(uint32_t));
+            mt_vm_push(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
+            mt_vm_dec_stack_atomic(vm);
+            break;
+        case MT_CALL:
+            mt_vm_cur_byte(vm)++;
+            num_args = *mt_vm_cur_byte(vm)++;
+            mt_vm_inc_frame(vm);
+            mt_vm_cur_base(vm) = vm->f_len - num_args;
+            mt_vm_cur_mod(vm) = mt_vm_cur_stack(vm).data.mt_mod;
+            mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_stack(vm).fn_idx]];
+            mt_vm_dec_stack_atomic(vm);
+            break;
+        case MT_RET:
             break;
     }
 }

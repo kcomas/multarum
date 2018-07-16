@@ -37,6 +37,8 @@ typedef struct _mt_var {
 
 #define mt_var_mod(value) (mt_var) { .type = MT_MODULE, .data = { .mt_mod = value } }
 
+#define mt_var_fn(value, i) (mt_var) { .type = MT_FN, .fn_idx = i, .data = { .mt_mod = value } }
+
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 
 #endif

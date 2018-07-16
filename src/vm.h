@@ -28,6 +28,10 @@ typedef struct {
 
 #define mt_vm_cur_mod(vm) vm->rsp[vm->f_len - 1].mod
 
+#define mt_vm_cur_base(vm) vm->rsp[vm->f_len - 1].rbp
+
+#define mt_vm_inc_frame(vm) vm->f_len++;
+
 #define mt_vm_cur_stack(vm) vm->stack[vm->s_len - 1]
 
 #define mt_vm_prev_stack(vm) vm->stack[vm->s_len - 2]
@@ -49,6 +53,8 @@ typedef struct {
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
+
+#define mt_vm_dec_stack_atomic(vm) vm->s_len--;
 
 void mt_vm_dec_stack(mt_vm* const vm);
 

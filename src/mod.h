@@ -5,7 +5,7 @@
 #include "multarum.h"
 
 typedef struct _mt_mod {
-    uint16_t ref_count;
+    uint32_t ref_count;
     size_t _size, len, _f_size, f_len;
     uint8_t* bytes;
     uint8_t* fns;
