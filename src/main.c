@@ -16,7 +16,7 @@ int main(void) {
     mt_write_byte(mod, MT_PUSH);
     mt_var_write_bytes(mod, &mt_var_int(2));
     mt_write_byte(mod, MT_SUB);
-    mt_write_byte(mod, MT_HALT);
+    mt_write_byte(mod, MT_RET);
 
     mt_write_byte(mod, MT_PUSH);
     mt_var_write_bytes(mod, &mt_var_int(3));

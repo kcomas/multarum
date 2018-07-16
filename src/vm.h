@@ -32,6 +32,8 @@ typedef struct {
 
 #define mt_vm_inc_frame(vm) vm->f_len++;
 
+#define mt_vm_dec_frame(vm) vm->f_len--;
+
 #define mt_vm_cur_stack(vm) vm->stack[vm->s_len - 1]
 
 #define mt_vm_prev_stack(vm) vm->stack[vm->s_len - 2]

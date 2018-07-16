@@ -32,6 +32,7 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp, mt_fn;
+    mt_var mt_ret;
 
     switch (*mt_vm_cur_byte(vm)) {
         case MT_NOP:
@@ -108,6 +109,18 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_dec_stack_atomic(vm);
             break;
         case MT_RET:
+            if (mt_vm_cur_base(vm) != vm->s_len) {
+                mt_ret = mt_vm_cur_stack(vm);
+                mt_vm_dec_stack_atomic(vm);
+                while (vm->s_len >= mt_vm_cur_base(vm)) {
+                    mt_vm_dec_stack(vm);
+                }
+            } else {
+                mt_ret = mt_var_null;
+            }
+            mt_vm_push(vm, mt_ret);
+            mt_mod_free(mt_vm_cur_mod(vm));
+            mt_vm_dec_frame(vm);
             break;
     }
 }
