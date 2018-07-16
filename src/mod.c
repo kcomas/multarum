@@ -1,16 +1,25 @@
 
 #include "mod.h"
 
-mt_mod* mt_mod_init(size_t _size) {
+mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
     mt_mod* mod = (mt_mod*) malloc(sizeof(mt_mod));
+    mod->ref_count = 1;
     mod->_size = _size;
     mod->len = 0;
     mod->bytes = (uint8_t*) malloc(_size);
+    mod->_f_size = _f_size;
+    mod->f_len = 0;
+    mod->fns = (uint8_t*) malloc(_f_size);
     return mod;
 }
 
 void mt_mod_free(mt_mod* const mod) {
+    mod->ref_count--;
+    if (mod->ref_count > 0) {
+        return;
+    }
     free(mod->bytes);
+    free(mod->fns);
     free(mod);
 }
 
@@ -51,6 +60,12 @@ void mt_mod_dis(const mt_mod* const mod) {
     size_t i = 0;
     size_t count_total = mt_mod_num_len(mod->len);
     while (i < mod->len) {
+        for (size_t fi = 0; fi < mod->f_len; fi++) {
+            if (mod->fns[fi] == i) {
+                printf("FN: %lu\n", fi);
+                break;
+            }
+        }
         printf("%lu: ", i);
         for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
             putchar(' ');
@@ -59,6 +74,7 @@ void mt_mod_dis(const mt_mod* const mod) {
             case MT_NOP:
             case MT_ADD:
             case MT_SUB:
+            case MT_LD_SELF:
             case MT_RET:
             case MT_HALT:
                 mt_print_byte_hex(mod, i, 1);

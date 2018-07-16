@@ -32,18 +32,6 @@ typedef struct {
 
 #define mt_vm_prev_stack(vm) vm->stack[vm->s_len - 2]
 
-// @TODO free
-#define mt_vm_sub_ref_cur_stack(vm) \
-    if (mt_vm_cur_stack(vm).ref_count > 0) { \
-        mt_vm_cur_stack(vm).ref_count--; \
-        if (mt_vm_cur_stack(vm).ref_count == 0) { \
-        } \
-    }
-
-#define mt_vm_dec_stack(vm) \
-    mt_vm_sub_ref_cur_stack(vm); \
-    vm->s_len--;
-
 #define mt_vm_stack_type_cmp(vm, var_type) \
     (mt_vm_prev_stack(vm).type == var_type) && (mt_vm_cur_stack(vm).type == var_type)
 
@@ -61,6 +49,8 @@ typedef struct {
 void mt_vm_init(mt_vm* const vm, const mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
+
+void mt_vm_dec_stack(mt_vm* const vm);
 
 mt_var mt_vm_run(mt_vm* const vm);
 

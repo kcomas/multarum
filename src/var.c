@@ -18,5 +18,7 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
         case MT_FLOAT:
             mt_write_bytes(mod, &var->data.mt_float, sizeof(double));
             break;
+        default:
+            break;
         }
 }

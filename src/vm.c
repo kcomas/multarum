@@ -16,6 +16,16 @@ void mt_vm_free(mt_vm* const vm) {
     free(vm->rsp);
 }
 
+void mt_vm_dec_stack(mt_vm* const vm) {
+    switch (vm->stack[--vm->s_len].type) {
+        case MT_MODULE:
+            mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
+            break;
+        default:
+            break;
+    }
+}
+
 static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;

@@ -10,6 +10,8 @@ typedef enum {
     MT_ADD,
     MT_SUB,
     MT_JMP,
+    MT_LD_SELF,
+    MT_LD_FN,
     MT_CALL,
     MT_RET,
     MT_HALT,

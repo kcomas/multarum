@@ -5,7 +5,8 @@
 #include "multarum.h"
 
 typedef struct _mt_mod {
-    size_t _size, len;
+    uint16_t ref_count;
+    size_t _size, len, _f_size, f_len;
     uint8_t* bytes;
     uint8_t* fns;
     // @TODO hash exports
@@ -19,7 +20,9 @@ typedef struct _mt_mod {
 
 #define mt_mod_tail(mod) mod->bytes[mod->len - 1]
 
-mt_mod* mt_mod_init(size_t _size);
+mt_mod* mt_mod_init(size_t _size, size_t _f_size);
+
+#define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i
 
 void mt_mod_free(mt_mod* const mod);
 

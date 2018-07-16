@@ -2,11 +2,12 @@
 #include "multarum.h"
 
 int main(void) {
-    mt_mod* mod = mt_mod_init(500);
+    mt_mod* mod = mt_mod_init(500, 2);
 
     uint32_t main_jmp = 18;
     mt_write_jmp(mod, &main_jmp);
 
+    mt_mod_reg_fn(mod, mod->len);
     mt_write_byte(mod, MT_ADD);
     mt_write_byte(mod, MT_PUSH);
     mt_var_write_bytes(mod, &mt_var_int(2));
@@ -18,10 +19,11 @@ int main(void) {
     mt_write_byte(mod, MT_PUSH);
     mt_var_write_bytes(mod, &mt_var_int(4));
 
-    uint32_t sec_jmp = 5;
-    mt_write_jmp(mod, &sec_jmp);
+    mt_write_byte(mod, MT_LD_SELF);
 
     mt_mod_dis(mod);
+
+    exit(1);
 
     mt_vm vm;
     mt_vm_init(&vm, mod);
