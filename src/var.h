@@ -15,7 +15,7 @@ typedef struct _mt_var {
         MT_FN,
         // @TODO colletions arrays modules hashs
     } type;
-    uint16_t fn_idx;
+    uint32_t fn_idx;
     union {
         bool mt_bool;
         char mt_char;

@@ -16,7 +16,8 @@ void mt_op_str_init(void) {
     qname(ADD);
     qname(SUB);
     qname(JMP);
-    qname(LD_SELF),
+    qname(LD_SELF);
+    qname(LD_FN);
     qname(CALL);
     qname(RET);
     qname(HALT);

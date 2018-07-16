@@ -20,6 +20,9 @@ int main(void) {
     mt_var_write_bytes(mod, &mt_var_int(4));
 
     mt_write_byte(mod, MT_LD_SELF);
+    mt_write_byte(mod, MT_LD_FN);
+    uint32_t fn0 = 0;
+    mt_write_bytes(mod, &fn0, sizeof(uint32_t));
 
     mt_mod_dis(mod);
 

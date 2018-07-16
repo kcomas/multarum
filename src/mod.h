@@ -39,6 +39,13 @@ void mt_mod_free(mt_mod* const mod);
     memcpy(&to, mod->bytes + i, sizeof(type)); \
     i += sizeof(type)
 
+#define mt_mod_op_w_data(mod, i, type, data, str) \
+    mt_print_byte_hex(mod, i, 1 + sizeof(type)); \
+    i++; \
+    mt_mod_copy_inc(mod, i, data, type); \
+    mt_mod_print_even_spaces(1 + sizeof(type)); \
+    printf(str, data);
+
 void mt_mod_dis(const mt_mod* const mod);
 
 #endif
