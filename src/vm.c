@@ -18,8 +18,8 @@ void mt_vm_free(mt_vm* const vm) {
 
 void mt_vm_dec_stack(mt_vm* const vm) {
     switch (vm->stack[--vm->s_len].type) {
-        case MT_MODULE:
-        case MT_FN:
+        case mt_pfx(MODULE):
+        case mt_pfx(FN):
             mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
             break;
         default:
@@ -28,6 +28,7 @@ void mt_vm_dec_stack(mt_vm* const vm) {
 }
 
 static void mt_run_op(mt_vm* const vm) {
+    bool mt_bool;
     uint8_t num_args, mt_arg;
     int64_t mt_int;
     double mt_float;
@@ -35,71 +36,79 @@ static void mt_run_op(mt_vm* const vm) {
     mt_var mt_ret;
 
     switch (*mt_vm_cur_byte(vm)) {
-        case MT_NOP:
+        case mt_pfx(NOP):
             mt_vm_cur_byte(vm)++;
             break;
-        case MT_PUSH:
+        case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {
-                case MT_NULL:
+                case mt_pfx(NULL):
                     mt_vm_push(vm, mt_var_null);
                     mt_vm_cur_byte(vm)++;
                     break;
-                case MT_BOOL:
+                case mt_pfx(BOOL):
                     mt_vm_push(vm, mt_var_bool(*++mt_vm_cur_byte(vm)));
                     mt_vm_cur_byte(vm)++;
                     break;
-                case MT_CHAR:
+                case mt_pfx(CHAR):
                     mt_vm_push(vm, mt_var_char(*++mt_vm_cur_byte(vm)));
                     mt_vm_cur_byte(vm)++;
                     break;
-                case MT_INT:
+                case mt_pfx(INT):
                     mt_vm_cur_byte(vm)++;
                     mt_vm_get_bytes(vm, &mt_int, sizeof(int64_t));
                     mt_vm_push(vm, mt_var_int(mt_int));
                     break;
-                case MT_FLOAT:
+                case mt_pfx(FLOAT):
                     mt_vm_cur_byte(vm)++;
                     mt_vm_get_bytes(vm, &mt_float, sizeof(double));
                     mt_vm_push(vm, mt_var_float(mt_float));
                     break;
             }
             break;
-        case MT_ADD:
-            if (mt_vm_stack_type_cmp(vm, MT_INT)) {
+        case mt_pfx(ADD):
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, +=, mt_int);
-            } else if (mt_vm_stack_type_cmp(vm, MT_FLOAT)) {
+            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                 mt_vm_math_op(vm, +=, mt_float);
             }
             break;
-        case MT_SUB:
-            if (mt_vm_stack_type_cmp(vm, MT_INT)) {
+        case mt_pfx(SUB):
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, -=, mt_int);
-            } else if (mt_vm_stack_type_cmp(vm, MT_FLOAT)) {
+            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                 mt_vm_math_op(vm, -=, mt_float);
             }
             break;
-        case MT_JMP:
+        case mt_pfx(EQ):
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
+               mt_vm_eq_op(vm, mt_bool, mt_int);
+            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
+               mt_vm_eq_op(vm, mt_bool, mt_float);
+            }
+            mt_vm_push(vm, mt_var_bool(mt_bool));
+            break;
+        case mt_pfx(JMP):
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
             mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp;
             break;
-        case MT_LD_SELF:
+        case mt_pfx(LD_SELF):
             mt_vm_cur_mod(vm)->ref_count++;
             mt_vm_push(vm, mt_var_mod(mt_vm_cur_mod(vm)));
             mt_vm_cur_byte(vm)++;
             break;
-        case MT_LD_FN:
+        case mt_pfx(LD_FN):
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_fn, sizeof(uint32_t));
             mt_vm_push(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
             mt_vm_dec_stack_atomic(vm);
             break;
-        case MT_LD_ARG:
+        case mt_pfx(LD_ARG):
             mt_vm_cur_byte(vm)++;
             mt_arg = *mt_vm_cur_byte(vm)++;
             mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
             break;
-        case MT_CALL:
+        case mt_pfx(CALL):
             mt_vm_cur_byte(vm)++;
             num_args = *mt_vm_cur_byte(vm)++;
             mt_vm_inc_frame(vm);
@@ -108,7 +117,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_stack(vm).fn_idx]];
             mt_vm_dec_stack_atomic(vm);
             break;
-        case MT_RET:
+        case mt_pfx(RET):
             if (mt_vm_cur_base(vm) != vm->s_len) {
                 mt_ret = mt_vm_cur_stack(vm);
                 mt_vm_dec_stack_atomic(vm);
@@ -126,7 +135,7 @@ static void mt_run_op(mt_vm* const vm) {
 }
 
 mt_var mt_vm_run(mt_vm* const vm) {
-    while (*mt_vm_cur_byte(vm) != MT_HALT) {
+    while (*mt_vm_cur_byte(vm) != mt_pfx(HALT)) {
         mt_run_op(vm);
     }
     if (vm->s_len == 0) {

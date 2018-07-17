@@ -71,57 +71,58 @@ void mt_mod_dis(const mt_mod* const mod) {
             putchar(' ');
         }
         switch (mod->bytes[i]) {
-            case MT_NOP:
-            case MT_ADD:
-            case MT_SUB:
-            case MT_LD_SELF:
-            case MT_RET:
-            case MT_HALT:
+            case mt_pfx(NOP):
+            case mt_pfx(ADD):
+            case mt_pfx(SUB):
+            case mt_pfx(EQ):
+            case mt_pfx(LD_SELF):
+            case mt_pfx(RET):
+            case mt_pfx(HALT):
                 mt_print_byte_hex(mod, i, 1);
                 mt_mod_print_even_spaces(1);
                 printf("%s\n", mt_op_str(mod->bytes[i]));
                 i++;
                 break;
-            case MT_PUSH:
+            case mt_pfx(PUSH):
                 mt_print_byte_hex(mod, i, 1);
                 switch (mod->bytes[++i]) {
-                    case MT_NULL:
+                    case mt_pfx(NULL):
                         mt_print_byte_hex(mod, i, 2);
                         printf("PUSH NULL\n");
                         i += 2;
                         break;
-                    case MT_BOOL:
+                    case mt_pfx(BOOL):
                         mt_print_byte_hex(mod, i, 2);
                         printf("PUSH %s\n", mod->bytes[++i] == true ? "true" : "false");
                         i++;
                         break;
-                    case MT_CHAR:
+                    case mt_pfx(CHAR):
                         mt_print_byte_hex(mod, i, 2);
                         printf("PUSH %c\n", mod->bytes[++i]);
                         i++;
                         break;
-                    case MT_INT:
+                    case mt_pfx(INT):
                         mt_print_byte_hex(mod, i, 9);
                         mt_mod_get_bytes(mod, &mt_int, sizeof(int64_t), i);
                         printf("PUSH %li\n", mt_int);
                         break;
-                    case MT_FLOAT:
+                    case mt_pfx(FLOAT):
                         mt_print_byte_hex(mod, i, 9);
                         mt_mod_get_bytes(mod, &mt_float, sizeof(double), i);
                         printf("PUSH %lf\n", mt_float);
                         break;
                 }
                 break;
-            case MT_JMP:
+            case mt_pfx(JMP):
                 mt_mod_op_w_data(mod, i, uint32_t, mt_jmp, "JMP %d\n");
                 break;
-            case MT_LD_FN:
+            case mt_pfx(LD_FN):
                 mt_mod_op_w_data(mod, i, uint32_t, mt_fn, "LD_FN %d\n");
                 break;
-            case MT_LD_ARG:
+            case mt_pfx(LD_ARG):
                 mt_mod_op2(mod, i, "LD_ARG %d\n");
                 break;
-            case MT_CALL:
+            case mt_pfx(CALL):
                 mt_mod_op2(mod, i, "CALL %d\n");
                 break;
             default:

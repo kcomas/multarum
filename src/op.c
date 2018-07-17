@@ -1,7 +1,7 @@
 
 #include "op.h"
 
-#define qname(OP) op_str[MT_##OP] = #OP
+#define qname(OP) op_str[mt_pfx(OP)] = #OP
 
 static char* op_str[_MT_OP_TOTAL];
 
@@ -15,6 +15,7 @@ void mt_op_str_init(void) {
     qname(PUSH);
     qname(ADD);
     qname(SUB);
+    qname(EQ);
     qname(JMP);
     qname(LD_SELF);
     qname(LD_FN);

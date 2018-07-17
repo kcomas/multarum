@@ -5,17 +5,18 @@
 #include "multarum.h"
 
 typedef enum {
-    MT_NOP,
-    MT_PUSH,
-    MT_ADD,
-    MT_SUB,
-    MT_JMP,
-    MT_LD_SELF,
-    MT_LD_FN,
-    MT_LD_ARG,
-    MT_CALL,
-    MT_RET,
-    MT_HALT,
+    mt_pfx(NOP),
+    mt_pfx(PUSH),
+    mt_pfx(ADD),
+    mt_pfx(SUB),
+    mt_pfx(EQ),
+    mt_pfx(JMP),
+    mt_pfx(LD_SELF),
+    mt_pfx(LD_FN),
+    mt_pfx(LD_ARG),
+    mt_pfx(CALL),
+    mt_pfx(RET),
+    mt_pfx(HALT),
     _MT_OP_TOTAL
 } mt_op;
 

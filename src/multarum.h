@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#define mt_pfx(NAME) MT_##NAME
+
 typedef struct _mt_mod mt_mod;
 typedef struct _mt_var mt_var;
 

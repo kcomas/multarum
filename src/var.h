@@ -1,18 +1,18 @@
 
-#ifndef MT_VAR_H
-#define MT_VAR_H
+#ifndef MT_VAR
+#define MT_VAR
 
 #include "multarum.h"
 
 typedef struct _mt_var {
     enum {
-        MT_NULL,
-        MT_BOOL,
-        MT_CHAR,
-        MT_INT,
-        MT_FLOAT,
-        MT_MODULE,
-        MT_FN,
+        mt_pfx(NULL),
+        mt_pfx(BOOL),
+        mt_pfx(CHAR),
+        mt_pfx(INT),
+        mt_pfx(FLOAT),
+        mt_pfx(MODULE),
+        mt_pfx(FN),
         // @TODO colletions arrays modules hashs
     } type;
     uint32_t fn_idx;
@@ -25,19 +25,19 @@ typedef struct _mt_var {
     } data;
 } mt_var;
 
-#define mt_var_null (mt_var) { .type = MT_NULL }
+#define mt_var_null (mt_var) { .type = mt_pfx(NULL) }
 
-#define mt_var_bool(value) (mt_var) { .type = MT_BOOL, .data = { .mt_bool = value } }
+#define mt_var_bool(value) (mt_var) { .type = mt_pfx(BOOL), .data = { .mt_bool = value } }
 
-#define mt_var_char(value) (mt_var) { .type = MT_CHAR, .data = { .mt_char = value } }
+#define mt_var_char(value) (mt_var) { .type = mt_pfx(CHAR), .data = { .mt_char = value } }
 
-#define mt_var_int(value) (mt_var) { .type = MT_INT, .data = { .mt_int = value } }
+#define mt_var_int(value) (mt_var) { .type = mt_pfx(INT), .data = { .mt_int = value } }
 
-#define mt_var_float(value) (mt_var) { .type = MT_FLOAT, .data = { .mt_float = value } }
+#define mt_var_float(value) (mt_var) { .type = mt_pfx(FLOAT), .data = { .mt_float = value } }
 
-#define mt_var_mod(value) (mt_var) { .type = MT_MODULE, .data = { .mt_mod = value } }
+#define mt_var_mod(value) (mt_var) { .type = mt_pfx(MODULE), .data = { .mt_mod = value } }
 
-#define mt_var_fn(value, i) (mt_var) { .type = MT_FN, .fn_idx = i, .data = { .mt_mod = value } }
+#define mt_var_fn(value, i) (mt_var) { .type = mt_pfx(FN), .fn_idx = i, .data = { .mt_mod = value } }
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 

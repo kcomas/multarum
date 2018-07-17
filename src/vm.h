@@ -52,6 +52,12 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
+#define mt_vm_eq_op(vm, target, v_data) \
+    target = mt_vm_prev_stack(vm).data.v_data == mt_vm_cur_stack(vm).data.v_data; \
+    mt_vm_dec_stack(vm); \
+    mt_vm_dec_stack(vm); \
+    mt_vm_cur_byte(vm)++
+
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
