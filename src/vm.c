@@ -84,6 +84,8 @@ static void mt_run_op(mt_vm* const vm) {
                mt_vm_eq_op(vm, mt_bool, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                mt_vm_eq_op(vm, mt_bool, mt_float);
+            } else {
+                mt_bool = false;
             }
             mt_vm_push(vm, mt_var_bool(mt_bool));
             break;
