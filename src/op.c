@@ -17,6 +17,7 @@ void mt_op_str_init(void) {
     qname(SUB);
     qname(EQ);
     qname(JMP);
+    qname(JMPF);
     qname(LD_SELF);
     qname(LD_FN);
     qname(LD_ARG);

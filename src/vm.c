@@ -89,10 +89,19 @@ static void mt_run_op(mt_vm* const vm) {
             }
             mt_vm_push(vm, mt_var_bool(mt_bool));
             break;
+        case mt_pfx(JMPF):
+            mt_vm_cur_byte(vm)++;
+            mt_bool = mt_var_as_bool(&mt_vm_cur_stack(vm));
+            if (!mt_bool) {
+                mt_vm_jmp(vm, mt_jmp);
+            } else {
+                mt_vm_cur_byte(vm) += sizeof(uint32_t);
+            }
+            mt_vm_dec_stack(vm);
+            break;
         case mt_pfx(JMP):
             mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
-            mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp;
+            mt_vm_jmp(vm, mt_jmp);
             break;
         case mt_pfx(LD_SELF):
             mt_vm_cur_mod(vm)->ref_count++;

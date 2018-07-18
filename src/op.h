@@ -11,6 +11,7 @@ typedef enum {
     mt_pfx(SUB),
     mt_pfx(EQ),
     mt_pfx(JMP),
+    mt_pfx(JMPF),
     mt_pfx(LD_SELF),
     mt_pfx(LD_FN),
     mt_pfx(LD_ARG),
@@ -20,8 +21,8 @@ typedef enum {
     _MT_OP_TOTAL
 } mt_op;
 
-#define mt_write_jmp(mod, mt_jmp) \
-    mt_write_byte(mod, MT_JMP); \
+#define mt_write_jmp(mod, type, mt_jmp) \
+    mt_write_byte(mod, type); \
     mt_write_bytes(mod, mt_jmp, sizeof(uint32_t))
 
 void mt_op_str_init(void);

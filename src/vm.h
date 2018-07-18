@@ -58,6 +58,10 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
+#define mt_vm_jmp(vm, mt_jmp) \
+    mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t)); \
+    mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp
+
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);

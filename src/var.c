@@ -4,18 +4,18 @@
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
     mt_write_byte(mod, var->type);
     switch (var->type) {
-        case MT_NULL:
+        case mt_pfx(NULL):
             break;
-        case MT_BOOL:
+        case mt_pfx(BOOL):
             mt_write_byte(mod, var->data.mt_bool);
             break;
-        case MT_CHAR:
+        case mt_pfx(CHAR):
             mt_write_byte(mod, var->data.mt_char);
             break;
-        case MT_INT:
+        case mt_pfx(INT):
             mt_write_bytes(mod, &var->data.mt_int, sizeof(int64_t));
             break;
-        case MT_FLOAT:
+        case mt_pfx(FLOAT):
             mt_write_bytes(mod, &var->data.mt_float, sizeof(double));
             break;
         default:
@@ -23,27 +23,46 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
         }
 }
 
+bool mt_var_as_bool(const mt_var* const var) {
+    switch (var->type) {
+        case mt_pfx(NULL):
+            return false;
+        case mt_pfx(BOOL):
+            return var->data.mt_bool;
+        case mt_pfx(CHAR):
+            return var->data.mt_char != '\0';
+        case mt_pfx(INT):
+            return var->data.mt_int != 0;
+        case mt_pfx(FLOAT):
+            return var->data.mt_float != 0.0;
+        case mt_pfx(MODULE):
+        case mt_pfx(FN):
+        default:
+            return false;
+    }
+}
+
 void mt_var_debug_print(const mt_var* const var) {
     switch (var->type) {
-        case MT_NULL:
+        case mt_pfx(NULL):
             printf("NULL");
             break;
-        case MT_BOOL:
+        case mt_pfx(BOOL):
             printf("%s", var->data.mt_bool ? "t" : "f");
             break;
-        case MT_CHAR:
+        case mt_pfx(CHAR):
             printf("%c", var->data.mt_char);
             break;
-        case MT_INT:
+        case mt_pfx(INT):
             printf("%li", var->data.mt_int);
             break;
-        case MT_FLOAT:
+        case mt_pfx(FLOAT):
             printf("%lf", var->data.mt_float);
             break;
-        case MT_MODULE:
+        case mt_pfx(MODULE):
             printf("Mod<%p>", var->data.mt_mod);
             break;
-        case MT_FN:
+        case mt_pfx(FN):
             printf("Fn %d Mod<%p>", var->fn_idx, var->data.mt_mod);
             break;
     }

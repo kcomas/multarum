@@ -4,8 +4,8 @@
 int main(void) {
     mt_mod* mod = mt_mod_init(500, 2);
 
-    uint32_t main_jmp = 33;
-    mt_write_jmp(mod, &main_jmp);
+    uint32_t main_jmp = 48;
+    mt_write_jmp(mod, mt_pfx(JMP), &main_jmp);
 
     mt_mod_reg_fn(mod, mod->len);
     mt_write_byte(mod, mt_pfx(LD_ARG));
@@ -17,8 +17,16 @@ int main(void) {
     mt_var_write_bytes(mod, &mt_var_int(2));
     mt_write_byte(mod, mt_pfx(SUB));
     mt_write_byte(mod, mt_pfx(PUSH));
-    mt_var_write_bytes(mod, &mt_var_int(5));
+    mt_var_write_bytes(mod, &mt_var_int(1));
     mt_write_byte(mod, mt_pfx(EQ));
+    uint32_t skip_p = 44;
+    mt_write_jmp(mod, mt_pfx(JMPF), &skip_p);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_null);
+    uint32_t skip_c = 47;
+    mt_write_jmp(mod, mt_pfx(JMP), &skip_c);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_char('M'));
     mt_write_byte(mod, mt_pfx(RET));
 
     mt_write_byte(mod, mt_pfx(PUSH));

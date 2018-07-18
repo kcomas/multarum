@@ -87,17 +87,20 @@ void mt_mod_dis(const mt_mod* const mod) {
                 mt_print_byte_hex(mod, i, 1);
                 switch (mod->bytes[++i]) {
                     case mt_pfx(NULL):
-                        mt_print_byte_hex(mod, i, 2);
+                        mt_print_byte_hex(mod, i, 1);
+                        mt_mod_print_even_spaces(2);
                         printf("PUSH NULL\n");
-                        i += 2;
+                        i++;
                         break;
                     case mt_pfx(BOOL):
                         mt_print_byte_hex(mod, i, 2);
+                        mt_mod_print_even_spaces(3);
                         printf("PUSH %s\n", mod->bytes[++i] == true ? "true" : "false");
                         i++;
                         break;
                     case mt_pfx(CHAR):
                         mt_print_byte_hex(mod, i, 2);
+                        mt_mod_print_even_spaces(3);
                         printf("PUSH %c\n", mod->bytes[++i]);
                         i++;
                         break;
@@ -115,6 +118,9 @@ void mt_mod_dis(const mt_mod* const mod) {
                 break;
             case mt_pfx(JMP):
                 mt_mod_op_w_data(mod, i, uint32_t, mt_jmp, "JMP %d\n");
+                break;
+            case mt_pfx(JMPF):
+                mt_mod_op_w_data(mod, i, uint32_t, mt_jmp, "JMPF %d\n");
                 break;
             case mt_pfx(LD_FN):
                 mt_mod_op_w_data(mod, i, uint32_t, mt_fn, "LD_FN %d\n");
