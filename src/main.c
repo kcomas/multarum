@@ -4,6 +4,7 @@
 int main(void) {
     mt_mod* mod = mt_mod_init(500, 2);
 
+    /**
     uint32_t main_jmp = 48;
     mt_write_jmp(mod, mt_pfx(JMP), &main_jmp);
 
@@ -41,6 +42,67 @@ int main(void) {
     mt_write_byte(mod, mt_pfx(CALL));
     mt_write_byte(mod, 2);
     mt_write_byte(mod, mt_pfx(HALT));
+    */
+
+    uint64_t fib = 30;
+
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(fib));
+    mt_write_byte(mod, mt_pfx(LD_SELF));
+    mt_write_byte(mod, mt_pfx(LD_FN));
+    uint32_t fn0 = 0;
+    mt_write_bytes(mod, &fn0, sizeof(uint32_t));
+    mt_write_byte(mod, mt_pfx(CALL));
+    mt_write_byte(mod, 1);
+    mt_write_byte(mod, mt_pfx(HALT));
+
+    mt_mod_reg_fn(mod, mod->len);
+    mt_write_byte(mod, mt_pfx(LD_ARG));
+    mt_write_byte(mod, 0);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(0));
+    mt_write_byte(mod, mt_pfx(EQ));
+    uint32_t skip0 = 48;
+    mt_write_jmp(mod, mt_pfx(JMPF), &skip0);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(0));
+    mt_write_byte(mod, mt_pfx(RET));
+
+    mt_write_byte(mod, mt_pfx(LD_ARG));
+    mt_write_byte(mod, 0);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(1));
+    mt_write_byte(mod, mt_pfx(EQ));
+    uint32_t skip1 = 77;
+    mt_write_jmp(mod, mt_pfx(JMPF), &skip1);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(1));
+    mt_write_byte(mod, mt_pfx(RET));
+
+    mt_write_byte(mod, mt_pfx(LD_ARG));
+    mt_write_byte(mod, 0);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(1));
+    mt_write_byte(mod, mt_pfx(SUB));
+    mt_write_byte(mod, mt_pfx(LD_SELF));
+    mt_write_byte(mod, mt_pfx(LD_FN));
+    mt_write_bytes(mod, &fn0, sizeof(uint32_t));
+    mt_write_byte(mod, mt_pfx(CALL));
+    mt_write_byte(mod, 1);
+
+    mt_write_byte(mod, mt_pfx(LD_ARG));
+    mt_write_byte(mod, 0);
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_int(2));
+    mt_write_byte(mod, mt_pfx(SUB));
+    mt_write_byte(mod, mt_pfx(LD_SELF));
+    mt_write_byte(mod, mt_pfx(LD_FN));
+    mt_write_bytes(mod, &fn0, sizeof(uint32_t));
+    mt_write_byte(mod, mt_pfx(CALL));
+    mt_write_byte(mod, 1);
+
+    mt_write_byte(mod, mt_pfx(ADD));
+    mt_write_byte(mod, mt_pfx(RET));
 
     mt_mod_dis(mod);
 
