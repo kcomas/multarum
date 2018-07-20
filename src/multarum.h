@@ -17,5 +17,6 @@ typedef struct _mt_var mt_var;
 #include "op.h"
 #include "mod.h"
 #include "vm.h"
+#include "err.h"
 
 #endif
