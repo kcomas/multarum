@@ -2,6 +2,7 @@
 #include "vm.h"
 
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
+    vm->mode = mt_pfx(VM_WAIT);
     vm->s_len = 0;
     vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
@@ -142,11 +143,15 @@ static void mt_run_op(mt_vm* const vm) {
             mt_mod_free(mt_vm_cur_mod(vm));
             mt_vm_dec_frame(vm);
             break;
+        case mt_pfx(HALT):
+            vm->mode = mt_pfx(VM_WAIT);
+            break;
     }
 }
 
 mt_var mt_vm_run(mt_vm* const vm) {
-    while (*mt_vm_cur_byte(vm) != mt_pfx(HALT)) {
+    vm->mode = mt_pfx(VM_RUN);
+    while (vm->mode == mt_pfx(VM_RUN)) {
         mt_run_op(vm);
     }
     if (vm->s_len == 0) {

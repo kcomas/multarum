@@ -2,7 +2,8 @@
 #ifndef MT_OP
 #define MT_OP
 
-#include "multarum.h"
+#include "common.h"
+#include "mod.h"
 
 typedef enum {
     mt_pfx(NOP),

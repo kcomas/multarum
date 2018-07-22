@@ -1,5 +1,5 @@
 
-#include "multarum.h"
+#include "vm.h"
 
 int main(void) {
     mt_mod* mod = mt_mod_init(500, 2);

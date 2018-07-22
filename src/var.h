@@ -2,7 +2,16 @@
 #ifndef MT_VAR
 #define MT_VAR
 
-#include "multarum.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "common.h"
+
+typedef struct _mt_mod mt_mod;
+
+#include "mod.h"
 
 typedef struct _mt_var {
     enum {
@@ -15,7 +24,7 @@ typedef struct _mt_var {
         mt_pfx(FN),
         // @TODO colletions arrays modules hashs
     } type;
-    uint32_t fn_idx;
+    uint16_t fn_idx;
     union {
         bool mt_bool;
         char mt_char;

@@ -2,7 +2,13 @@
 #ifndef MT_VM
 #define MT_VM
 
-#include "multarum.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "common.h"
+#include "op.h"
+#include "var.h"
+#include "mod.h"
 
 #ifndef MT_DEFAULT_STACK_SIZE
 #   define MT_DEFAULT_STACK_SIZE 2000
@@ -12,6 +18,12 @@
 #   define MT_DEFAULT_FRAME_SIZE 200
 #endif
 
+typedef enum {
+    mt_pfx(VM_WAIT),
+    mt_pfx(VM_RUN),
+    mt_pfx(VM_ERR)
+} mt_vm_mode;
+
 typedef struct {
     size_t rbp;
     uint8_t* rip;
@@ -19,6 +31,7 @@ typedef struct {
 } mt_frame;
 
 typedef struct {
+    mt_vm_mode mode;
     size_t s_len, f_len;
     mt_var* stack;
     mt_frame* rsp;

@@ -2,11 +2,14 @@
 #ifndef MT_MOD
 #define MT_MOD
 
-#include "multarum.h"
+#include "common.h"
+#include "var.h"
+#include "op.h"
 
 typedef struct _mt_mod {
     uint32_t ref_count;
-    size_t _size, len, _f_size, f_len;
+    uint16_t _f_size, f_len;
+    size_t _size, len;
     uint8_t* bytes;
     uint8_t* fns;
     // @TODO hash exports
