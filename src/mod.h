@@ -7,8 +7,8 @@
 #include "op.h"
 
 typedef struct _mt_mod {
+    uint8_t _f_size, f_len;
     uint32_t ref_count;
-    uint16_t _f_size, f_len;
     uint32_t _size, len;
     uint8_t* bytes;
     uint8_t* fns;

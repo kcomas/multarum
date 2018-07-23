@@ -24,7 +24,7 @@ typedef struct _mt_var {
         mt_pfx(FN),
         // @TODO colletions arrays modules hashs
     } type;
-    uint16_t fn_idx;
+    uint8_t fn_idx;
     union {
         bool mt_bool;
         char mt_char;
