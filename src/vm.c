@@ -7,6 +7,7 @@ void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
     vm->f_len = 0;
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
+    vm->rsp[vm->f_len].safe = false;
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
@@ -124,6 +125,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             num_args = *mt_vm_cur_byte(vm)++;
             mt_vm_inc_frame(vm);
+            mt_vm_cur_safe(vm) = false;
             mt_vm_cur_base(vm) = vm->s_len - num_args;
             mt_vm_cur_mod(vm) = mt_vm_cur_stack(vm).data.mt_mod;
             mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_stack(vm).fn_idx]];

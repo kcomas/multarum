@@ -15,7 +15,7 @@
 #endif
 
 #ifndef MT_DEFAULT_FRAME_SIZE
-#   define MT_DEFAULT_FRAME_SIZE 200
+#   define MT_DEFAULT_FRAME_SIZE 500
 #endif
 
 typedef enum {
@@ -25,7 +25,8 @@ typedef enum {
 } mt_vm_mode;
 
 typedef struct {
-    size_t rbp;
+    bool safe;
+    uint32_t rbp;
     uint8_t* rip;
     mt_mod* mod;
 } mt_frame;
@@ -37,11 +38,15 @@ typedef struct {
     mt_frame* rsp;
 } mt_vm;
 
-#define mt_vm_cur_byte(vm) vm->rsp[vm->f_len - 1].rip
+#define mt_vm_cur_frame(vm) vm->rsp[vm->f_len - 1]
 
-#define mt_vm_cur_mod(vm) vm->rsp[vm->f_len - 1].mod
+#define mt_vm_cur_safe(vm) mt_vm_cur_frame(vm).safe
 
-#define mt_vm_cur_base(vm) vm->rsp[vm->f_len - 1].rbp
+#define mt_vm_cur_byte(vm) mt_vm_cur_frame(vm).rip
+
+#define mt_vm_cur_mod(vm) mt_vm_cur_frame(vm).mod
+
+#define mt_vm_cur_base(vm) mt_vm_cur_frame(vm).rbp
 
 #define mt_vm_inc_frame(vm) vm->f_len++;
 
