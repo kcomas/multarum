@@ -51,8 +51,6 @@ static void mt_mod_print_even_spaces(size_t cur_len) {
 }
 
 void mt_mod_dis(const mt_mod* const mod) {
-    mt_op_str_init();
-
     uint32_t mt_jmp, mt_fn;
     int64_t mt_int;
     double mt_float;
