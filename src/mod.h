@@ -15,6 +15,11 @@ typedef struct _mt_mod {
     // @TODO hash exports
 } mt_mod;
 
+typedef struct {
+    bool in;
+    uint8_t idx;
+} mt_fn_place;
+
 #define mt_write_byte(mod, byte) mod->bytes[mod->len++] = byte
 
 #define mt_write_bytes(mod, data, size) \
@@ -49,11 +54,12 @@ void mt_mod_free(mt_mod* const mod);
     mt_mod_print_even_spaces(1 + sizeof(type)); \
     printf(str, data);
 
-#define mt_mod_op2(mod, i, str) \
+#define mt_mod_op2(moj, i) \
+    i2 = i; \
     mt_print_byte_hex(mod, i, 2); \
     i++; \
     mt_mod_print_even_spaces(2); \
-    printf(str, mod->bytes[i++]);
+    printf("%s %d\n", mt_op_str(mod->bytes[i2]), mod->bytes[i++]);
 
 
 void mt_mod_dis(const mt_mod* const mod);

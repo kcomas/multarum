@@ -26,6 +26,7 @@ typedef enum {
 
 typedef struct {
     bool safe;
+    mt_fn_place fn;
     uint32_t rbp;
     uint8_t* rip;
     mt_mod* mod;
@@ -38,9 +39,13 @@ typedef struct {
     mt_frame* rsp;
 } mt_vm;
 
+#define mt_vm_prev_frame(vm) vm->rsp[vm->f_len - 2]
+
 #define mt_vm_cur_frame(vm) vm->rsp[vm->f_len - 1]
 
 #define mt_vm_cur_safe(vm) mt_vm_cur_frame(vm).safe
+
+#define mt_vm_cur_fn(vm) mt_vm_cur_frame(vm).fn
 
 #define mt_vm_cur_byte(vm) mt_vm_cur_frame(vm).rip
 
@@ -79,6 +84,17 @@ typedef struct {
 #define mt_vm_jmp(vm, mt_jmp) \
     mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t)); \
     mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp
+
+#define mt_vm_call(vm, new_mod, new_idx, new_base) \
+    mt_vm_cur_byte(vm)++; \
+    num_args = *mt_vm_cur_byte(vm)++; \
+    mt_vm_inc_frame(vm); \
+    mt_vm_cur_safe(vm) = false; \
+    mt_vm_cur_fn(vm).in = true; \
+    mt_vm_cur_fn(vm).idx = new_idx; \
+    mt_vm_cur_base(vm) = new_base; \
+    mt_vm_cur_mod(vm) = new_mod; \
+    mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm).idx]]
 
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 

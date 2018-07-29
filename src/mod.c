@@ -55,7 +55,7 @@ void mt_mod_dis(const mt_mod* const mod) {
     int64_t mt_int;
     double mt_float;
 
-    size_t i = 0;
+    size_t i2, i = 0;
     size_t count_total = mt_mod_num_len(mod->len);
     while (i < mod->len) {
         for (size_t fi = 0; fi < mod->f_len; fi++) {
@@ -124,10 +124,9 @@ void mt_mod_dis(const mt_mod* const mod) {
                 mt_mod_op_w_data(mod, i, uint32_t, mt_fn, "LD_FN %d\n");
                 break;
             case mt_pfx(LD_ARG):
-                mt_mod_op2(mod, i, "LD_ARG %d\n");
-                break;
+            case mt_pfx(CALL_SELF):
             case mt_pfx(CALL):
-                mt_mod_op2(mod, i, "CALL %d\n");
+                mt_mod_op2(mod, i);
                 break;
             default:
                 i++;

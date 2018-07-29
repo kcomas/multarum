@@ -17,6 +17,7 @@ typedef enum {
     mt_pfx(LD_FN),
     mt_pfx(LD_ARG),
     mt_pfx(CALL),
+    mt_pfx(CALL_SELF),
     mt_pfx(RET),
     mt_pfx(HALT),
 } mt_op;
