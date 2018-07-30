@@ -2,13 +2,12 @@
 #ifndef MT_VM
 #define MT_VM
 
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "common.h"
 #include "op.h"
 #include "var.h"
-#include "mod.h"
+#include "frame.h"
 
 #ifndef MT_DEFAULT_STACK_SIZE
 #   define MT_DEFAULT_STACK_SIZE 2000
@@ -23,14 +22,6 @@ typedef enum {
     mt_pfx(VM_RUN),
     mt_pfx(VM_ERR)
 } mt_vm_mode;
-
-typedef struct {
-    bool safe;
-    mt_fn_place fn;
-    uint32_t rbp;
-    uint8_t* rip;
-    mt_mod* mod;
-} mt_frame;
 
 typedef struct {
     mt_vm_mode mode;
@@ -103,6 +94,27 @@ void mt_vm_free(mt_vm* const vm);
 #define mt_vm_dec_stack_atomic(vm) vm->s_len--;
 
 void mt_vm_dec_stack(mt_vm* const vm);
+
+#define mt_vm_ret(vm) \
+    if (mt_vm_cur_base(vm) != vm->s_len) { \
+        mt_ret = &mt_vm_cur_stack(vm); \
+        mt_vm_dec_stack_atomic(vm); \
+        while (vm->s_len >= mt_vm_cur_base(vm)) { \
+            mt_vm_dec_stack(vm); \
+        } \
+        mt_vm_push(vm, *mt_ret); \
+    } else { \
+        mt_vm_push(vm, mt_var_null); \
+    } \
+    mt_mod_free(mt_vm_cur_mod(vm)); \
+    mt_vm_dec_frame(vm)
+
+#define mt_vm_err_handle(vm, type, msg) \
+    if (!mt_vm_cur_safe(vm)) { \
+        vm->mode = mt_pfx(VM_ERR); \
+    } else { \
+        mt_vm_ret(vm); \
+    }
 
 mt_var mt_vm_run(mt_vm* const vm);
 

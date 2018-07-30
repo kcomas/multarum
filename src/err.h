@@ -4,13 +4,20 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "vm.h"
 
 typedef enum {
     mt_pfx(ERR_OK)
 } mt_err_type;
 
+#ifndef MT_ERR_STACK_COPY
+#   define MT_ERR_STACK_COPY 10
+#endif
+
 typedef struct {
-    mt_err_type type;
+    uint32_t ref_count;
+    size_t f_len;
+    mt_frame* rsp;
     char* msg;
 } mt_err;
 

@@ -74,6 +74,8 @@ static void mt_run_op(mt_vm* const vm) {
                 mt_vm_math_op(vm, +=, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                 mt_vm_math_op(vm, +=, mt_float);
+            } else {
+                // @TODO handle error
             }
             break;
         case mt_pfx(SUB):
@@ -81,6 +83,8 @@ static void mt_run_op(mt_vm* const vm) {
                 mt_vm_math_op(vm, -=, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                 mt_vm_math_op(vm, -=, mt_float);
+            } else {
+                // @TODO handle error
             }
             break;
         case mt_pfx(EQ):
@@ -89,7 +93,8 @@ static void mt_run_op(mt_vm* const vm) {
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                mt_vm_eq_op(vm, mt_bool, mt_float);
             } else {
-                mt_bool = false;
+                // @TODO handle error
+                break;
             }
             mt_vm_push(vm, mt_var_bool(mt_bool));
             break;
@@ -124,6 +129,9 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
             break;
         case mt_pfx(CALL):
+            if (mt_vm_cur_stack(vm).type != mt_pfx(FN)) {
+             // @TODO handle error
+            }
             mt_vm_call(vm, mt_vm_cur_stack(vm).data.mt_mod, mt_vm_cur_stack(vm).fn_idx, vm->s_len - num_args);
             mt_vm_dec_stack_atomic(vm);
             break;
@@ -132,18 +140,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_mod(vm)->ref_count++;
             break;
         case mt_pfx(RET):
-            if (mt_vm_cur_base(vm) != vm->s_len) {
-                mt_ret = &mt_vm_cur_stack(vm);
-                mt_vm_dec_stack_atomic(vm);
-                while (vm->s_len >= mt_vm_cur_base(vm)) {
-                    mt_vm_dec_stack(vm);
-                }
-                mt_vm_push(vm, *mt_ret);
-            } else {
-                mt_vm_push(vm, mt_var_null);
-            }
-            mt_mod_free(mt_vm_cur_mod(vm));
-            mt_vm_dec_frame(vm);
+            mt_vm_ret(vm);
             break;
         case mt_pfx(HALT):
             vm->mode = mt_pfx(VM_WAIT);
