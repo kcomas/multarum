@@ -54,14 +54,6 @@ void mt_mod_free(mt_mod* const mod);
     mt_mod_print_even_spaces(1 + sizeof(type)); \
     printf(str, data);
 
-#define mt_mod_op2(moj, i) \
-    i2 = i; \
-    mt_print_byte_hex(mod, i, 2); \
-    i++; \
-    mt_mod_print_even_spaces(2); \
-    printf("%s %d\n", mt_op_str(mod->bytes[i2]), mod->bytes[i++]);
-
-
 void mt_mod_dis(const mt_mod* const mod);
 
 #endif

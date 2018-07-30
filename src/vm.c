@@ -20,7 +20,7 @@ void mt_vm_free(mt_vm* const vm) {
     free(vm->rsp);
 }
 
-void mt_vm_dec_stack(mt_vm* const vm) {
+static void mt_vm_dec_stack(mt_vm* const vm) {
     switch (vm->stack[--vm->s_len].type) {
         case mt_pfx(MODULE):
         case mt_pfx(FN):
@@ -31,13 +31,39 @@ void mt_vm_dec_stack(mt_vm* const vm) {
     }
 }
 
+static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, size_t new_base) {
+    mt_vm_cur_byte(vm)++;
+    uint8_t num_args = *mt_vm_cur_byte(vm)++;
+    mt_vm_inc_frame(vm);
+    mt_vm_cur_safe(vm) = false;
+    mt_vm_cur_fn(vm).in = true;
+    mt_vm_cur_fn(vm).idx = new_idx;
+    mt_vm_cur_base(vm) = new_base - num_args;
+    mt_vm_cur_mod(vm) = new_mod;
+    mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm).idx]];
+}
+
+static void mt_vm_ret(mt_vm* const vm) {
+    if (mt_vm_cur_base(vm) != vm->s_len) {
+        mt_var* mt_ret = &mt_vm_cur_stack(vm);
+        mt_vm_dec_stack_atomic(vm);
+        while (vm->s_len >= mt_vm_cur_base(vm)) {
+            mt_vm_dec_stack(vm);
+        }
+        mt_vm_push(vm, *mt_ret);
+    } else {
+        mt_vm_push(vm, mt_var_null);
+    }
+    mt_mod_free(mt_vm_cur_mod(vm));
+    mt_vm_dec_frame(vm)
+}
+
 static void mt_run_op(mt_vm* const vm) {
     bool mt_bool;
-    uint8_t num_args, mt_arg;
+    uint8_t mt_fn, mt_arg;
     int64_t mt_int;
     double mt_float;
-    uint32_t mt_jmp, mt_fn;
-    mt_var* mt_ret;
+    uint32_t mt_jmp;
 
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
@@ -119,7 +145,7 @@ static void mt_run_op(mt_vm* const vm) {
             break;
         case mt_pfx(LD_FN):
             mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_fn, sizeof(uint32_t));
+            mt_vm_get_bytes(vm, &mt_fn, sizeof(uint8_t));
             mt_vm_push(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
             mt_vm_dec_stack_atomic(vm);
             break;
@@ -132,11 +158,11 @@ static void mt_run_op(mt_vm* const vm) {
             if (mt_vm_cur_stack(vm).type != mt_pfx(FN)) {
              // @TODO handle error
             }
-            mt_vm_call(vm, mt_vm_cur_stack(vm).data.mt_mod, mt_vm_cur_stack(vm).fn_idx, vm->s_len - num_args);
+            mt_vm_call(vm, mt_vm_cur_stack(vm).data.mt_mod, mt_vm_cur_stack(vm).fn_idx, vm->s_len);
             mt_vm_dec_stack_atomic(vm);
             break;
         case mt_pfx(CALL_SELF):
-            mt_vm_call(vm, mt_vm_prev_frame(vm).mod, mt_vm_prev_frame(vm).fn.idx, vm->s_len + 1 - num_args);
+            mt_vm_call(vm, mt_vm_prev_frame(vm).mod, mt_vm_prev_frame(vm).fn.idx, vm->s_len + 1);
             mt_vm_cur_mod(vm)->ref_count++;
             break;
         case mt_pfx(RET):

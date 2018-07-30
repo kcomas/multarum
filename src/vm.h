@@ -76,38 +76,11 @@ typedef struct {
     mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t)); \
     mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp
 
-#define mt_vm_call(vm, new_mod, new_idx, new_base) \
-    mt_vm_cur_byte(vm)++; \
-    num_args = *mt_vm_cur_byte(vm)++; \
-    mt_vm_inc_frame(vm); \
-    mt_vm_cur_safe(vm) = false; \
-    mt_vm_cur_fn(vm).in = true; \
-    mt_vm_cur_fn(vm).idx = new_idx; \
-    mt_vm_cur_base(vm) = new_base; \
-    mt_vm_cur_mod(vm) = new_mod; \
-    mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm).idx]]
-
 void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
 
 #define mt_vm_dec_stack_atomic(vm) vm->s_len--;
-
-void mt_vm_dec_stack(mt_vm* const vm);
-
-#define mt_vm_ret(vm) \
-    if (mt_vm_cur_base(vm) != vm->s_len) { \
-        mt_ret = &mt_vm_cur_stack(vm); \
-        mt_vm_dec_stack_atomic(vm); \
-        while (vm->s_len >= mt_vm_cur_base(vm)) { \
-            mt_vm_dec_stack(vm); \
-        } \
-        mt_vm_push(vm, *mt_ret); \
-    } else { \
-        mt_vm_push(vm, mt_var_null); \
-    } \
-    mt_mod_free(mt_vm_cur_mod(vm)); \
-    mt_vm_dec_frame(vm)
 
 #define mt_vm_err_handle(vm, type, msg) \
     if (!mt_vm_cur_safe(vm)) { \

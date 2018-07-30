@@ -50,12 +50,19 @@ static void mt_mod_print_even_spaces(size_t cur_len) {
     }
 }
 
+static void mt_mod_op2(const mt_mod* const mod, size_t i) {
+    mt_print_byte_hex(mod, i, 2);
+    mt_mod_print_even_spaces(2);
+    printf("%s %d\n", mt_op_str(mod->bytes[i]), mod->bytes[i + 1]);
+}
+
 void mt_mod_dis(const mt_mod* const mod) {
-    uint32_t mt_jmp, mt_fn;
+    uint8_t mt_fn;
+    uint32_t mt_jmp;
     int64_t mt_int;
     double mt_float;
 
-    size_t i2, i = 0;
+    size_t i = 0;
     size_t count_total = mt_mod_num_len(mod->len);
     while (i < mod->len) {
         for (size_t fi = 0; fi < mod->f_len; fi++) {
@@ -121,12 +128,13 @@ void mt_mod_dis(const mt_mod* const mod) {
                 mt_mod_op_w_data(mod, i, uint32_t, mt_jmp, "JMPF %d\n");
                 break;
             case mt_pfx(LD_FN):
-                mt_mod_op_w_data(mod, i, uint32_t, mt_fn, "LD_FN %d\n");
+                mt_mod_op_w_data(mod, i, uint8_t, mt_fn, "LD_FN %d\n");
                 break;
             case mt_pfx(LD_ARG):
             case mt_pfx(CALL_SELF):
             case mt_pfx(CALL):
                 mt_mod_op2(mod, i);
+                i += 2;
                 break;
             default:
                 i++;
