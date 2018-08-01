@@ -17,6 +17,8 @@ void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
 
 void mt_vm_free(mt_vm* const vm) {
     free(vm->stack);
+    mt_mod_free(mt_vm_cur_mod(vm));
+    mt_vm_dec_frame(vm)
     free(vm->rsp);
 }
 

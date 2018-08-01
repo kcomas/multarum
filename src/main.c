@@ -66,6 +66,5 @@ int main(void) {
     printf("Rst: %li\n", rst.data.mt_int);
     mt_vm_debug_stack_print(&vm);
     mt_vm_free(&vm);
-    mt_mod_free(mod);
     return 0;
 }
