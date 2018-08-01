@@ -66,6 +66,19 @@ static size_t mt_mod_op2(const mt_mod* const mod, size_t i) {
     return i + 2;
 }
 
+static void mt_mod_space_bytes(size_t i, size_t count_total) {
+    for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
+        putchar(' ');
+    }
+}
+
+static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
+    mt_print_byte_hex(mod, i, 1);
+    mt_mod_print_even_spaces(1);
+    printf("%s\n", mt_op_str(mod->bytes[i]));
+    return i + 1;
+}
+
 void mt_mod_dis(const mt_mod* const mod) {
     uint32_t mt_jmp;
     int64_t mt_int;
@@ -81,21 +94,15 @@ void mt_mod_dis(const mt_mod* const mod) {
             }
         }
         printf("%lu: ", i);
-        for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
-            putchar(' ');
-        }
+        mt_mod_space_bytes(i, count_total);
         switch (mod->bytes[i]) {
             case mt_pfx(NOP):
             case mt_pfx(ADD):
             case mt_pfx(SUB):
             case mt_pfx(EQ):
             case mt_pfx(LD_SELF):
-            case mt_pfx(RET):
             case mt_pfx(HALT):
-                mt_print_byte_hex(mod, i, 1);
-                mt_mod_print_even_spaces(1);
-                printf("%s\n", mt_op_str(mod->bytes[i]));
-                i++;
+                i = mt_mod_single_byte_cmd(mod, i);
                 break;
             case mt_pfx(PUSH):
                 mt_print_byte_hex(mod, i, 1);
@@ -143,6 +150,10 @@ void mt_mod_dis(const mt_mod* const mod) {
             case mt_pfx(CALL_SELF):
             case mt_pfx(CALL):
                 i = mt_mod_op2(mod, i);
+                break;
+            case mt_pfx(RET):
+                i = mt_mod_single_byte_cmd(mod, i);
+                printf("\n");
                 break;
             default:
                 i++;
