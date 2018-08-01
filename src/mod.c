@@ -101,6 +101,7 @@ void mt_mod_dis(const mt_mod* const mod) {
             case mt_pfx(SUB):
             case mt_pfx(EQ):
             case mt_pfx(LD_SELF):
+            case mt_pfx(RET):
             case mt_pfx(HALT):
                 i = mt_mod_single_byte_cmd(mod, i);
                 break;
@@ -150,10 +151,6 @@ void mt_mod_dis(const mt_mod* const mod) {
             case mt_pfx(CALL_SELF):
             case mt_pfx(CALL):
                 i = mt_mod_op2(mod, i);
-                break;
-            case mt_pfx(RET):
-                i = mt_mod_single_byte_cmd(mod, i);
-                printf("\n");
                 break;
             default:
                 i++;
