@@ -16,6 +16,7 @@ typedef enum {
 
 typedef struct {
     uint32_t ref_count;
+    int32_t no; // errno
     size_t f_len;
     mt_frame* rsp;
     char* msg;

@@ -22,12 +22,14 @@ typedef struct _mt_var {
         mt_pfx(FLOAT),
         mt_pfx(MODULE),
         mt_pfx(FN),
+        mt_pfx(FILE),
         // @TODO colletions arrays modules hashs
     } type;
     uint8_t fn_idx;
     union {
         bool mt_bool;
         char mt_char;
+        uint32_t mt_file;
         int64_t mt_int;
         double mt_float;
         mt_mod* mt_mod;
@@ -47,6 +49,8 @@ typedef struct _mt_var {
 #define mt_var_mod(value) (mt_var) { .type = mt_pfx(MODULE), .data = { .mt_mod = value } }
 
 #define mt_var_fn(value, i) (mt_var) { .type = mt_pfx(FN), .fn_idx = i, .data = { .mt_mod = value } }
+
+#define mt_var_file(value) (mt_var) { .type = mt_pfx(FILE) .data = { .mt_file = value } }
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 

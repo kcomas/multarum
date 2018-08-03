@@ -37,6 +37,7 @@ bool mt_var_as_bool(const mt_var* const var) {
             return var->data.mt_float != 0.0;
         case mt_pfx(MODULE):
         case mt_pfx(FN):
+        case mt_pfx(FILE):
         default:
             return false;
     }
@@ -64,6 +65,9 @@ void mt_var_debug_print(const mt_var* const var) {
             break;
         case mt_pfx(FN):
             printf("Fn %d Mod<%p>", var->fn_idx, var->data.mt_mod);
+            break;
+        case mt_pfx(FILE):
+            printf("File (fd: %d)", var->data.mt_file);
             break;
     }
 }
