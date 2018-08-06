@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "mod.h"
 
-typedef struct {
+typedef struct _mt_frame {
     bool safe;
     mt_fn_place fn;
     uint32_t rbp;

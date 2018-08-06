@@ -15,7 +15,7 @@ typedef struct _mt_mod {
     // @TODO hash exports
 } mt_mod;
 
-typedef struct {
+typedef struct _mt_fn_place {
     bool in;
     uint8_t idx;
 } mt_fn_place;
