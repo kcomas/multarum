@@ -1,7 +1,13 @@
 
+#include "file.h"
 #include "vm.h"
 
 int main(void) {
+
+    mt_var script = mt_open_file("./examples/fib.mul");
+    mt_var_debug_print(&script);
+    printf("\n");
+
     mt_mod* mod = mt_mod_init(500, 2);
 
     uint64_t fib = 30;

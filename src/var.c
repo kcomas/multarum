@@ -71,7 +71,7 @@ void mt_var_debug_print(const mt_var* const var) {
             printf("File (fd: %d)", var->data.mt_file);
             break;
         case mt_pfx(ERROR):
-            printf("Error: Errno: %d, Msg: %s", var->data.mt_err->no, var->data.mt_err->msg->data);
+            printf("Error, Errno: %d, Msg: %s", var->data.mt_err->no, var->data.mt_err->msg->data);
             break;
     }
 }

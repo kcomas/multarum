@@ -28,6 +28,8 @@ typedef struct _mt_err {
     mt_buf* msg;
 } mt_err;
 
-mt_err* mt_err_new(mt_err_type type, int32_t no, size_t f_len, mt_frame* const rsp, mt_buf* const msg);
+mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const rsp, mt_buf* const msg);
+
+void mt_err_free(mt_err* const err);
 
 #endif
