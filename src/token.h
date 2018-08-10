@@ -14,14 +14,13 @@ typedef struct {
         mt_pfx(ASSIGN), // :
         mt_pfx(L_BRACE), // (
         mt_pfx(R_BRACE), // )
-        mt_pfx(COMMA),
-        mt_pfx(FN_ENTRY), // ) {
-        mt_pfx(IF_ENTRY), // ? {
+        mt_pfx(COMMA), // ,
+        mt_pfx(QUESTION), // ?
         mt_pfx(EQ), // =
         mt_pfx(OR), // |
         mt_pfx(R_BRACKET), // {
         mt_pfx(L_BRACKET), // }
-        mt_pfx(SELF), // $
+        mt_pfx(DOLLAR), // $
         mt_pfx(ADD), // +
         mt_pfx(SUB), // -
         mt_pfx(WRITE) // >>

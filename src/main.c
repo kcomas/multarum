@@ -3,6 +3,8 @@
 #include "vm.h"
 
 int main(void) {
+    mt_ctx ctx;
+    mt_ctx_init(&ctx);
 
     mt_var script = mt_open_file("./examples/fib.mul");
     mt_var_debug_print(&script);
@@ -67,10 +69,11 @@ int main(void) {
     mt_mod_dis(mod);
 
     mt_vm vm;
-    mt_vm_init(&vm, mod);
+    mt_vm_init(&vm, &ctx, mod);
     mt_var rst = mt_vm_run(&vm);
     printf("Rst: %li\n", rst.data.mt_int);
     mt_vm_debug_stack_print(&vm);
     mt_vm_free(&vm);
+    mt_ctx_free(&ctx);
     return 0;
 }

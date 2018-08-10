@@ -8,6 +8,7 @@
 #include "op.h"
 #include "var.h"
 #include "frame.h"
+#include "ctx.h"
 
 #ifndef MT_DEFAULT_STACK_SIZE
 #   define MT_DEFAULT_STACK_SIZE 2000
@@ -28,6 +29,7 @@ typedef struct {
     size_t s_len, f_len;
     mt_var* stack;
     mt_frame* rsp;
+    mt_ctx* ctx;
 } mt_vm;
 
 #define mt_vm_prev_frame(vm) vm->rsp[vm->f_len - 2]
@@ -76,7 +78,7 @@ typedef struct {
     mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t)); \
     mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp
 
-void mt_vm_init(mt_vm* const vm, mt_mod* const mod);
+void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
 

@@ -1,7 +1,7 @@
 
 #include "vm.h"
 
-void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
+void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod) {
     vm->mode = mt_pfx(VM_WAIT);
     vm->s_len = 0;
     vm->f_len = 0;
@@ -13,6 +13,7 @@ void mt_vm_init(mt_vm* const vm, mt_mod* const mod) {
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
+    vm->ctx = ctx;
 }
 
 void mt_vm_free(mt_vm* const vm) {
