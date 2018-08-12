@@ -39,6 +39,7 @@ bool mt_var_as_bool(const mt_var* const var) {
         case mt_pfx(FN):
         case mt_pfx(MFILE):
         case mt_pfx(ERROR):
+        case mt_pfx(BUFFER):
         default:
             return false;
     }
@@ -65,13 +66,16 @@ void mt_var_debug_print(const mt_var* const var) {
             printf("Mod<%p>", var->data.mt_mod);
             break;
         case mt_pfx(FN):
-            printf("Fn %d Mod<%p>", var->fn_idx, var->data.mt_mod);
+            printf("Fn %d Mod<%p>", var->meta.fn_idx, var->data.mt_mod);
             break;
         case mt_pfx(MFILE):
             printf("File (fd: %d)", var->data.mt_file);
             break;
         case mt_pfx(ERROR):
             printf("Error, Errno: %d, Msg: %s", var->data.mt_err->no, var->data.mt_err->msg->data);
+            break;
+        case mt_pfx(BUFFER):
+            write(1, var->data.mt_buf->data, var->data.mt_buf->len);
             break;
     }
 }

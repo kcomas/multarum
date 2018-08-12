@@ -161,7 +161,7 @@ static void mt_run_op(mt_vm* const vm) {
             if (mt_vm_cur_stack(vm).type != mt_pfx(FN)) {
              // @TODO handle error
             }
-            mt_vm_call(vm, mt_vm_cur_stack(vm).data.mt_mod, mt_vm_cur_stack(vm).fn_idx, vm->s_len);
+            mt_vm_call(vm, mt_vm_cur_stack(vm).data.mt_mod, mt_vm_cur_stack(vm).meta.fn_idx, vm->s_len);
             mt_vm_dec_stack_atomic(vm);
             break;
         case mt_pfx(CALL_SELF):

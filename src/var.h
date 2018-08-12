@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "common.h"
 #include "mod.h"
 #include "err.h"
+#include "buf.h"
 
 typedef struct _mt_mod mt_mod;
 typedef struct _mt_err mt_err;
@@ -24,10 +26,13 @@ typedef struct _mt_var {
         mt_pfx(MODULE),
         mt_pfx(FN),
         mt_pfx(MFILE),
-        mt_pfx(ERROR)
+        mt_pfx(ERROR),
+        mt_pfx(BUFFER)
         // @TODO colletions arrays modules hashs
     } type;
-    uint8_t fn_idx;
+    union {
+        uint8_t fn_idx;
+    } meta;
     union {
         bool mt_bool;
         char mt_char;
@@ -36,6 +41,7 @@ typedef struct _mt_var {
         double mt_float;
         mt_mod* mt_mod;
         mt_err* mt_err;
+        mt_buf* mt_buf;
     } data;
 } mt_var;
 
@@ -51,11 +57,13 @@ typedef struct _mt_var {
 
 #define mt_var_mod(value) (mt_var) { .type = mt_pfx(MODULE), .data = { .mt_mod = value } }
 
-#define mt_var_fn(value, i) (mt_var) { .type = mt_pfx(FN), .fn_idx = i, .data = { .mt_mod = value } }
+#define mt_var_fn(value, i) (mt_var) { .type = mt_pfx(FN), .meta = { .fn_idx = i }, .data = { .mt_mod = value } }
 
 #define mt_var_file(value) (mt_var) { .type = mt_pfx(MFILE), .data = { .mt_file = value } }
 
 #define mt_var_err(value) (mt_var) { .type = mt_pfx(ERROR), .data = { .mt_err = value } }
+
+#define mt_var_buf(value) (mt_var) { .type = mt_pfx(BUFFER), .data = { .mt_buf = value } }
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 

@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 #include "common.h"
-#include "buf.h"
+#include "ctx.h"
 
 typedef struct {
     enum {
@@ -31,5 +31,10 @@ typedef struct {
         mt_buf* mt_var_name;
     } data;
 } mt_token;
+
+typedef struct {
+    size_t file_pos;
+    mt_ctx* ctx;
+} mt_token_state;
 
 #endif

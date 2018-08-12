@@ -4,7 +4,9 @@
 
 #include "buf.h"
 
-#define MT_DEFAULT_CTX_BUF_SIZE 1000
+#ifndef MT_DEFAULT_CTX_BUF_SIZE
+#   define MT_DEFAULT_CTX_BUF_SIZE 1000
+#endif
 
 typedef struct {
    mt_buf* read_buf;
