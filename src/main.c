@@ -6,13 +6,23 @@ int main(void) {
     mt_ctx ctx;
     mt_ctx_init(&ctx);
 
-    mt_var to_open = mt_var_buf(mt_buf_from_c_str("./examples/fib.mul"));
+    mt_buf* to_open = mt_buf_from_c_str("./examples/fib.mul");
 
-    mt_var script = mt_open_file(&to_open);
+    mt_var script = mt_open_file(to_open);
     mt_var_debug_print(&script);
     printf("\n");
 
-    mt_buf_free(to_open.data.mt_buf);
+    mt_buf_free(to_open);
+
+    mt_var read_status = mt_read_file_chunk(script.data.mt_file, ctx.read_buf);
+
+    mt_var_debug_print(&read_status);
+    printf("\n");
+
+    mt_var script_buf = mt_var_buf(ctx.read_buf);
+    mt_var_debug_print(&script_buf);
+
+    printf("\n");
 
     mt_mod* mod = mt_mod_init(500, 2);
 

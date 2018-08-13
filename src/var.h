@@ -30,9 +30,6 @@ typedef struct _mt_var {
         // @TODO colletions arrays modules hashs
     } type;
     union {
-        struct {
-            bool f_open, f_has_bytes;
-        } file_info;
         uint8_t fn_idx;
     } meta;
     union {
@@ -61,7 +58,7 @@ typedef struct _mt_var {
 
 #define mt_var_fn(value, i) (mt_var) { .type = mt_pfx(FN), .meta = { .fn_idx = i }, .data = { .mt_mod = value } }
 
-#define mt_var_file(value) (mt_var) { .type = mt_pfx(MFILE), .meta = { .file_info = { .f_open = true, .f_has_bytes = true } }, .data = { .mt_file = value } }
+#define mt_var_file(value) (mt_var) { .type = mt_pfx(MFILE), .data = { .mt_file = value } }
 
 #define mt_var_err(value) (mt_var) { .type = mt_pfx(ERROR), .data = { .mt_err = value } }
 

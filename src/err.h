@@ -13,7 +13,8 @@ typedef struct _mt_frame mt_frame;
 typedef enum {
     mt_pfx(ERR_OK),
     mt_pfx(ERR_TYPE),
-    mt_pfx(ERR_FILE_OPEN)
+    mt_pfx(ERR_FILE_OPEN),
+    mt_pfx(ERR_FILE_READ)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY

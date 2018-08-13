@@ -1,13 +1,19 @@
 
 #include "file.h"
 
-mt_var mt_open_file(mt_var* const path) {
-    if (path->type != mt_pfx(BUFFER)) {
-        return mt_var_err(mt_err_type_err());
-    }
-    int32_t fd = open((char*) path->data.mt_buf->data, O_RDONLY);
+mt_var mt_open_file(mt_buf* const path) {
+    int32_t fd = open((char*) path->data, O_RDONLY);
     if (fd == -1) {
         return mt_var_err(mt_err_init(mt_pfx(ERR_FILE_OPEN), errno, 0, NULL, mt_buf_from_c_str("Failed To Open File")));
     }
     return mt_var_file(fd);
+}
+
+mt_var mt_read_file_chunk(int32_t file, mt_buf* const buf) {
+    ssize_t total = read(file, buf->data, buf->_size);
+    if (total == -1) {
+        return mt_var_err(mt_err_init(mt_pfx(ERR_FILE_READ), errno, 0, NULL, mt_buf_from_c_str("File Read Fail")));
+    }
+    buf->len = (size_t) total;
+    return mt_var_int((int64_t) total);
 }
