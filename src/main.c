@@ -8,7 +8,7 @@ int main(void) {
 
     mt_buf* to_open = mt_buf_from_c_str("./examples/fib.mul");
 
-    mt_var script = mt_open_file(to_open);
+    mt_var script = mt_file_open(to_open);
     mt_var_debug_print(&script);
     printf("\n");
 
@@ -21,7 +21,11 @@ int main(void) {
 
     mt_var script_buf = mt_var_buf(ctx.read_buf);
     mt_var_debug_print(&script_buf);
+    printf("\n");
 
+    mt_var closed = mt_file_close(script.data.mt_file);
+
+    mt_var_debug_print(&closed);
     printf("\n");
 
     mt_mod* mod = mt_mod_init(500, 2);
