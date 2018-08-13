@@ -31,7 +31,7 @@ typedef struct _mt_err {
 
 mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const rsp, mt_buf* const msg);
 
-#define mt_err_type() mt_err_init(mt_pfx(ERR_TYPE), 0, 0, NULL, mt_buf_from_c_str("Invalid Type"))
+#define mt_err_type_err() mt_err_init(mt_pfx(ERR_TYPE), 0, 0, NULL, mt_buf_from_c_str("Invalid Type"))
 
 void mt_err_free(mt_err* const err);
 

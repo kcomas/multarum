@@ -3,7 +3,7 @@
 
 mt_var mt_open_file(mt_var* const path) {
     if (path->type != mt_pfx(BUFFER)) {
-        return mt_var_err(mt_err_type());
+        return mt_var_err(mt_err_type_err());
     }
     int32_t fd = open((char*) path->data.mt_buf->data, O_RDONLY);
     if (fd == -1) {

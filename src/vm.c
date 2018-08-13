@@ -29,6 +29,8 @@ static void mt_vm_dec_stack(mt_vm* const vm) {
         case mt_pfx(FN):
             mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
             break;
+        case mt_pfx(BUFFER):
+            mt_buf_free(mt_vm_cur_stack(vm).data.mt_buf);
         default:
             break;
     }

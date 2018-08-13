@@ -2,7 +2,7 @@
 #ifndef MT_CTX
 #define MT_CTX
 
-#include "buf.h"
+#include "token.h"
 
 #ifndef MT_DEFAULT_CTX_BUF_SIZE
 #   define MT_DEFAULT_CTX_BUF_SIZE 1000
