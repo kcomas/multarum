@@ -35,7 +35,7 @@ typedef struct _mt_var {
     union {
         bool mt_bool;
         char mt_char;
-        int32_t mt_file;
+        int mt_file;
         int64_t mt_int;
         double mt_float;
         mt_mod* mt_mod;
