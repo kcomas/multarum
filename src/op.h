@@ -1,6 +1,6 @@
 
-#ifndef MT_OP
-#define MT_OP
+#ifndef MT_OP_H
+#define MT_OP_H
 
 #include "common.h"
 #include "mod.h"

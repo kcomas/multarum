@@ -1,6 +1,6 @@
 
-#ifndef MT_VM
-#define MT_VM
+#ifndef MT_VM_H
+#define MT_VM_H
 
 #include <stdlib.h>
 #include <stdio.h>

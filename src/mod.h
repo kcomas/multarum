@@ -1,6 +1,6 @@
 
-#ifndef MT_MOD
-#define MT_MOD
+#ifndef MT_MOD_H
+#define MT_MOD_H
 
 #include "common.h"
 #include "var.h"

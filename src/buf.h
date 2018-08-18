@@ -1,6 +1,6 @@
 
-#ifndef MT_BUF
-#define MT_BUF
+#ifndef MT_BUF_H
+#define MT_BUF_H
 
 #include <stdlib.h>
 #include <stdint.h>

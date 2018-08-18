@@ -1,5 +1,6 @@
 
 #include "file.h"
+#include "token.h"
 #include "vm.h"
 
 int main(void) {
@@ -22,6 +23,11 @@ int main(void) {
     mt_var script_buf = mt_var_buf(ctx.read_buf);
     mt_var_debug_print(&script_buf);
     printf("\n");
+
+    mt_token_state token_state;
+    mt_token_state_init(&token_state);
+    mt_var tokenize_rst = mt_tokenize_buf(&token_state, ctx.read_buf);
+    mt_var_debug_print(&tokenize_rst);
 
     mt_var closed = mt_file_close(script.data.mt_file);
 

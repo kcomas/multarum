@@ -10,7 +10,16 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
             mt_write_byte(mod, var->data.mt_bool);
             break;
         case mt_pfx(CHAR):
-            mt_write_byte(mod, var->data.mt_char);
+            mt_write_byte(mod, var->data.mt_char.a);
+            if (var->data.mt_char.b) {
+                mt_write_byte(mod, var->data.mt_char.b);
+                if (var->data.mt_char.c) {
+                    mt_write_byte(mod, var->data.mt_char.c);
+                    if (var->data.mt_char.d) {
+                        mt_write_byte(mod, var->data.mt_char.d);
+                    }
+                }
+            }
             break;
         case mt_pfx(INT):
             mt_write_bytes(mod, &var->data.mt_int, sizeof(int64_t));
@@ -30,7 +39,7 @@ bool mt_var_as_bool(const mt_var* const var) {
         case mt_pfx(BOOL):
             return var->data.mt_bool;
         case mt_pfx(CHAR):
-            return var->data.mt_char != '\0';
+            return var->data.mt_char.a != '\0';
         case mt_pfx(INT):
             return var->data.mt_int != 0;
         case mt_pfx(FLOAT):
@@ -54,7 +63,10 @@ void mt_var_debug_print(const mt_var* const var) {
             printf("#%s", var->data.mt_bool ? "t" : "f");
             break;
         case mt_pfx(CHAR):
-            printf("%c", var->data.mt_char);
+            putchar(var->data.mt_char.a);
+            putchar(var->data.mt_char.b);
+            putchar(var->data.mt_char.c);
+            putchar(var->data.mt_char.d);
             break;
         case mt_pfx(INT):
             printf("%li", var->data.mt_int);

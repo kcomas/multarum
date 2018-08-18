@@ -1,6 +1,6 @@
 
-#ifndef MT_ERR
-#define MT_ERR
+#ifndef MT_ERR_H
+#define MT_ERR_H
 
 #include <stdint.h>
 #include "common.h"

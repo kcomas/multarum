@@ -1,6 +1,6 @@
 
-#ifndef MT_FRAME
-#define MT_FRAME
+#ifndef MT_FRAME_H
+#define MT_FRAME_H
 
 #include <stdint.h>
 #include "mod.h"

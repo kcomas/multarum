@@ -1,6 +1,6 @@
 
-#ifndef MT_CTX
-#define MT_CTX
+#ifndef MT_CTX_H
+#define MT_CTX_H
 
 #include "token.h"
 

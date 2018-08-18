@@ -1,13 +1,13 @@
 
-#ifndef MT_VAR
-#define MT_VAR
+#ifndef MT_VAR_H
+#define MT_VAR_H
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "char.h"
 #include "mod.h"
 #include "err.h"
 #include "buf.h"
@@ -34,7 +34,7 @@ typedef struct _mt_var {
     } meta;
     union {
         bool mt_bool;
-        char mt_char;
+        mt_char mt_char;
         int mt_file;
         int64_t mt_int;
         double mt_float;

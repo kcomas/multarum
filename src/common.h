@@ -1,6 +1,6 @@
 
-#ifndef MT_COMMON
-#define MT_COMMON
+#ifndef MT_COMMON_H
+#define MT_COMMON_H
 
 #define mt_pfx(NAME) MT_##NAME
 

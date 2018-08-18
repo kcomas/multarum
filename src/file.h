@@ -1,6 +1,6 @@
 
-#ifndef MT_FILE
-#define MT_FILE
+#ifndef MT_FILE_H
+#define MT_FILE_H
 
 #include <fcntl.h>
 #include <unistd.h>

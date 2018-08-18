@@ -85,6 +85,7 @@ static void mt_run_op(mt_vm* const vm) {
                     mt_vm_cur_byte(vm)++;
                     break;
                 case mt_pfx(CHAR):
+                    // @TODO multi byte utf8 push
                     mt_vm_push(vm, mt_var_char(*++mt_vm_cur_byte(vm)));
                     mt_vm_cur_byte(vm)++;
                     break;

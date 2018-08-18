@@ -1,6 +1,6 @@
 
-#ifndef MT_TOKEN
-#define MT_TOKEN
+#ifndef MT_TOKEN_H
+#define MT_TOKEN_H
 
 #include <stdint.h>
 #include "common.h"
@@ -9,7 +9,7 @@
 
 #define mt_token(NAME) mt_pfx(_T_##NAME)
 
-typedef struct {
+typedef struct _mt_token {
     enum {
         mt_token(VAR),
         mt_token(INT),
@@ -34,6 +34,31 @@ typedef struct {
         double mt_float;
         mt_buf* mt_var_name;
     } data;
+    struct _mt_token* next;
 } mt_token;
+
+#define mt_token_state(NAME) mt_pfx(_T_S_##NAME)
+
+#define MT_MAX_BUF_NAME 500
+
+typedef struct {
+    enum {
+        mt_token_state(NOTHING),
+        mt_token_state(VAR),
+        mt_token_state(INT),
+        mt_token_state(FLOAT)
+    } state;
+    size_t buf_pos;
+    mt_buf* name;
+    mt_token* head;
+    mt_token* tail;
+} mt_token_state;
+
+void mt_token_state_init(mt_token_state* const state);
+
+// @TODO
+// void mt_token_state_free(mt_token_state* const state);
+
+mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf);
 
 #endif
