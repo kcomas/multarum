@@ -3,6 +3,7 @@
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
     mt_write_byte(mod, var->type);
+    uint8_t char_conts;
     switch (var->type) {
         case mt_pfx(NULL):
             break;
@@ -11,11 +12,12 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
             break;
         case mt_pfx(CHAR):
             mt_write_byte(mod, var->data.mt_char.a);
-            if (var->data.mt_char.b) {
+            char_conts = mt_char_cont(var->data.mt_char.a);
+            if (char_conts >= 1) {
                 mt_write_byte(mod, var->data.mt_char.b);
-                if (var->data.mt_char.c) {
+                if (char_conts >= 2) {
                     mt_write_byte(mod, var->data.mt_char.c);
-                    if (var->data.mt_char.d) {
+                    if (char_conts == 3) {
                         mt_write_byte(mod, var->data.mt_char.d);
                     }
                 }
@@ -55,6 +57,7 @@ bool mt_var_as_bool(const mt_var* const var) {
 }
 
 void mt_var_debug_print(const mt_var* const var) {
+    uint8_t char_conts;
     switch (var->type) {
         case mt_pfx(NULL):
             printf("NULL");
@@ -64,9 +67,16 @@ void mt_var_debug_print(const mt_var* const var) {
             break;
         case mt_pfx(CHAR):
             putchar(var->data.mt_char.a);
-            putchar(var->data.mt_char.b);
-            putchar(var->data.mt_char.c);
-            putchar(var->data.mt_char.d);
+            char_conts = mt_char_cont(var->data.mt_char.a);
+            if (char_conts >= 1) {
+                putchar(var->data.mt_char.b);
+                if (char_conts >= 2) {
+                    putchar(var->data.mt_char.c);
+                    if (char_conts == 3) {
+                        putchar(var->data.mt_char.d);
+                    }
+                }
+            }
             break;
         case mt_pfx(INT):
             printf("%li", var->data.mt_int);

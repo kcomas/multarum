@@ -80,9 +80,11 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 }
 
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
+    uint8_t char_conts;
     uint32_t mt_jmp;
     int64_t mt_int;
     double mt_float;
+    mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
 
     printf("%lu: ", i);
     mt_mod_space_bytes(i, count_total);
@@ -113,8 +115,33 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                     break;
                 case mt_pfx(CHAR):
                     mt_print_byte_hex(mod, i, 2);
-                    mt_mod_print_even_spaces(3);
-                    printf("PUSH %c\n", mod->bytes[++i]);
+                    mt_char_parts.a = mod->bytes[++i];
+                    char_conts = mt_char_cont(mt_char_parts.a);
+                    mt_print_byte_hex(mod, i + 1, char_conts);
+                    if (char_conts >= 1) {
+                        mt_char_parts.b = mod->bytes[++i];
+                        if (char_conts >= 2) {
+                            mt_char_parts.c = mod->bytes[++i];
+                            if (char_conts == 3) {
+                                mt_char_parts.d = mod->bytes[++i];
+                            }
+                        }
+                    }
+                    mt_mod_print_even_spaces(3 + char_conts);
+                    printf("PUSH ");
+                    if (mt_char_parts.a) {
+                        putchar(mt_char_parts.a);
+                        if (mt_char_parts.b) {
+                            putchar(mt_char_parts.b);
+                            if (mt_char_parts.c) {
+                                putchar(mt_char_parts.c);
+                                if (mt_char_parts.d) {
+                                    putchar(mt_char_parts.d);
+                                }
+                            }
+                        }
+                    }
+                    putchar('\n');
                     i++;
                     break;
                 case mt_pfx(INT):

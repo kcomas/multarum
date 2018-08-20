@@ -65,10 +65,11 @@ static void mt_vm_ret(mt_vm* const vm) {
 
 static void mt_run_op(mt_vm* const vm) {
     bool mt_bool;
-    uint8_t mt_fn, mt_arg;
+    uint8_t mt_fn, mt_arg, char_conts;
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp;
+    mt_char mt_char_parts;
 
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
@@ -85,8 +86,18 @@ static void mt_run_op(mt_vm* const vm) {
                     mt_vm_cur_byte(vm)++;
                     break;
                 case mt_pfx(CHAR):
-                    // @TODO multi byte utf8 push
-                    mt_vm_push(vm, mt_var_char(*++mt_vm_cur_byte(vm)));
+                    mt_char_parts.a = *++mt_vm_cur_byte(vm);
+                    char_conts = mt_char_cont(mt_char_parts.a);
+                    if (char_conts >= 1) {
+                        mt_char_parts.b = *++mt_vm_cur_byte(vm);
+                        if (char_conts >= 2) {
+                            mt_char_parts.c = *++mt_vm_cur_byte(vm);
+                            if (char_conts == 3) {
+                                mt_char_parts.d = *++mt_vm_cur_byte(vm);
+                            }
+                        }
+                    }
+                    mt_vm_push(vm, mt_var_char(mt_char_parts));
                     mt_vm_cur_byte(vm)++;
                     break;
                 case mt_pfx(INT):

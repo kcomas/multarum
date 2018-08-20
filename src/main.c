@@ -28,6 +28,7 @@ int main(void) {
     mt_token_state_init(&token_state);
     mt_var tokenize_rst = mt_tokenize_buf(&token_state, ctx.read_buf);
     mt_var_debug_print(&tokenize_rst);
+    printf("\n");
 
     mt_var closed = mt_file_close(script.data.mt_file);
 
@@ -38,6 +39,8 @@ int main(void) {
 
     uint64_t fib = 30;
 
+    // mt_write_byte(mod, mt_pfx(PUSH));
+    // mt_var_write_bytes(mod, &mt_var_char(mt_char_init(0xce, 0xa3, 0, 0)));
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(fib));
     mt_write_byte(mod, mt_pfx(LD_SELF));
