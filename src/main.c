@@ -39,8 +39,8 @@ int main(void) {
 
     uint64_t fib = 30;
 
-    // mt_write_byte(mod, mt_pfx(PUSH));
-    // mt_var_write_bytes(mod, &mt_var_char(mt_char_init(0xce, 0xa3, 0, 0)));
+    mt_write_byte(mod, mt_pfx(PUSH));
+    mt_var_write_bytes(mod, &mt_var_char(mt_char_init(0xce, 0xa3, 0, 0)));
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(fib));
     mt_write_byte(mod, mt_pfx(LD_SELF));
@@ -57,7 +57,7 @@ int main(void) {
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(0));
     mt_write_byte(mod, mt_pfx(EQ));
-    uint32_t skip0 = 45;
+    uint32_t skip0 = 49;
     mt_write_jmp(mod, mt_pfx(JMPF), &skip0);
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(0));
@@ -68,7 +68,7 @@ int main(void) {
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(1));
     mt_write_byte(mod, mt_pfx(EQ));
-    uint32_t skip1 = 74;
+    uint32_t skip1 = 78;
     mt_write_jmp(mod, mt_pfx(JMPF), &skip1);
     mt_write_byte(mod, mt_pfx(PUSH));
     mt_var_write_bytes(mod, &mt_var_int(1));
