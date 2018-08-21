@@ -3,8 +3,7 @@
 
 void mt_token_state_init(mt_token_state* const state) {
     state->state = mt_token_state(NOTHING);
-    state->buf_pos = 0;
-    state->name = mt_buf_init(MT_MAX_BUF_NAME);
+    // @TODO init buf iter
     state->head = NULL;
     state->tail = NULL;
 }

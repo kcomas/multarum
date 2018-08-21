@@ -44,12 +44,12 @@ typedef struct _mt_token {
 typedef struct {
     enum {
         mt_token_state(NOTHING),
+        mt_token_state(COMMENT),
         mt_token_state(VAR),
         mt_token_state(INT),
         mt_token_state(FLOAT)
     } state;
-    size_t buf_pos;
-    mt_buf* name;
+    mt_buf_iter iter;
     mt_token* head;
     mt_token* tail;
 } mt_token_state;
