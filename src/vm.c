@@ -65,7 +65,8 @@ static void mt_vm_ret(mt_vm* const vm) {
 
 static void mt_run_op(mt_vm* const vm) {
     bool mt_bool;
-    uint8_t mt_fn, mt_arg, char_conts;
+    uint8_t mt_fn, mt_arg;
+    int8_t char_conts;
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp;
@@ -88,6 +89,9 @@ static void mt_run_op(mt_vm* const vm) {
                 case mt_pfx(CHAR):
                     mt_char_parts.a = *++mt_vm_cur_byte(vm);
                     char_conts = mt_char_cont(mt_char_parts.a);
+                    if (char_conts < 0) {
+                        // @TODO handle error
+                    }
                     if (char_conts >= 1) {
                         mt_char_parts.b = *++mt_vm_cur_byte(vm);
                         if (char_conts >= 2) {

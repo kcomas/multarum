@@ -9,6 +9,7 @@ void mt_token_state_init(mt_token_state* const state) {
 }
 
 mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
+    mt_buf_iter char_iter;
     /**
     while (state->buf_pos < buf->len) {
 

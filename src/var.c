@@ -3,7 +3,7 @@
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
     mt_write_byte(mod, var->type);
-    uint8_t char_conts;
+    int8_t char_conts;
     switch (var->type) {
         case mt_pfx(NULL):
             break;
@@ -13,6 +13,10 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var) {
         case mt_pfx(CHAR):
             mt_write_byte(mod, var->data.mt_char.a);
             char_conts = mt_char_cont(var->data.mt_char.a);
+            if (char_conts < 0) {
+                mt_write_byte(mod, '\0');
+                break;
+            }
             if (char_conts >= 1) {
                 mt_write_byte(mod, var->data.mt_char.b);
                 if (char_conts >= 2) {
@@ -57,7 +61,7 @@ bool mt_var_as_bool(const mt_var* const var) {
 }
 
 void mt_var_debug_print(const mt_var* const var) {
-    uint8_t char_conts;
+    int8_t char_conts;
     switch (var->type) {
         case mt_pfx(NULL):
             printf("NULL");
@@ -68,6 +72,10 @@ void mt_var_debug_print(const mt_var* const var) {
         case mt_pfx(CHAR):
             putchar(var->data.mt_char.a);
             char_conts = mt_char_cont(var->data.mt_char.a);
+            if (char_conts < 0) {
+                printf("Invalid utf8 char\n");
+                break;
+            }
             if (char_conts >= 1) {
                 putchar(var->data.mt_char.b);
                 if (char_conts >= 2) {

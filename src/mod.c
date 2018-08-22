@@ -80,7 +80,7 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 }
 
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
-    uint8_t char_conts;
+    int8_t char_conts;
     uint32_t mt_jmp;
     int64_t mt_int;
     double mt_float;
@@ -118,6 +118,12 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                     mt_char_parts.a = mod->bytes[++i];
                     char_conts = mt_char_cont(mt_char_parts.a);
                     mt_print_byte_hex(mod, i + 1, char_conts);
+                    if (char_conts < 0) {
+                        mt_mod_print_even_spaces(3 + char_conts);
+                        printf("Invalid utf8 char\n");
+                        i++;
+                        break;
+                    }
                     if (char_conts >= 1) {
                         mt_char_parts.b = mod->bytes[++i];
                         if (char_conts >= 2) {
@@ -129,12 +135,12 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                     }
                     mt_mod_print_even_spaces(3 + char_conts);
                     printf("PUSH ");
-                    if (mt_char_parts.a) {
-                        putchar(mt_char_parts.a);
-                        if (mt_char_parts.b) {
-                            putchar(mt_char_parts.b);
+                    putchar(mt_char_parts.a);
+                    if (char_conts >= 1) {
+                        putchar(mt_char_parts.b);
+                        if (char_conts >= 2) {
+                            putchar(mt_char_parts.c);
                             if (mt_char_parts.c) {
-                                putchar(mt_char_parts.c);
                                 if (mt_char_parts.d) {
                                     putchar(mt_char_parts.d);
                                 }

@@ -21,3 +21,8 @@ void mt_buf_free(mt_buf* const buf) {
     free(buf->data);
     free(buf);
 }
+
+void mt_buf_iter_init(const mt_buf* const buf, mt_buf_iter* const iter) {
+    iter->buf_pos = 0;
+    iter->buf = buf;
+}
