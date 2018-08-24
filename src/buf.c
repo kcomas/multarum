@@ -26,3 +26,38 @@ void mt_buf_iter_init(const mt_buf* const buf, mt_buf_iter* const iter) {
     iter->buf_pos = 0;
     iter->buf = buf;
 }
+
+static int8_t mt_buf_iter_n(mt_buf_iter* const iter, mt_char* const c) {
+    if (iter->buf_pos >= iter->buf->len) {
+        return -1;
+    }
+    int8_t conts = mt_char_cont(iter->buf->data[iter->buf_pos]);
+    if (conts < 0) {
+        return conts;
+    }
+    c->a = iter->buf->data[iter->buf_pos];
+    if (conts >= 1) {
+        c->b = iter->buf->data[iter->buf_pos + 1];
+        if (conts >= 2) {
+            c->c = iter->buf->data[iter->buf_pos + 2];
+            if (conts == 3) {
+                c->d = iter->buf->data[iter->buf_pos + 3];
+            }
+        }
+    }
+    return conts + 1;
+}
+
+bool mt_buf_iter_next(mt_buf_iter* const iter, mt_char* const c) {
+    int8_t i = mt_buf_iter_n(iter, c);
+    if (i < 0) {
+        return false;
+    }
+    iter->buf_pos += i;
+    return true;
+}
+
+bool mt_buf_iter_peek(mt_buf_iter* const iter, mt_char* const c) {
+    int8_t i = mt_buf_iter_n(iter, c);
+    return i > 0 ? true : false;
+}
