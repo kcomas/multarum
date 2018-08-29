@@ -32,6 +32,7 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
     mt_buf_iter_init(buf, &state->iter);
     while (has_chars) {
         has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+        // @TODO whitespace check
         // printf("%c\n", cur_char.a);
         switch (state->state) {
             case mt_token_state(NOTHING):

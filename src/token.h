@@ -48,7 +48,6 @@ typedef struct _mt_token {
 typedef struct {
     enum {
         mt_token_state(NOTHING),
-        mt_token_state(MABE_COMMENT),
         mt_token_state(COMMENT),
         mt_token_state(VAR),
         mt_token_state(INT),
