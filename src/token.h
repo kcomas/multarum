@@ -32,7 +32,8 @@ typedef enum {
     mt_token(ADD), // +
     mt_token(SUB), // -
     mt_token(WRITE), // >>
-    mt_token(SLASH) // /
+    mt_token(SLASH), // /
+    mt_token(END), // ; \n
 } mt_token_type;
 
 typedef struct _mt_token {
@@ -53,6 +54,7 @@ typedef struct {
         mt_token_state(INT),
         mt_token_state(FLOAT)
     } state;
+    size_t line, c;
     mt_buf_iter iter;
     mt_token* head;
     mt_token* tail;

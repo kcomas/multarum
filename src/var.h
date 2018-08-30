@@ -64,6 +64,8 @@ typedef struct _mt_var {
 
 #define mt_var_buf(value) (mt_var) { .type = mt_pfx(BUFFER), .data = { .mt_buf = value } }
 
+#define mt_var_is_bool(var) (var.type == mt_pfx(BOOL))
+
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 
 bool mt_var_as_bool(const mt_var* const var);
