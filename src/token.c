@@ -8,6 +8,15 @@ void mt_token_state_init(mt_token_state* const state) {
     state->tail = NULL;
 }
 
+void mt_token_state_free(mt_token_state* const state) {
+    mt_token* t = state->head;
+    while (t != NULL) {
+        mt_token* cpy = t;
+        t = t->next;
+        free(cpy);
+    }
+}
+
 static void mt_add_token(mt_token_state* const state, mt_token_type type, mt_token_data data) {
     mt_token* token = malloc(sizeof(mt_token));
     token->type = type;
@@ -26,17 +35,14 @@ static void mt_add_token_no_data(mt_token_state* const state, mt_token_type type
     mt_add_token(state, type, (mt_token_data) { .mt_int = 0 });
 }
 
-#define mt_token_quick_nothing(c, state, token) case c: mt_add_token_no_data(state, mt_token(token)); break
+#define mt_token_quick_nothing(state, token) case mt_token(token): mt_add_token_no_data(state, mt_token(token)); break
 
 static mt_var mt_token_state_nothing(mt_token_state* const state) {
     mt_char cur_char;
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
     switch (cur_char.a) {
-        mt_token_quick_nothing(':', state, ASSIGN);
-        mt_token_quick_nothing('(', state, L_BRACE);
-        mt_token_quick_nothing(')', state, R_BRACE);
-        mt_token_quick_nothing(',', state, COMMA);
-        mt_token_quick_nothing('?', state, QUESTION);
+        mt_token_quick_nothing(state, ASSIGN);
+        mt_token_quick_nothing(state, L_BRACE);
         default:
             break;
     }
@@ -56,4 +62,8 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
         }
     }
     return has_chars;
+}
+
+void mt_token_state_debug_print(const mt_token_state* const state) {
+
 }

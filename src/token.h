@@ -19,20 +19,21 @@ typedef enum {
     mt_token(VAR),
     mt_token(INT),
     mt_token(FLOAT),
-    mt_token(ASSIGN), // :
-    mt_token(L_BRACE), // (
-    mt_token(R_BRACE), // )
-    mt_token(COMMA), // ,
-    mt_token(QUESTION), // ?
-    mt_token(EQ), // =
-    mt_token(OR), // |
-    mt_token(R_BRACKET), // {
-    mt_token(L_BRACKET), // }
-    mt_token(DOLLAR), // $
-    mt_token(ADD), // +
-    mt_token(SUB), // -
+    mt_token(ASSIGN) = ':',
+    mt_token(L_BRACE) = '(',
+    mt_token(R_BRACE) = ')',
+    mt_token(COMMA) = ',',
+    mt_token(QUESTION) = '?',
+    mt_token(EQ) = '=',
+    mt_token(OR) = '|',
+    mt_token(L_BRACKET) = '{',
+    mt_token(R_BRACKET) = '}',
+    mt_token(DOLLAR) = '$',
+    mt_token(ADD) = '+',
+    mt_token(SUB) = '-',
+    mt_token(GREATER) = '>',
     mt_token(WRITE), // >>
-    mt_token(SLASH), // /
+    mt_token(SLASH) = '/',
     mt_token(END), // ; \n
 } mt_token_type;
 
@@ -62,9 +63,10 @@ typedef struct {
 
 void mt_token_state_init(mt_token_state* const state);
 
-// @TODO
-// void mt_token_state_free(mt_token_state* const state);
+void mt_token_state_free(mt_token_state* const state);
 
 mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf);
+
+void mt_token_state_debug_print(const mt_token_state* const state);
 
 #endif

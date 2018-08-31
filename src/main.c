@@ -35,6 +35,8 @@ int main(void) {
     mt_var_debug_print(&closed);
     printf("\n");
 
+    mt_token_state_free(&token_state);
+
     mt_mod* mod = mt_mod_init(500, 2);
 
     uint64_t fib = 30;
