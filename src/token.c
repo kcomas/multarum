@@ -135,37 +135,44 @@ void mt_token_state_debug_print(const mt_token_state* const state) {
     size_t ident_bracket = 0;
     mt_token* t = state->head;
     while (t != NULL) {
-        mt_token_debug_print_space(ident_brace);
-        mt_token_debug_print_space(ident_bracket);
         printf("%lu:%lu:", t->line, t->c);
         switch (t->type) {
             case mt_token(WRITE):
-                printf(">>");
+                printf(">> ");
                 break;
             case mt_token(NL):
                 printf("\\n\n");
+                mt_token_debug_print_space(ident_bracket);
+                mt_token_debug_print_space(ident_brace);
                 break;
             case mt_token(L_BRACE):
                 ident_brace++;
                 printf("%c\n", t->type);
+                mt_token_debug_print_space(ident_bracket);
+                mt_token_debug_print_space(ident_brace);
                 break;
             case mt_token(R_BRACE):
                 ident_brace--;
                 printf("%c\n", t->type);
+                mt_token_debug_print_space(ident_bracket);
+                mt_token_debug_print_space(ident_brace);
                 break;
             case mt_token(L_BRACKET):
                 ident_bracket++;
                 printf("%c\n", t->type);
+                mt_token_debug_print_space(ident_bracket);
+                mt_token_debug_print_space(ident_brace);
                 break;
             case mt_token(R_BRACKET):
                 ident_bracket--;
                 printf("%c\n", t->type);
+                mt_token_debug_print_space(ident_bracket);
+                mt_token_debug_print_space(ident_brace);
                 break;
             default:
-                printf("%c", t->type);
+                printf("%c ", t->type);
                 break;
         }
-        printf(" ");
         t = t->next;
     }
 }
