@@ -16,9 +16,9 @@ typedef union {
 } mt_token_data;
 
 typedef enum {
-    mt_token(VAR),
-    mt_token(INT),
-    mt_token(FLOAT),
+    mt_token(VAR) = 128,
+    mt_token(INT) = 129,
+    mt_token(FLOAT) = 130,
     mt_token(ASSIGN) = ':',
     mt_token(L_BRACE) = '(',
     mt_token(R_BRACE) = ')',
@@ -32,14 +32,16 @@ typedef enum {
     mt_token(ADD) = '+',
     mt_token(SUB) = '-',
     mt_token(GREATER) = '>',
-    mt_token(WRITE), // >>
+    mt_token(WRITE) = 131,
     mt_token(SLASH) = '/',
-    mt_token(END), // ; \n
+    mt_token(NL) = '\n',
+    mt_token(END) = ';'
 } mt_token_type;
 
 typedef struct _mt_token {
     mt_token_type type;
     mt_token_data data;
+    size_t line, c;
     struct _mt_token* next;
 } mt_token;
 

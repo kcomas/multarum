@@ -35,6 +35,9 @@ int main(void) {
     mt_var_debug_print(&closed);
     printf("\n");
 
+    mt_token_state_debug_print(&token_state);
+    printf("\n");
+
     mt_token_state_free(&token_state);
 
     mt_mod* mod = mt_mod_init(500, 2);

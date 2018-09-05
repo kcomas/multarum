@@ -19,6 +19,8 @@ void mt_token_state_free(mt_token_state* const state) {
 
 static void mt_add_token(mt_token_state* const state, mt_token_type type, mt_token_data data) {
     mt_token* token = malloc(sizeof(mt_token));
+    token->line = state->line;
+    token->c = state->c;
     token->type = type;
     token->data = data;
     token->next = NULL;
@@ -66,7 +68,15 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, DOLLAR);
         mt_token_quick_nothing(state, ADD);
         mt_token_quick_nothing(state, SUB);
-        mt_token_quick_nothing(state, GREATER);
+        case mt_token(GREATER):
+            has_chars = mt_buf_iter_peek(&state->iter, &cur_char);
+            if (has_chars && cur_char.a == '>') {
+                mt_token_add_no_data(state, mt_token(WRITE));
+                has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+            } else {
+                mt_token_add_no_data(state, mt_token(GREATER));
+            }
+            break;
         case mt_token(SLASH):
             has_chars = mt_buf_iter_peek(&state->iter, &cur_char);
             if (has_chars && cur_char.a == '/') {
@@ -77,8 +87,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
             break;
         case '\n':
             mt_token_inc_line(state);
-        case ';':
-            mt_token_add_no_data(state, mt_token(END));
+            mt_token_add_no_data(state, mt_token(NL));
             break;
         default:
             break;
@@ -92,7 +101,8 @@ static mt_var mt_token_state_comment(mt_token_state* const state) {
     mt_token_inc_char(state);
     if (cur_char.a == '\n') {
         mt_token_inc_line(state);
-        return mt_var_bool(false);
+        state->state = mt_token_state(NOTHING);
+        return mt_var_bool(true);
     }
     return mt_var_bool(has_chars);
 }
@@ -102,7 +112,6 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
 
     mt_buf_iter_init(buf, &state->iter);
     while (mt_var_is_bool(has_chars) && has_chars.data.mt_bool == true) {
-        // printf("%c\n", cur_char.a);
         switch (state->state) {
             case mt_token_state(NOTHING):
                 has_chars = mt_token_state_nothing(state);
@@ -115,6 +124,48 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
     return has_chars;
 }
 
-void mt_token_state_debug_print(const mt_token_state* const state) {
+static void mt_token_debug_print_space(size_t stop) {
+    for (size_t i = 0; i < stop; i++) {
+        putchar(' ');
+    }
+}
 
+void mt_token_state_debug_print(const mt_token_state* const state) {
+    size_t ident_brace = 0;
+    size_t ident_bracket = 0;
+    mt_token* t = state->head;
+    while (t != NULL) {
+        mt_token_debug_print_space(ident_brace);
+        mt_token_debug_print_space(ident_bracket);
+        printf("%lu:%lu:", t->line, t->c);
+        switch (t->type) {
+            case mt_token(WRITE):
+                printf(">>");
+                break;
+            case mt_token(NL):
+                printf("\\n\n");
+                break;
+            case mt_token(L_BRACE):
+                ident_brace++;
+                printf("%c\n", t->type);
+                break;
+            case mt_token(R_BRACE):
+                ident_brace--;
+                printf("%c\n", t->type);
+                break;
+            case mt_token(L_BRACKET):
+                ident_bracket++;
+                printf("%c\n", t->type);
+                break;
+            case mt_token(R_BRACKET):
+                ident_bracket--;
+                printf("%c\n", t->type);
+                break;
+            default:
+                printf("%c", t->type);
+                break;
+        }
+        printf(" ");
+        t = t->next;
+    }
 }
