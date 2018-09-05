@@ -91,6 +91,7 @@ static mt_var mt_token_state_comment(mt_token_state* const state) {
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
     mt_token_inc_char(state);
     if (cur_char.a == '\n') {
+        mt_token_inc_line(state);
         return mt_var_bool(false);
     }
     return mt_var_bool(has_chars);
