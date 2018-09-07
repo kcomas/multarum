@@ -9,10 +9,12 @@
 
 #define mt_token(NAME) mt_pfx(_T_##NAME)
 
+#define MT_TOKEN_DATA_CHAR_BUF_SIZE 200
+
 typedef union {
     int64_t mt_int;
     double mt_float;
-    mt_buf* mt_var_name;
+    mt_buf* char_buf;
 } mt_token_data;
 
 typedef enum {
@@ -46,8 +48,6 @@ typedef struct _mt_token {
 } mt_token;
 
 #define mt_token_state(NAME) mt_pfx(_T_S_##NAME)
-
-#define MT_MAX_BUF_NAME 500
 
 typedef struct {
     enum {

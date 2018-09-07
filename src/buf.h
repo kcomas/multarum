@@ -30,4 +30,6 @@ bool mt_buf_iter_next(mt_buf_iter* const iter, mt_char* const c);
 
 bool mt_buf_iter_peek(mt_buf_iter* const iter, mt_char* const c);
 
+bool mt_buf_push_char(mt_buf* const buf, mt_char c);
+
 #endif

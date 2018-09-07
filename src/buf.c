@@ -61,3 +61,11 @@ bool mt_buf_iter_peek(mt_buf_iter* const iter, mt_char* const c) {
     int8_t i = mt_buf_iter_n(iter, c);
     return i > 0 ? true : false;
 }
+
+bool mt_buf_push_char(mt_buf* const buf, mt_char c) {
+    int8_t conts = mt_char_cont(c.a);
+    if (buf->len + conts + 1 > buf->_size) {
+        return false;
+    }
+    // @TODO add char to buf
+}

@@ -56,6 +56,17 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         return mt_var_bool(has_chars);
     }
     switch (cur_char.a) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            break;
         mt_token_quick_nothing(state, ASSIGN);
         mt_token_quick_nothing(state, L_BRACE);
         mt_token_quick_nothing(state, R_BRACE);
@@ -92,6 +103,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         case ' ':
         case '\t':
         case '\0':
+            break;
         default:
             break;
     }
@@ -101,6 +113,9 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
 static mt_var mt_token_state_comment(mt_token_state* const state) {
     mt_char cur_char;
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+    if (!has_chars) {
+        return mt_var_bool(true);
+    }
     mt_token_inc_char(state);
     if (cur_char.a == '\n') {
         mt_token_inc_line(state);
