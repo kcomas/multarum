@@ -67,5 +67,22 @@ bool mt_buf_push_char(mt_buf* const buf, mt_char c) {
     if (buf->len + conts + 1 > buf->_size) {
         return false;
     }
-    // @TODO add char to buf
+    buf->data[buf->len++] = c.a;
+    if (conts >= 1) {
+        buf->data[buf->len++] = c.b;
+        if (conts >= 2) {
+            buf->data[buf->len++] = c.c;
+            if (conts == 3) {
+                buf->data[buf->len++] = c.d;
+            }
+        }
+    }
+    return true;
 }
+
+void mt_buf_debug_print(const mt_buf* const buf) {
+    for (size_t i = 0; i < buf->len; i++) {
+        putchar(buf->data[i]);
+    }
+}
+

@@ -3,6 +3,7 @@
 #define MT_BUF_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -30,6 +31,10 @@ bool mt_buf_iter_next(mt_buf_iter* const iter, mt_char* const c);
 
 bool mt_buf_iter_peek(mt_buf_iter* const iter, mt_char* const c);
 
+bool mt_buf_push_byte(mt_buf* const buf, uint8_t b);
+
 bool mt_buf_push_char(mt_buf* const buf, mt_char c);
+
+void mt_buf_debug_print(const mt_buf* const buf);
 
 #endif

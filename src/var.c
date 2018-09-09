@@ -105,9 +105,7 @@ void mt_var_debug_print(const mt_var* const var) {
             printf("Error, Errno: %d, Msg: %s", var->data.mt_err->no, var->data.mt_err->msg->data);
             break;
         case mt_pfx(BUFFER):
-            for (size_t i = 0; i < var->data.mt_buf->len; i++) {
-                putchar(var->data.mt_buf->data[i]);
-            }
+            mt_buf_debug_print(var->data.mt_buf);
             break;
     }
 }
