@@ -22,6 +22,11 @@ void mt_buf_free(mt_buf* const buf) {
     free(buf);
 }
 
+void mt_buf_zero(mt_buf* const buf) {
+    memset(buf->data, 0, buf->len);
+    buf->len = 0;
+}
+
 void mt_buf_iter_init(const mt_buf* const buf, mt_buf_iter* const iter) {
     iter->buf_pos = 0;
     iter->buf = buf;

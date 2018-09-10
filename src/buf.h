@@ -20,6 +20,8 @@ mt_buf* mt_buf_from_c_str(const char* const str);
 
 void mt_buf_free(mt_buf* const buf);
 
+void mt_buf_zero(mt_buf* const buf);
+
 typedef struct {
     size_t buf_pos;
     const mt_buf* buf;

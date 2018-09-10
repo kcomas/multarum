@@ -17,7 +17,7 @@ void mt_token_state_free(mt_token_state* const state) {
         free(cpy);
     }
     if (state->cur_data != NULL) {
-        free(state->cur_data);
+        mt_buf_free(state->cur_data);
     }
 }
 
@@ -50,8 +50,10 @@ static void mt_token_add_no_data(mt_token_state* const state, mt_token_type type
     mt_token_add(state, type, (mt_token_data) { .mt_int = 0 });
 }
 
-static void mt_token_new_cur_data(mt_token_state* const state, mt_char c) {
-    state->cur_data = mt_buf_init(MT_TOKEN_DATA_CHAR_BUF_SIZE);
+static void mt_token_set_cur_data(mt_token_state* const state, mt_char c) {
+    if (state->cur_data == NULL) {
+        state->cur_data = mt_buf_init(MT_TOKEN_DATA_CHAR_BUF_SIZE);
+    }
     mt_buf_push_char(state->cur_data, c);
 }
 
@@ -75,7 +77,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         case '7':
         case '8':
         case '9':
-            mt_token_new_cur_data(state, cur_char);
+            mt_token_set_cur_data(state, cur_char);
             state->state = mt_token_state(INT);
             break;
         mt_token_quick_nothing(state, ASSIGN);
@@ -154,8 +156,7 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
         }
         char* endptr;
         int64_t value = strtol((char*) state->cur_data->data, &endptr, 10);
-        mt_buf_free(state->cur_data);
-        state->cur_data = NULL;
+        mt_buf_zero(state->cur_data);
         mt_token_add(state, mt_token(INT), (mt_token_data) { .mt_int = value });
         state->state = mt_token_state(NOTHING);
         return mt_var_bool(true);
