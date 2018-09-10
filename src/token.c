@@ -150,12 +150,8 @@ static bool mt_token_state_int_next_check(mt_token_state* const state) {
 static mt_var mt_token_state_int(mt_token_state* const state) {
     mt_char cur_char;
     if (!mt_token_state_int_next_check(state)) {
-        // found int
-        if (!mt_buf_push_char(state->cur_data, mt_char_init('\0', 0, 0, 0))) {
-            return mt_var_err(mt_err_token_buf_full());
-        }
-        char* endptr;
-        int64_t value = strtol((char*) state->cur_data->data, &endptr, 10);
+        uint8_t* endptr = &state->cur_data->data[state->cur_data->len];
+        int64_t value = strtol((char*) state->cur_data->data, (char**) &endptr, 10);
         mt_buf_zero(state->cur_data);
         mt_token_add(state, mt_token(INT), (mt_token_data) { .mt_int = value });
         state->state = mt_token_state(NOTHING);
