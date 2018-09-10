@@ -14,7 +14,7 @@
 typedef union {
     int64_t mt_int;
     double mt_float;
-    mt_buf* char_buf;
+    mt_buf* mt_var;
 } mt_token_data;
 
 typedef enum {
