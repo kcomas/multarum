@@ -12,7 +12,6 @@ typedef struct _mt_mod {
     uint32_t _size, len;
     uint8_t* bytes;
     uint8_t* fns;
-    // @TODO hash exports
 } mt_mod;
 
 typedef struct _mt_fn_place {

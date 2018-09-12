@@ -36,6 +36,20 @@ static void mt_vm_dec_stack(mt_vm* const vm) {
     }
 }
 
+static inline void mt_vm_get_bytes(mt_vm* restrict vm, void* restrict dest, size_t size) {
+    memcpy(dest, mt_vm_cur_byte(vm), size);
+    mt_vm_cur_byte(vm) += size;
+}
+
+static inline void mt_vm_jmp(mt_vm* const vm, uint32_t mt_jmp) {
+    mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
+    mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp;
+}
+
+static inline void mt_vm_dec_stack_atomic(mt_vm* const vm) {
+    vm->s_len--;
+}
+
 static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, size_t new_base) {
     mt_vm_cur_byte(vm)++;
     uint8_t num_args = *mt_vm_cur_byte(vm)++;

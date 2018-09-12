@@ -59,10 +59,6 @@ typedef struct {
 
 #define mt_vm_push(vm, var) vm->stack[vm->s_len++] = var;
 
-#define mt_vm_get_bytes(vm, dest, size) \
-    memcpy(dest, mt_vm_cur_byte(vm), size); \
-    mt_vm_cur_byte(vm) += size
-
 #define mt_vm_math_op(vm, op, v_data) \
     mt_vm_prev_stack(vm).data.v_data op mt_vm_cur_stack(vm).data.v_data; \
     mt_vm_dec_stack(vm); \
@@ -74,15 +70,9 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
-#define mt_vm_jmp(vm, mt_jmp) \
-    mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t)); \
-    mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp
-
 void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod);
 
 void mt_vm_free(mt_vm* const vm);
-
-#define mt_vm_dec_stack_atomic(vm) vm->s_len--;
 
 #define mt_vm_err_handle(vm, type, msg) \
     if (!mt_vm_cur_safe(vm)) { \

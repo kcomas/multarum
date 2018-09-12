@@ -40,31 +40,31 @@ static void mt_token_add(mt_token_state* const state, mt_token_type type, mt_tok
     }
 }
 
-static void mt_token_inc_char(mt_token_state* const state) {
+static inline void mt_token_inc_char(mt_token_state* const state) {
     state->c++;
 }
 
-static void mt_token_inc_line(mt_token_state* const state) {
+static inline void mt_token_inc_line(mt_token_state* const state) {
     state->c = 0;
     state->line++;
 }
 
-static void mt_token_add_no_data(mt_token_state* const state, mt_token_type type) {
+static inline void mt_token_add_no_data(mt_token_state* const state, mt_token_type type) {
     mt_token_add(state, type, (mt_token_data) { .mt_int = 0 });
 }
 
-static void mt_token_set_cur_data(mt_token_state* const state, mt_char c) {
+static inline void mt_token_set_cur_data(mt_token_state* const state, mt_char c) {
     if (state->cur_data == NULL) {
         state->cur_data = mt_buf_init(MT_TOKEN_DATA_CHAR_BUF_SIZE);
     }
     mt_buf_push_char(state->cur_data, c);
 }
 
-static bool mt_token_is_skip(mt_char c) {
+static inline bool mt_token_is_skip(mt_char c) {
     return c.a != '\n' && c.a <= ' ';
 }
 
-static bool mt_token_is_var(mt_char c) {
+static inline bool mt_token_is_var(mt_char c) {
     uint8_t conts = mt_char_cont(c.a);
     if (conts > 0 || (c.a >= 'a' && c.a <= 'z') || (c.a >= 'A' && c.a <= 'Z')) {
         return true;
@@ -72,7 +72,7 @@ static bool mt_token_is_var(mt_char c) {
     return false;
 }
 
-static bool mt_token_is_num(mt_char c) {
+static inline bool mt_token_is_num(mt_char c) {
     return c.a >= '0' && c.a <= '9';
 }
 
@@ -225,13 +225,13 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
     return has_chars;
 }
 
-static void mt_token_debug_print_space(size_t stop) {
+static inline void mt_token_debug_print_space(size_t stop) {
     for (size_t i = 0; i < stop; i++) {
         putchar(' ');
     }
 }
 
-static void mt_token_debug_print_top(size_t ident_bracket, size_t ident_brace, mt_token* t) {
+static inline void mt_token_debug_print_top(size_t ident_bracket, size_t ident_brace, mt_token* t) {
     putchar('\n');
     mt_token_debug_print_space(ident_bracket);
     mt_token_debug_print_space(ident_brace);
