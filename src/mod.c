@@ -66,7 +66,7 @@ static size_t mt_mod_op2(const mt_mod* const mod, size_t i) {
     return i + 2;
 }
 
-static void mt_mod_space_bytes(size_t i, size_t count_total) {
+static inline void mt_mod_space_bytes(size_t i, size_t count_total) {
     for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
         putchar(' ');
     }

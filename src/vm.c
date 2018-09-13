@@ -35,6 +35,14 @@ static void mt_vm_dec_stack(mt_vm* const vm) {
     }
 }
 
+static inline bool mt_vm_stack_type_cmp(mt_vm* const vm, mt_var_type type) {
+    return mt_vm_prev_stack(vm).type == type && mt_vm_cur_stack(vm).type == type;
+}
+
+static inline void mt_vm_push(mt_vm* const vm, mt_var var) {
+    vm->stack[vm->s_len++] = var;
+}
+
 static inline void mt_vm_get_bytes(mt_vm* restrict vm, void* restrict dest, size_t size) {
     memcpy(dest, mt_vm_cur_byte(vm), size);
     mt_vm_cur_byte(vm) += size;
@@ -82,7 +90,7 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp;
-    mt_char mt_char_parts;
+    mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
 
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
