@@ -8,8 +8,7 @@ void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod) {
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
     vm->rsp[vm->f_len].safe = false;
-    vm->rsp[vm->f_len].fn.in = false;
-    vm->rsp[vm->f_len].fn.idx = 0;
+    vm->rsp[vm->f_len].fn= 0;
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
@@ -55,11 +54,10 @@ static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, s
     uint8_t num_args = *mt_vm_cur_byte(vm)++;
     mt_vm_inc_frame(vm);
     mt_vm_cur_safe(vm) = false;
-    mt_vm_cur_fn(vm).in = true;
-    mt_vm_cur_fn(vm).idx = new_idx;
+    mt_vm_cur_fn(vm) = new_idx;
     mt_vm_cur_base(vm) = new_base - num_args;
     mt_vm_cur_mod(vm) = new_mod;
-    mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm).idx]];
+    mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm)]];
 }
 
 static void mt_vm_ret(mt_vm* const vm) {
@@ -197,7 +195,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_dec_stack_atomic(vm);
             break;
         case mt_pfx(CALL_SELF):
-            mt_vm_call(vm, mt_vm_prev_frame(vm).mod, mt_vm_prev_frame(vm).fn.idx, vm->s_len + 1);
+            mt_vm_call(vm, mt_vm_prev_frame(vm).mod, mt_vm_prev_frame(vm).fn, vm->s_len + 1);
             mt_vm_cur_mod(vm)->ref_count++;
             break;
         case mt_pfx(RET):

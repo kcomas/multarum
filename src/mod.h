@@ -14,11 +14,6 @@ typedef struct _mt_mod {
     uint8_t* fns;
 } mt_mod;
 
-typedef struct _mt_fn_place {
-    bool in;
-    uint8_t idx;
-} mt_fn_place;
-
 #define mt_write_byte(mod, byte) mod->bytes[mod->len++] = byte
 
 #define mt_write_bytes(mod, data, size) \
