@@ -76,8 +76,6 @@ static inline bool mt_token_is_num(mt_char c) {
     return c.a >= '0' && c.a <= '9';
 }
 
-#define mt_token_quick_nothing(state, token) case mt_token(token): mt_token_add_no_data(state, mt_token(token)); break
-
 static mt_var mt_token_state_nothing(mt_token_state* const state) {
     mt_char cur_char;
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);

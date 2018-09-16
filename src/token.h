@@ -9,7 +9,7 @@
 
 #define mt_token(NAME) mt_pfx(_T_##NAME)
 
-#define MT_TOKEN_DATA_CHAR_BUF_SIZE 201
+#define MT_TOKEN_DATA_CHAR_BUF_SIZE 200
 
 typedef union {
     int64_t mt_int;
@@ -63,6 +63,8 @@ typedef struct {
     mt_token* tail;
     mt_buf* cur_data;
 } mt_token_state;
+
+#define mt_token_quick_nothing(state, token) case mt_token(token): mt_token_add_no_data(state, mt_token(token)); break
 
 void mt_token_state_init(mt_token_state* const state);
 
