@@ -7,28 +7,35 @@
 
 #define mt_ast(NAME) mt_pfx(_A_##NAME)
 
-typedef enum {
-    mt_ast(COND),
-    mt_ast(IF_COND),
-    mt_ast(IF)
-} mt_ast_type;
-
 typedef struct _mt_ast mt_ast;
 
+typedef enum {
+    mt_ast(ASSIGN),
+    mt_ast(FN)
+} mt_ast_type;
+
+typedef struct {
+
+} mt_sym_table;
+
+typedef struct {
+    mt_ast* op;
+    mt_ast* next;
+} mt_ast_op_list;
+
+typedef struct {
+    mt_sym_table* sym_table;
+    mt_ast_op_list* ops;
+} mt_ast_fn;
+
+typedef struct {
+    mt_ast* left;
+    mt_ast* right;
+} mt_ast_bop;
+
 typedef union {
-    struct {
-        // @TODO cond type
-        mt_ast* left;
-        mt_ast* right;
-    } mt_ast_cond;
-    struct {
-        mt_ast* cmp;
-        mt_ast* next;
-    } mt_ast_if_cond;
-    struct {
-        mt_ast* cond;
-        mt_ast* def;
-    } mt_ast_if;
+    mt_ast_fn* fn;
+    mt_ast_op* bop;
 } mt_ast_node;
 
 typedef struct _mt_ast {
