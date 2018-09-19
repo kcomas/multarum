@@ -35,7 +35,7 @@ typedef struct {
 
 typedef union {
     mt_ast_fn* fn;
-    mt_ast_op* bop;
+    mt_ast_bop* bop;
 } mt_ast_node;
 
 typedef struct _mt_ast {
