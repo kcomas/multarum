@@ -12,4 +12,6 @@ typedef struct {
 
 int8_t mt_char_cont(uint8_t a);
 
+int32_t mt_char_to_int(mt_char c);
+
 #endif
