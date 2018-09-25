@@ -6,7 +6,7 @@
 
 typedef struct _mt_hash_node {
     int32_t key;
-    uint8_t* name;
+    mt_buf* name;
     struct _mt_hash_node* next;
     mt_var value;
 } mt_hash_node;
