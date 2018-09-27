@@ -2,20 +2,17 @@
 #ifndef MT_AST_H
 #define MT_AST_H
 
-#include "common.h"
-#include "buf.h"
+#include "hash.h"
 
 #define mt_ast(NAME) mt_pfx(_A_##NAME)
 
 typedef struct _mt_ast mt_ast;
 
-typedef enum {
-    mt_ast(ASSIGN),
-    mt_ast(FN)
-} mt_ast_type;
-
 typedef struct {
-
+    struct {
+        uint64_t idx;
+        mt_hash hash;
+    } var_table;
 } mt_sym_table;
 
 typedef struct {
@@ -37,6 +34,11 @@ typedef union {
     mt_ast_fn* fn;
     mt_ast_bop* bop;
 } mt_ast_node;
+
+typedef enum {
+    mt_ast(ASSIGN),
+    mt_ast(FN)
+} mt_ast_type;
 
 typedef struct _mt_ast {
     mt_ast_type type;
