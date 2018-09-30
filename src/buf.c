@@ -85,6 +85,26 @@ bool mt_buf_push_char(mt_buf* const buf, mt_char c) {
     return true;
 }
 
+mt_buf* mt_buf_clone(const mt_buf* const buf) {
+    mt_buf* new_buf = mt_buf_init(buf->len);
+    new_buf->len = buf->len;
+    new_buf->_size = buf->len;
+    memcpy(new_buf->data, buf->data, buf->len);
+    return new_buf;
+}
+
+bool mt_buf_cmp(const mt_buf* const a, const mt_buf* const b) {
+    if (a->len != b->len) {
+        return false;
+    }
+    for (size_t i = 0; i < a->len; i++) {
+        if (a->data[i] != b->data[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void mt_buf_debug_print(const mt_buf* const buf) {
     for (size_t i = 0; i < buf->len; i++) {
         putchar(buf->data[i]);

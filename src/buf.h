@@ -37,6 +37,10 @@ bool mt_buf_push_byte(mt_buf* const buf, uint8_t b);
 
 bool mt_buf_push_char(mt_buf* const buf, mt_char c);
 
+mt_buf* mt_buf_clone(const mt_buf* const buf);
+
+bool mt_buf_cmp(const mt_buf* const a, const mt_buf* const b);
+
 void mt_buf_debug_print(const mt_buf* const buf);
 
 #endif

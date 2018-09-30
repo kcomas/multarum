@@ -2,8 +2,8 @@
 
 void mt_token_state_init(mt_token_state* const state) {
     state->state = mt_token_state(NOTHING);
-    state->line = 0;
-    state->c = 0;
+    state->line = 1;
+    state->c = 1;
     state->head = NULL;
     state->tail = NULL;
     state->cur_data = NULL;
