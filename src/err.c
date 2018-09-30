@@ -13,6 +13,9 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 }
 
 void mt_err_free(mt_err* const err) {
+    if (--err->ref_count > 0) {
+        return;
+    }
     mt_buf_free(err->msg);
     if (err->rsp != NULL) {
         free(err->rsp);

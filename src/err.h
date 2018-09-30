@@ -10,13 +10,16 @@
 
 typedef struct _mt_frame mt_frame;
 
+#define mt_pfx_err(NAME) mt_pfx(_ERR_##NAME)
+
 typedef enum {
-    mt_pfx(ERR_OK),
-    mt_pfx(ERR_TYPE),
-    mt_pfx(ERR_FILE_OPEN),
-    mt_pfx(ERR_FILE_READ),
-    mt_pfx(ERR_BUF_FULL),
-    mt_pfx(ERR_HASH_KEY_LEN)
+    mt_pfx_err(OK),
+    mt_pfx_err(TYPE),
+    mt_pfx_err(FILE_OPEN),
+    mt_pfx_err(FILE_READ),
+    mt_pfx_err(BUF_FULL),
+    mt_pfx_err(HASH_KEY_LEN),
+    mt_pfx_err(HASH_GET_FAIL)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -34,13 +37,25 @@ typedef struct _mt_err {
 
 mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const rsp, mt_buf* const msg);
 
-#define mt_err_type_err() mt_err_init(mt_pfx(ERR_TYPE), 0, 0, NULL, mt_buf_from_c_str("Invalid Type"))
+#define mt_err_type_err() mt_err_init(mt_pfx_err(ERR_TYPE), 0, 0, NULL, mt_buf_from_c_str("Invalid Type"))
+
+#define mt_err_file_open() \
+    mt_err_init(mt_pfx_err(FILE_OPEN), errno, 0, NULL, mt_buf_from_c_str("Failed To Open File"))
+
+#define mt_err_file_read() \
+    mt_err_init(mt_pfx_err(FILE_READ), errno, 0, NULL, mt_buf_from_c_str("File Read Fail"))
+
+#define mt_err_file_close() \
+    mt_err_init(mt_pfx_err(FILE_READ), errno, 0, NULL, mt_buf_from_c_str("Failed To Close File"))
 
 #define mt_err_token_buf_full() \
-    mt_err_init(mt_pfx(ERR_BUF_FULL), 0, 0, NULL, mt_buf_from_c_str("Token Data Buf Full"))
+    mt_err_init(mt_pfx_err(BUF_FULL), 0, 0, NULL, mt_buf_from_c_str("Token Data Buf Full"))
 
 #define mt_err_hash_key_len() \
-    mt_err_init(mt_pfx(ERR_HASH_KEY_LEN), 0, 0, NULL, mt_buf_from_c_str("Hash Key Len Exceed"))
+    mt_err_init(mt_pfx_err(HASH_KEY_LEN), 0, 0, NULL, mt_buf_from_c_str("Hash Key Len Exceed"))
+
+#define mt_err_hash_get_fail() \
+    mt_err_init(mt_pfx_err(HASH_GET_FAIL), 0, 0, NULL, mt_buf_from_c_str("Hash Get Failed"))
 
 void mt_err_free(mt_err* const err);
 

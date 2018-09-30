@@ -28,6 +28,9 @@ static void mt_vm_dec_stack(mt_vm* const vm) {
         case mt_pfx(FN):
             mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
             break;
+        case mt_pfx(ERROR):
+            mt_err_free(mt_vm_cur_stack(vm).data.mt_err);
+            break;
         case mt_pfx(BUFFER):
             mt_buf_free(mt_vm_cur_stack(vm).data.mt_buf);
         default:
@@ -77,7 +80,7 @@ static void mt_vm_ret(mt_vm* const vm) {
         }
         mt_vm_push(vm, *mt_ret);
     } else {
-        mt_vm_push(vm, mt_var_null);
+        mt_vm_push(vm, mt_var_null());
     }
     mt_mod_free(mt_vm_cur_mod(vm));
     mt_vm_dec_frame(vm)
@@ -99,7 +102,7 @@ static void mt_run_op(mt_vm* const vm) {
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {
                 case mt_pfx(NULL):
-                    mt_vm_push(vm, mt_var_null);
+                    mt_vm_push(vm, mt_var_null());
                     mt_vm_cur_byte(vm)++;
                     break;
                 case mt_pfx(BOOL):
@@ -221,7 +224,7 @@ mt_var mt_vm_run(mt_vm* const vm) {
         mt_run_op(vm);
     }
     if (vm->s_len == 0) {
-        return mt_var_null;
+        return mt_var_null();
     }
     return mt_vm_cur_stack(vm);
 }

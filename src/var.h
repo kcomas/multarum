@@ -46,7 +46,7 @@ typedef struct _mt_var {
     } data;
 } mt_var;
 
-#define mt_var_null (mt_var) { .type = mt_pfx(NULL) }
+#define mt_var_null() (mt_var) { .type = mt_pfx(NULL) }
 
 #define mt_var_bool(value) (mt_var) { .type = mt_pfx(BOOL), .data = { .mt_bool = value } }
 
