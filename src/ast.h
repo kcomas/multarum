@@ -12,7 +12,7 @@ typedef struct {
     struct {
         uint64_t idx;
         mt_hash hash;
-    } var_table;
+    } args_table, var_table;
 } mt_sym_table;
 
 typedef struct {
@@ -44,5 +44,7 @@ typedef struct _mt_ast {
     mt_ast_type type;
     mt_ast_node node;
 } mt_ast;
+
+mt_ast* mt_ast_init(size_t arg_size, size_t local_size);
 
 #endif
