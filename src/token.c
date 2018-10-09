@@ -95,6 +95,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
     }
     switch (cur_char.a) {
         mt_token_quick_nothing(state, ASSIGN);
+        mt_token_quick_nothing(state, PERIOD);
         mt_token_quick_nothing(state, L_BRACE);
         mt_token_quick_nothing(state, R_BRACE);
         mt_token_quick_nothing(state, COMMA);

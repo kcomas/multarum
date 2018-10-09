@@ -22,6 +22,7 @@ typedef enum {
     mt_token(INT) = 129,
     mt_token(FLOAT) = 130,
     mt_token(ASSIGN) = ':',
+    mt_token(PERIOD) = '.',
     mt_token(L_BRACE) = '(',
     mt_token(R_BRACE) = ')',
     mt_token(COMMA) = ',',
