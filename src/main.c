@@ -1,7 +1,7 @@
 
 #include "file.h"
-#include "token.h"
 #include "vm.h"
+#include "ast.h"
 
 int main(void) {
     mt_ctx ctx;
@@ -37,6 +37,15 @@ int main(void) {
 
     mt_token_state_debug_print(&token_state);
     printf("\n");
+
+    mt_ast_state ast_state;
+    mt_ast_init(&ast_state);
+
+    mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
+    mt_var_debug_print(&ast_rst);
+    printf("\n");
+
+    exit(1);
 
     mt_token_state_free(&token_state);
 

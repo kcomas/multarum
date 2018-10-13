@@ -19,12 +19,15 @@ static inline mt_ast* mt_ast_create_node(mt_ast_type type, mt_ast_node node) {
     return ast;
 }
 
+#define mt_ast_value(name, value) (mt_ast_value) { .name = value }
+
 #define mt_ast_node(type, name, _node) mt_ast_create_node(mt_ast(type), (mt_ast_node) { .name = _node })
 
 static mt_ast* mt_ast_fn_init(void) {
     mt_ast_fn* fn = malloc(sizeof(mt_ast_fn));
     fn->sym_table.args_table.hash = NULL;
     fn->sym_table.local_table.hash = NULL;
+    fn->sym_table.fn_table.hash = NULL;
     fn->ops = mt_ast_add_op_list();
     return mt_ast_node(FN, fn, fn);
 }
@@ -32,19 +35,38 @@ static mt_ast* mt_ast_fn_init(void) {
 void mt_ast_init(mt_ast_state* const state) {
     state->cur_token = NULL;
     state->ast = mt_ast_fn_init();
-    state->last = state->ast->node.fn->ops->op;
 }
 
-static mt_var mt_ast_next_token(mt_ast_state* const state) {
-    switch (state->cur_token->type) {
-
+static void mt_ast_add_data_to_tree(mt_ast* cur_tree, mt_ast* const new_node) {
+    switch (cur_tree->type) {
+        case mt_ast(NULL):
+            cur_tree = new_node;
+            break;
+        default:
+            break;
     }
+}
+
+#define mt_ast_quick_add_data(state, cur_tree, type, name) \
+    case mt_token(type): \
+        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(type, value, mt_ast_value(mt_var, state->cur_token->data.name))); \
+        break
+
+static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
+    switch (state->cur_token->type) {
+        mt_ast_quick_add_data(state, cur_tree, VAR, mt_var);
+        mt_ast_quick_add_data(state, cur_tree, INT, mt_int);
+        default:
+            return mt_var_err(mt_err_ast_build_fail("Invalid Token Found"));
+    }
+    return mt_ast_next_token(state, cur_tree);
 }
 
 mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
     state->cur_token = tokens;
     while (state->cur_token != NULL) {
-        mt_var rst = mt_ast_next_token(state);
+        mt_ast cur_tree = mt_ast_null();
+        mt_var rst = mt_ast_next_token(state, &cur_tree);
         if (mt_var_is_err(rst)) {
             return rst;
         }

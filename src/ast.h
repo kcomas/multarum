@@ -14,14 +14,18 @@ typedef struct _mt_ast mt_ast;
 #endif
 
 #ifndef MT_AST_LOCAL_SIZE
-#   define MT_AST_LOCAL_SIZE 30
+#   define MT_AST_LOCAL_SIZE 20
+#endif
+
+#ifndef MT_AST_FN_SIZE
+#   define MT_AST_FN_SIZE 30
 #endif
 
 typedef struct {
     struct {
         uint64_t idx;
         mt_hash* hash;
-    } args_table, local_table;
+    } args_table, local_table, fn_table;
 } mt_sym_table;
 
 typedef struct _mt_ast_op_list {
@@ -52,6 +56,7 @@ typedef union {
 } mt_ast_node;
 
 typedef enum {
+    mt_ast(NULL),
     mt_ast(FN),
     mt_ast(ASSIGN),
     mt_ast(VAR),
@@ -64,10 +69,11 @@ typedef struct _mt_ast {
     mt_ast_node node;
 } mt_ast;
 
+#define mt_ast_null() (mt_ast) { .type = mt_ast(NULL) }
+
 typedef struct {
     mt_token* cur_token;
     mt_ast* ast;
-    mt_ast* last;
 } mt_ast_state;
 
 void mt_ast_init(mt_ast_state* const state);
