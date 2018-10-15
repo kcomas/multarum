@@ -47,15 +47,12 @@ static void mt_ast_add_data_to_tree(mt_ast* cur_tree, mt_ast* const new_node) {
     }
 }
 
-#define mt_ast_quick_add_data(state, cur_tree, type, name) \
-    case mt_token(type): \
-        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(type, value, mt_ast_value(mt_var, state->cur_token->data.name))); \
-        break
-
 static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
     switch (state->cur_token->type) {
-        mt_ast_quick_add_data(state, cur_tree, VAR, mt_var);
-        mt_ast_quick_add_data(state, cur_tree, INT, mt_int);
+        case mt_token(VAR):
+            // @TODO add to locals table
+        case mt_token(INT):
+            mt_ast_add_data_to_tree(cur_tree, mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int)));
         default:
             return mt_var_err(mt_err_ast_build_fail("Invalid Token Found"));
     }
