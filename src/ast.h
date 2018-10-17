@@ -71,7 +71,16 @@ typedef struct _mt_ast {
 
 #define mt_ast_null() (mt_ast) { .type = mt_ast(NULL) }
 
+#define mt_ast_state(NAME) mt_pfx(_S_M_##NAME)
+
+typedef enum {
+    mt_ast_state(MAIN),
+    mt_ast_state(FN),
+    mt_ast_state(ARGS),
+} mt_ast_state_mode;
+
 typedef struct {
+    mt_ast_state_mode mode;
     mt_token* cur_token;
     mt_ast* ast;
 } mt_ast_state;

@@ -13,6 +13,22 @@ mt_hash* mt_hash_init(size_t num_buckets) {
     return h;
 }
 
+void mt_hash_free(mt_hash* const hash) {
+    for (size_t i = 0; i < hash->_bsize; i++) {
+        if (hash->buckets[i] == NULL) {
+            continue;
+        }
+        mt_hash* next = hash->buckets[i]->next;
+        while (next != NULL) {
+            tmp = next;
+            next = next->next;
+            free(tmp);
+        }
+        free(hash->buckets[i]);
+    }
+    free(hash->buckets);
+}
+
 static mt_hash_node* mt_hash_create_node(size_t hashd, const mt_buf* const name, mt_var value) {
     mt_hash_node* node = (mt_hash_node*) malloc(sizeof(mt_hash_node));
     node->hashd = hashd;
@@ -53,6 +69,7 @@ mt_var mt_hash_insert(mt_hash* const hash, const mt_buf* const name, mt_var valu
             to_ins = to_ins->next;
         }
     }
+    hash->len++;
     return mt_var_bool(true);
 }
 
@@ -70,4 +87,8 @@ mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name) {
         to_get = to_get->next;
     }
     return mt_var_err(mt_err_hash_get_fail());
+}
+
+void mt_hash_debug_print(const mt_hash* const hash) {
+
 }
