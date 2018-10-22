@@ -18,9 +18,9 @@ void mt_hash_free(mt_hash* const hash) {
         if (hash->buckets[i] == NULL) {
             continue;
         }
-        mt_hash* next = hash->buckets[i]->next;
+        mt_hash_node* next = hash->buckets[i]->next;
         while (next != NULL) {
-            tmp = next;
+            mt_hash_node* tmp = next;
             next = next->next;
             free(tmp);
         }
@@ -86,9 +86,13 @@ mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name) {
         }
         to_get = to_get->next;
     }
-    return mt_var_err(mt_err_hash_get_fail());
+    return mt_var_null();
 }
 
 void mt_hash_debug_print(const mt_hash* const hash) {
-
+    for (size_t i = 0; i < hash->_bsize; i++) {
+        if (hash->buckets[i] == NULL) {
+            continue;
+        }
+    }
 }

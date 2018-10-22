@@ -16,16 +16,7 @@ typedef struct _mt_mod mt_mod;
 typedef struct _mt_err mt_err;
 
 typedef enum {
-    mt_pfx(NULL),
-    mt_pfx(BOOL),
-    mt_pfx(CHAR),
-    mt_pfx(INT),
-    mt_pfx(FLOAT),
-    mt_pfx(MODULE),
-    mt_pfx(FN),
-    mt_pfx(MFILE),
-    mt_pfx(ERROR),
-    mt_pfx(BUFFER)
+    MT_TYPES
     // @TODO colletions arrays modules hashs
 } mt_var_type;
 

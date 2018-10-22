@@ -27,6 +27,8 @@ typedef struct {
     const mt_buf* buf;
 } mt_buf_iter;
 
+#define mt_buf_space_free(buf) buf->_size - buf->len
+
 void mt_buf_iter_init(const mt_buf* const buf, mt_buf_iter* const iter);
 
 bool mt_buf_iter_next(mt_buf_iter* const iter, mt_char* const c);
@@ -40,6 +42,8 @@ bool mt_buf_push_char(mt_buf* const buf, mt_char c);
 mt_buf* mt_buf_clone(const mt_buf* const buf);
 
 bool mt_buf_cmp(const mt_buf* const a, const mt_buf* const b);
+
+bool mt_buf_write(mt_buf* restrict buf, const void* restrict data, size_t size);
 
 void mt_buf_debug_print(const mt_buf* const buf);
 

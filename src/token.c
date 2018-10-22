@@ -108,13 +108,14 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, ADD);
         mt_token_quick_nothing(state, SUB);
         mt_token_quick_nothing(state, END);
-        case mt_token(GREATER):
+        mt_token_quick_nothing(state, GREATER);
+        case mt_token(LESS):
             has_chars = mt_buf_iter_peek(&state->iter, &cur_char);
             if (has_chars && cur_char.a == '>') {
                 mt_token_add_no_data(state, mt_token(WRITE));
                 has_chars = mt_buf_iter_next(&state->iter, &cur_char);
             } else {
-                mt_token_add_no_data(state, mt_token(GREATER));
+                mt_token_add_no_data(state, mt_token(LESS));
             }
             break;
         case mt_token(SLASH):
@@ -252,7 +253,7 @@ void mt_token_state_debug_print(const mt_token_state* const state) {
                 printf("%lu:%lu:%li ", t->line, t->c, t->data.mt_int);
                 break;
             case mt_token(WRITE):
-                printf("%lu:%lu:>> ", t->line, t->c);
+                printf("%lu:%lu:<> ", t->line, t->c);
                 break;
             case mt_token(NL):
                 printf("%lu:%lu:\\n\n", t->line, t->c);
@@ -289,4 +290,42 @@ void mt_token_state_debug_print(const mt_token_state* const state) {
         }
         t = t->next;
     }
+}
+
+int32_t mt_token_buf_info(mt_buf* const target, const mt_token* const token) {
+    int32_t sub_total = 0;
+    if (mt_buf_space_free(target) < 30) {
+        return -1;
+    }
+    char* to_w = (char*) target->data + target->len;
+    int32_t total = sprintf(to_w, "Line: %lu, Char: %lu, ", token->line, token->c);
+    if (total < 0) {
+        return total;
+    }
+    target->len += total;
+    to_w = (char*) target->data + target->len;
+    switch (token->type) {
+        case mt_token(VAR):
+            if (token->data.mt_var->len > mt_buf_space_free(target)) {
+                return total;
+            }
+            mt_buf_write(target, token->data.mt_var->data, token->data.mt_var->len);
+            total += token->data.mt_var->len;
+            break;
+        case mt_token(INT):
+            sub_total = sprintf(to_w, "%li", token->data.mt_int);
+            break;
+        case mt_token(NL):
+            sub_total = mt_buf_write(target, "\\n", 3);
+            break;
+        default:
+            sub_total = sprintf(to_w, "%c", token->type);
+            break;
+    }
+    if (sub_total < 0) {
+        return sub_total;
+    }
+    target->len += 0;
+    total += sub_total;
+    return total;
 }

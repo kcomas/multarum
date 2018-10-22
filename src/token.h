@@ -35,6 +35,7 @@ typedef enum {
     mt_token(ADD) = '+',
     mt_token(SUB) = '-',
     mt_token(GREATER) = '>',
+    mt_token(LESS) = '<',
     mt_token(WRITE) = 131,
     mt_token(SLASH) = '/',
     mt_token(NL) = '\n',
@@ -74,5 +75,7 @@ void mt_token_state_free(mt_token_state* const state);
 mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf);
 
 void mt_token_state_debug_print(const mt_token_state* const state);
+
+int32_t mt_token_buf_info(mt_buf* const target, const mt_token* const token);
 
 #endif

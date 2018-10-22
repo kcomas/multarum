@@ -105,9 +105,17 @@ bool mt_buf_cmp(const mt_buf* const a, const mt_buf* const b) {
     return true;
 }
 
+bool mt_buf_write(mt_buf* restrict buf, const void* restrict data, size_t size) {
+    if (size > mt_buf_space_free(buf)) {
+        return false;
+    }
+    memcpy(buf->data + buf->len, data, size);
+    buf->len += size;
+    return true;
+}
+
 void mt_buf_debug_print(const mt_buf* const buf) {
     for (size_t i = 0; i < buf->len; i++) {
         putchar(buf->data[i]);
     }
 }
-

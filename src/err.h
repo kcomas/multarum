@@ -19,7 +19,6 @@ typedef enum {
     mt_pfx_err(FILE_READ),
     mt_pfx_err(BUF_FULL),
     mt_pfx_err(HASH_KEY_LEN),
-    mt_pfx_err(HASH_GET_FAIL),
     mt_pfx_err(AST_BUILD)
 } mt_err_type;
 
@@ -55,11 +54,8 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 #define mt_err_hash_key_len() \
     mt_err_init(mt_pfx_err(HASH_KEY_LEN), 0, 0, NULL, mt_buf_from_c_str("Hash Key Len Exceed"))
 
-#define mt_err_hash_get_fail() \
-    mt_err_init(mt_pfx_err(HASH_GET_FAIL), 0, 0, NULL, mt_buf_from_c_str("Hash Get Failed"))
-
 #define mt_err_ast_build_fail(err) \
-    mt_err_init(mt_pfx_err(AST_BUILD), 0, 0, NULL, mt_buf_from_c_str(err))
+    mt_err_init(mt_pfx_err(AST_BUILD), 0, 0, NULL, err)
 
 void mt_err_free(mt_err* const err);
 
