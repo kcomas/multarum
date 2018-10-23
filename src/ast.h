@@ -35,7 +35,8 @@ typedef struct _mt_ast_op_list {
 
 typedef struct {
     mt_sym_table sym_table;
-    mt_ast_op_list* ops;
+    mt_ast_op_list* ops_head;
+    mt_ast_op_list* ops_tail;
 } mt_ast_fn;
 
 typedef struct {

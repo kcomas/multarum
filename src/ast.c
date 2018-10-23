@@ -28,7 +28,8 @@ static mt_ast* mt_ast_fn_init(void) {
     fn->sym_table.args_table.hash = NULL;
     fn->sym_table.local_table.hash = NULL;
     fn->sym_table.fn_table.hash = NULL;
-    fn->ops = mt_ast_add_op_list();
+    fn->ops_head = mt_ast_add_op_list();
+    fn->ops_tail = fn->ops_head;
     return mt_ast_node(FN, fn, fn);
 }
 
@@ -62,6 +63,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
             }
         case mt_token(INT):
             mt_ast_add_data_to_tree(cur_tree, mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int)));
+            break;
         default:
             err_buf = mt_buf_init(200);
             mt_buf_write(err_buf, err_msg, 21);
