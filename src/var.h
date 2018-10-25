@@ -9,15 +9,16 @@
 #include "common.h"
 #include "char.h"
 #include "mod.h"
-#include "err.h"
 #include "buf.h"
+#include "err.h"
 
 typedef struct _mt_mod mt_mod;
 typedef struct _mt_err mt_err;
+typedef struct _mt_hash mt_hash;
 
 typedef enum {
     MT_TYPES
-    // @TODO colletions arrays modules hashs
+    // @TODO colletions arrays
 } mt_var_type;
 
 typedef struct _mt_var {
@@ -34,8 +35,11 @@ typedef struct _mt_var {
         mt_mod* mt_mod;
         mt_err* mt_err;
         mt_buf* mt_buf;
+        mt_hash* mt_hash;
     } data;
 } mt_var;
+
+#include "hash.h"
 
 #define mt_var_null() (mt_var) { .type = mt_pfx(NULL) }
 
@@ -66,5 +70,6 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 bool mt_var_as_bool(const mt_var* const var);
 
 void mt_var_debug_print(const mt_var* const var);
+
 
 #endif

@@ -11,7 +11,7 @@ typedef struct _mt_hash_node {
     mt_var value;
 } mt_hash_node;
 
-typedef struct {
+typedef struct _mt_hash {
     uint32_t ref_count;
     size_t len, _bsize; // len can be larger then _bsize
     mt_hash_node** buckets;

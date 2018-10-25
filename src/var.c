@@ -107,5 +107,8 @@ void mt_var_debug_print(const mt_var* const var) {
         case mt_pfx(BUFFER):
             mt_buf_debug_print(var->data.mt_buf);
             break;
+        case mt_pfx(HASH):
+            mt_hash_debug_print(var->data.mt_hash);
+            break;
     }
 }

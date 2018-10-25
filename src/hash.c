@@ -94,5 +94,10 @@ void mt_hash_debug_print(const mt_hash* const hash) {
         if (hash->buckets[i] == NULL) {
             continue;
         }
+        printf("%lu: ", i);
+        mt_buf_debug_print(hash->buckets[i]->name);
+        printf(" - ");
+        mt_var_debug_print(&hash->buckets[i]->value);
+        mt_hash_node* next = hash->buckets[i]->next;
     }
 }

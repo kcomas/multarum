@@ -14,6 +14,7 @@
     mt_pfx(FN), \
     mt_pfx(MFILE), \
     mt_pfx(ERROR), \
-    mt_pfx(BUFFER)
+    mt_pfx(BUFFER), \
+    mt_pfx(HASH)
 
 #endif
