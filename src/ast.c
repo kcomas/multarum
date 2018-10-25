@@ -49,9 +49,16 @@ static void mt_ast_add_data_to_tree(mt_ast* cur_tree, mt_ast* const new_node) {
     }
 }
 
-static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
-    static const char* err_msg = "Invalid Token Found, ";
+static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
     mt_buf* err_buf;
+    static const char* err_msg = "Invalid Token Found, ";
+    err_buf = mt_buf_init(200);
+    mt_buf_write(err_buf, err_msg, 21);
+    mt_token_buf_info(err_buf, cur_token);
+    return mt_var_err(mt_err_ast_build_fail(err_buf));
+}
+
+static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
     switch (state->cur_token->type) {
         case mt_token(VAR):
             switch (state->mode) {
@@ -65,10 +72,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* cur_tree) {
             mt_ast_add_data_to_tree(cur_tree, mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int)));
             break;
         default:
-            err_buf = mt_buf_init(200);
-            mt_buf_write(err_buf, err_msg, 21);
-            mt_token_buf_info(err_buf, state->cur_token);
-            return mt_var_err(mt_err_ast_build_fail(err_buf));
+            return mt_ast_token_invalid(state->cur_token);
     }
     return mt_ast_next_token(state, cur_tree);
 }
