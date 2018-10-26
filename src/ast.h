@@ -26,7 +26,7 @@ typedef struct {
         uint64_t idx;
         mt_hash* hash;
     } args_table, local_table, fn_table;
-} mt_sym_table;
+} mt_ast_sym_table;
 
 typedef struct _mt_ast_op_list {
     mt_ast* op;
@@ -34,7 +34,7 @@ typedef struct _mt_ast_op_list {
 } mt_ast_op_list;
 
 typedef struct {
-    mt_sym_table sym_table;
+    mt_ast_sym_table sym_table;
     mt_ast_op_list* ops_head;
     mt_ast_op_list* ops_tail;
 } mt_ast_fn;
@@ -69,8 +69,6 @@ typedef struct _mt_ast {
     mt_ast_type type;
     mt_ast_node node;
 } mt_ast;
-
-#define mt_ast_null() (mt_ast) { .type = mt_ast(NULL) }
 
 #define mt_ast_state(NAME) mt_pfx(_S_M_##NAME)
 

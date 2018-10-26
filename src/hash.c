@@ -99,5 +99,14 @@ void mt_hash_debug_print(const mt_hash* const hash) {
         printf(" - ");
         mt_var_debug_print(&hash->buckets[i]->value);
         mt_hash_node* next = hash->buckets[i]->next;
+        size_t sub = 0;
+        while (next != NULL) {
+            printf("\n\t%lu.%lu: ", i, sub++);
+            mt_buf_debug_print(hash->buckets[i]->name);
+            printf(" - ");
+            mt_var_debug_print(&hash->buckets[i]->value);
+            next = next->next;
+        }
+        printf("\n");
     }
 }

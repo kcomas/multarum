@@ -92,7 +92,7 @@ static void mt_run_op(mt_vm* const vm) {
     int8_t char_conts;
     int64_t mt_int;
     double mt_float;
-    uint32_t mt_jmp;
+    uint32_t mt_jmp = 0;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
 
     switch (*mt_vm_cur_byte(vm)) {
