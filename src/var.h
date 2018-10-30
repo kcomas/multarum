@@ -61,6 +61,8 @@ typedef struct _mt_var {
 
 #define mt_var_buf(value) (mt_var) { .type = mt_pfx(BUFFER), .data = { .mt_buf = value } }
 
+#define mt_var_is_null(var) (var.type == mt_pfx(NULL))
+
 #define mt_var_is_bool(var) (var.type == mt_pfx(BOOL))
 
 #define mt_var_is_err(var) (var.type == mt_pfx(ERROR))

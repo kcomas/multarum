@@ -27,7 +27,7 @@ static inline mt_ast* mt_ast_create_node(mt_ast_type type, mt_ast_node node) {
 
 static mt_ast* mt_ast_fn_init(void) {
     mt_ast_fn* fn = malloc(sizeof(mt_ast_fn));
-    mt_ast_fn_access(fn, args_table).hash = NULL;
+    mt_ast_fn_access(fn, arg_table).hash = NULL;
     mt_ast_fn_access(fn, local_table).hash = NULL;
     mt_ast_fn_access(fn, fn_table).hash = NULL;
     fn->ops_head = mt_ast_add_op_list();
@@ -39,7 +39,12 @@ static mt_ast* mt_ast_fn_init(void) {
     if (mt_ast_fn_access(fn, target).hash == NULL) { \
         mt_ast_sym_table_init(fn, target, size); \
     } \
-    mt_hash_insert(mt_ast_fn_access(fn, target).hash, buf, mt_var_int(mt_ast_fn_access(fn, target).idx++))
+    if (mt_var_is_null(mt_hash_get(mt_ast_fn_access(fn, target).hash, buf))) { \
+        mt_hash_insert(mt_ast_fn_access(fn, target).hash, buf, mt_var_int(mt_ast_fn_access(fn, target).idx++)); \
+    }
+
+#define mt_ast_symbol_in_args(fn, buf) \
+    (mt_ast_fn_access(fn, arg_table).hash != NULL && mt_var_is_null(mt_hash_get(mt_ast_fn_access(fn, arg_table).hash, buf)))
 
 void mt_ast_init(mt_ast_state* const state) {
     state->mode = mt_ast_state(MAIN);
@@ -72,8 +77,12 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast* const cur_tre
             switch (state->mode) {
                 case mt_ast_state(MAIN):
                 case mt_ast_state(FN):
-                    mt_ast_add_data_to_tree(cur_tree, mt_ast_node(VAR, value, mt_ast_value(mt_var, state->cur_token->data.mt_var)));
-                    mt_ast_fn_add_table(state->ast->node.fn, state->cur_token->data.mt_var, local_table, MT_AST_LOCAL_SIZE);
+                    if (mt_ast_symbol_in_args(state->ast->node.fn, state->cur_token->data.mt_var)) {
+                        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var)));
+                    } else {
+                        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(VAR, value, mt_ast_value(mt_var, state->cur_token->data.mt_var)));
+                        mt_ast_fn_add_table(state->ast->node.fn, state->cur_token->data.mt_var, local_table, MT_AST_LOCAL_SIZE);
+                    }
                     break;
                 case mt_ast_state(ARGS):
                     break;
@@ -101,9 +110,15 @@ mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
         if (mt_var_is_err(rst)) {
             return rst;
         }
-        state->ast->node.fn->ops_tail->op = cur_tree;
-        state->ast->node.fn->ops_tail->next = mt_ast_add_op_list();
-        state->ast->node.fn->ops_tail = state->ast->node.fn->ops_tail->next;
+        if (cur_tree != NULL) {
+            state->ast->node.fn->ops_tail->op = cur_tree;
+            state->ast->node.fn->ops_tail->next = mt_ast_add_op_list();
+            state->ast->node.fn->ops_tail = state->ast->node.fn->ops_tail->next;
+        }
     }
     return mt_var_bool(true);
+}
+
+void mt_ast_debug_print(const mt_ast* const ast) {
+
 }

@@ -25,7 +25,7 @@ typedef struct {
     struct {
         uint64_t idx;
         mt_hash* hash;
-    } args_table, local_table, fn_table;
+    } arg_table, local_table, fn_table;
 } mt_ast_sym_table;
 
 typedef struct _mt_ast_op_list {
@@ -61,6 +61,7 @@ typedef enum {
     mt_ast(FN),
     mt_ast(ASSIGN),
     mt_ast(VAR),
+    mt_ast(ARG),
     mt_ast(INT),
     // mt_ast(FLOAT)
 } mt_ast_type;
@@ -87,5 +88,7 @@ typedef struct {
 void mt_ast_init(mt_ast_state* const state);
 
 mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens);
+
+void mt_ast_debug_print(const mt_ast* const ast);
 
 #endif
