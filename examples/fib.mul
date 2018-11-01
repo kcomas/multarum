@@ -1,6 +1,8 @@
 
 // Comment
 
+total: 30
+
 fib: .(n) {
     ? {
         (n = 1) | (n = 0) { n }
@@ -8,4 +10,4 @@ fib: .(n) {
     }
 }
 
-1 <> fib(30)
+1 <> fib(total)
