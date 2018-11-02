@@ -59,13 +59,6 @@ void mt_ast_init(mt_ast_state* const state) {
     state->ast = mt_ast_fn_init();
 }
 
-static void mt_ast_add_data_to_tree(mt_ast** const cur_tree, mt_ast* const new_node) {
-    if (cur_tree == NULL) {
-        *cur_tree = new_node;
-        return;
-    }
-}
-
 static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
     mt_buf* err_buf;
     static const char* err_msg = "Invalid Token Found, ";
@@ -75,7 +68,7 @@ static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
     return mt_var_err(mt_err_ast_build_fail(err_buf));
 }
 
-#define inc_token(state) state->cur_token = state->cur_token->next
+#define mt_ast_inc_token(state) state->cur_token = state->cur_token->next
 
 static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tree) {
     if (state->cur_token == NULL) {
@@ -87,29 +80,31 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(MAIN):
                 case mt_ast_state(FN):
                     if (mt_ast_symbol_in_args(state->ast->node.fn, state->cur_token->data.mt_var)) {
-                        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var)));
+                        *cur_tree = mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
                     } else {
-                        mt_ast_add_data_to_tree(cur_tree, mt_ast_node(VAR, value, mt_ast_value(mt_var, state->cur_token->data.mt_var)));
+                        *cur_tree = mt_ast_node(VAR, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
                         mt_ast_fn_add_table(state->ast->node.fn, state->cur_token->data.mt_var, local_table, MT_AST_LOCAL_SIZE);
                     }
                     break;
                 case mt_ast_state(ARGS):
                     break;
             }
+            mt_ast_inc_token(state);
+            return mt_ast_next_token(state, cur_tree);
         case mt_token(INT):
-            mt_ast_add_data_to_tree(cur_tree, mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int)));
-            break;
+            *cur_tree = mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int));
+            mt_ast_inc_token(state);
+            return mt_ast_next_token(state, cur_tree);
         case mt_token(ASSIGN):
             *cur_tree = mt_ast_node(ASSIGN, bop, mt_ast_create_bop(*cur_tree, NULL));
-            break;
+            mt_ast_inc_token(state);
+            return mt_ast_next_token(state, &(*cur_tree)->node.bop->right);
         case mt_token(NL):
-            inc_token(state);
+            mt_ast_inc_token(state);
             return mt_var_bool(true);
         default:
             return mt_ast_token_invalid(state->cur_token);
     }
-    inc_token(state);
-    return mt_ast_next_token(state, cur_tree);
 }
 
 mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
