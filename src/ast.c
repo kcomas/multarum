@@ -119,13 +119,55 @@ mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
             state->ast->node.fn->ops_tail->op = cur_tree;
             state->ast->node.fn->ops_tail->next = mt_ast_add_op_list();
             state->ast->node.fn->ops_tail = state->ast->node.fn->ops_tail->next;
-            // @TODO print tree
-            exit(1);
+            mt_ast_debug_print(state->ast, 0);
         }
     }
     return mt_var_bool(true);
 }
 
-void mt_ast_debug_print(const mt_ast* const ast) {
+#define mt_ast_debug_print_syms(ast, table, type, indent) \
+    if (mt_ast_fn_access(ast->node.fn, table).hash != NULL) { \
+        for (uint32_t i = 0; i < indent; i++) { \
+             putchar(' '); \
+        } \
+        printf("%s %lu\n", type, mt_ast_fn_access(ast->node.fn, table).idx); \
+        mt_hash_debug_print(mt_ast_fn_access(ast->node.fn, table).hash, indent); \
+    }
 
+void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
+    if (ast == NULL) {
+       return;
+    }
+    for (uint32_t i = 0; i < indent; i++) {
+        putchar(' ');
+    }
+    switch (ast->type) {
+        case mt_ast(NULL):
+            printf("NULL\n");
+            break;
+        case mt_ast(FN):
+            printf("FN\n");
+            mt_ast_debug_print_syms(ast, arg_table, "ARGS" , indent);
+            mt_ast_debug_print_syms(ast, local_table, "LOCALS", indent);
+            mt_ast_debug_print_syms(ast, fn_table, "NAMED FNS", indent);
+            mt_ast_op_list* list = ast->node.fn->ops_head;
+            while (list != NULL) {
+                mt_ast_debug_print(list->op, indent + 1);
+                list = list->next;
+            }
+            break;
+        case mt_ast(ASSIGN):
+            printf(":\n");
+            mt_ast_debug_print(ast->node.bop->left, indent + 1);
+            mt_ast_debug_print(ast->node.bop->right, indent + 1);
+            break;
+        case mt_ast(VAR):
+        case mt_ast(ARG):
+            mt_buf_debug_print(ast->node.value.mt_var);
+            printf("\n");
+            break;
+        case mt_ast(INT):
+            printf("%lu\n", ast->node.value.mt_int);
+            break;
+    }
 }

@@ -3,7 +3,7 @@
 
 mt_hash* mt_hash_init(size_t num_buckets) {
     mt_hash* h = (mt_hash*) malloc(sizeof(mt_hash));
-    h->ref_count = 0;
+    h->ref_count = 1;
     h->len = 0;
     h->_bsize = num_buckets;
     h->buckets = (mt_hash_node**) malloc(sizeof(mt_hash_node*) * num_buckets);
@@ -89,22 +89,25 @@ mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name) {
     return mt_var_null();
 }
 
-void mt_hash_debug_print(const mt_hash* const hash) {
+void mt_hash_debug_print(const mt_hash* const hash, uint32_t indent) {
     for (size_t i = 0; i < hash->_bsize; i++) {
+        for (uint32_t x = 0; x < indent; x++) {
+            putchar(' ');
+        }
         if (hash->buckets[i] == NULL) {
             continue;
         }
         printf("%lu: ", i);
         mt_buf_debug_print(hash->buckets[i]->name);
         printf(" - ");
-        mt_var_debug_print(&hash->buckets[i]->value);
+        mt_var_debug_print(hash->buckets[i]->value);
         mt_hash_node* next = hash->buckets[i]->next;
         size_t sub = 0;
         while (next != NULL) {
             printf("\n\t%lu.%lu: ", i, sub++);
             mt_buf_debug_print(hash->buckets[i]->name);
             printf(" - ");
-            mt_var_debug_print(&hash->buckets[i]->value);
+            mt_var_debug_print(hash->buckets[i]->value);
             next = next->next;
         }
         printf("\n");

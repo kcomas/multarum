@@ -231,7 +231,7 @@ mt_var mt_vm_run(mt_vm* const vm) {
 
 void mt_vm_debug_stack_print(const mt_vm* const vm) {
     for (size_t i = 0; i < vm->s_len; i++) {
-        mt_var_debug_print(&vm->stack[i]);
+        mt_var_debug_print(vm->stack[i]);
         printf("\n");
     }
 }

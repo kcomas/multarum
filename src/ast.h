@@ -39,6 +39,8 @@ typedef struct {
     mt_ast_op_list* ops_tail;
 } mt_ast_fn;
 
+#define mt_ast_fn_access(fn, target) fn->sym_table.target
+
 typedef struct {
     mt_ast* left;
     mt_ast* right;
@@ -89,6 +91,6 @@ void mt_ast_init(mt_ast_state* const state);
 
 mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens);
 
-void mt_ast_debug_print(const mt_ast* const ast);
+void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent);
 
 #endif

@@ -10,29 +10,29 @@ int main(void) {
     mt_buf* to_open = mt_buf_from_c_str("./examples/fib.mul");
 
     mt_var script = mt_file_open(to_open);
-    mt_var_debug_print(&script);
+    mt_var_debug_print(script);
     printf("\n");
 
     mt_buf_free(to_open);
 
     mt_var read_status = mt_read_file_chunk(script.data.mt_file, ctx.read_buf);
 
-    mt_var_debug_print(&read_status);
+    mt_var_debug_print(read_status);
     printf("\n");
 
     mt_var script_buf = mt_var_buf(ctx.read_buf);
-    mt_var_debug_print(&script_buf);
+    mt_var_debug_print(script_buf);
     printf("\n");
 
     mt_token_state token_state;
     mt_token_state_init(&token_state);
     mt_var tokenize_rst = mt_tokenize_buf(&token_state, ctx.read_buf);
-    mt_var_debug_print(&tokenize_rst);
+    mt_var_debug_print(tokenize_rst);
     printf("\n");
 
     mt_var closed = mt_file_close(script.data.mt_file);
 
-    mt_var_debug_print(&closed);
+    mt_var_debug_print(closed);
     printf("\n");
 
     mt_token_state_debug_print(&token_state);
@@ -42,7 +42,7 @@ int main(void) {
     mt_ast_init(&ast_state);
 
     mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
-    mt_var_debug_print(&ast_rst);
+    mt_var_debug_print(ast_rst);
     printf("\n");
 
     exit(1);
