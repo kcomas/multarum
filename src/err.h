@@ -57,6 +57,9 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 #define mt_err_ast_build_fail(err) \
     mt_err_init(mt_pfx_err(AST_BUILD), 0, 0, NULL, err)
 
+#define mt_err_ast_dup_arg() \
+    mt_err_init(mt_pfx_err(HASH_KEY_LEN), 0, 0, NULL, mt_buf_from_c_str("Duplicate Fn Arg Found"))
+
 void mt_err_free(mt_err* const err);
 
 #endif
