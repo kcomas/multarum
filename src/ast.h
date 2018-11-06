@@ -41,6 +41,17 @@ typedef struct {
 
 #define mt_ast_fn_access(fn, target) fn->sym_table.target
 
+typedef struct _mt_ast_if_cond {
+    mt_ast* cond;
+    mt_ast* body;
+    struct _mt_ast_if_cond* next;
+} mt_ast_if_cond;
+
+typedef struct {
+    mt_ast_if_cond* conds;
+    mt_ast* def;
+} mt_ast_if;
+
 typedef struct {
     mt_ast* left;
     mt_ast* right;
@@ -79,6 +90,7 @@ typedef enum {
     mt_ast_state(MAIN),
     mt_ast_state(FN),
     mt_ast_state(ARGS),
+    mt_ast_state(IF),
 } mt_ast_state_mode;
 
 typedef struct {

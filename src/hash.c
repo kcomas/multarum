@@ -89,11 +89,8 @@ mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name) {
     return mt_var_null();
 }
 
-void mt_hash_debug_print(const mt_hash* const hash, uint32_t indent) {
+void mt_hash_debug_print(const mt_hash* const hash) {
     for (size_t i = 0; i < hash->_bsize; i++) {
-        for (uint32_t x = 0; x < indent; x++) {
-            putchar(' ');
-        }
         if (hash->buckets[i] == NULL) {
             continue;
         }

@@ -29,6 +29,6 @@ mt_var mt_hash_insert(mt_hash* const hash, const mt_buf* const name, mt_var valu
 
 mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name);
 
-void mt_hash_debug_print(const mt_hash* const hash, uint32_t indent);
+void mt_hash_debug_print(const mt_hash* const hash);
 
 #endif

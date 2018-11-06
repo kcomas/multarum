@@ -89,6 +89,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             switch (state->mode) {
                 case mt_ast_state(MAIN):
                 case mt_ast_state(FN):
+                case mt_ast_state(IF):
                     if (mt_ast_symbol_in_args(state->ast->node.fn, state->cur_token->data.mt_var)) {
                         *cur_tree = mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
                     } else {
@@ -157,15 +158,6 @@ mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
     return mt_var_bool(true);
 }
 
-#define mt_ast_debug_print_syms(ast, table, type, indent) \
-    if (mt_ast_fn_access(ast->node.fn, table).hash != NULL) { \
-        for (uint32_t i = 0; i < indent; i++) { \
-             putchar(' '); \
-        } \
-        printf("%s %lu\n", type, mt_ast_fn_access(ast->node.fn, table).idx); \
-        mt_hash_debug_print(mt_ast_fn_access(ast->node.fn, table).hash, indent); \
-    }
-
 void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
     if (ast == NULL) {
        return;
@@ -179,13 +171,6 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
             break;
         case mt_ast(FN):
             printf("FN\n");
-            mt_ast_debug_print_syms(ast, arg_table, "ARGS" , indent);
-            mt_ast_debug_print_syms(ast, local_table, "LOCALS", indent);
-            mt_ast_debug_print_syms(ast, fn_table, "NAMED FNS", indent);
-            for (uint32_t i = 0; i < indent; i++) {
-                putchar(' ');
-            }
-            printf("FNBODY\n");
             mt_ast_op_list* list = ast->node.fn->ops_head;
             while (list != NULL) {
                 mt_ast_debug_print(list->op, indent + 1);
