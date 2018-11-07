@@ -19,7 +19,9 @@ typedef enum {
     mt_pfx_err(FILE_READ),
     mt_pfx_err(BUF_FULL),
     mt_pfx_err(HASH_KEY_LEN),
-    mt_pfx_err(AST_BUILD)
+    mt_pfx_err(AST_BUILD),
+    mt_pfx_err(DUP_ARG),
+    mt_pfx_err(TOKEN_END)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -58,7 +60,10 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
     mt_err_init(mt_pfx_err(AST_BUILD), 0, 0, NULL, err)
 
 #define mt_err_ast_dup_arg() \
-    mt_err_init(mt_pfx_err(HASH_KEY_LEN), 0, 0, NULL, mt_buf_from_c_str("Duplicate Fn Arg Found"))
+    mt_err_init(mt_pfx_err(DUP_ARG), 0, 0, NULL, mt_buf_from_c_str("Duplicate Fn Arg Found"))
+
+#define mt_err_ast_token_end() \
+    mt_err_init(mt_pfx_err(TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("No More Tokens"))
 
 void mt_err_free(mt_err* const err);
 

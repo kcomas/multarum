@@ -73,7 +73,12 @@ static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
 #define mt_ast_peek_token_is_type(state, TYPE) \
     (state->cur_token->next != NULL && state->cur_token->next->type == mt_token(TYPE))
 
-#define mt_ast_inc_token(state) state->cur_token = mt_ast_peek_token(state)
+#define mt_ast_inc_token(state) do { \
+        if (mt_ast_peek_token(state) == NULL) { \
+            return mt_var_err(mt_err_ast_token_end()); \
+        } \
+        state->cur_token = mt_ast_peek_token(state); \
+    } while (0)
 
 #define mt_ast_inc_token2(state) \
     mt_ast_inc_token(state); \
@@ -132,6 +137,13 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_init(&sub_state);
             sub_state.mode = mt_ast_state(ARGS);
             return mt_ast_build(&sub_state, state->cur_token);
+        case mt_token(QUESTION):
+            if (!mt_ast_peek_token_is_type(state, L_BRACKET)) {
+                return mt_ast_token_invalid(state->cur_token);
+            }
+            mt_ast_inc_token2(state);
+            // @TODO parse if
+            exit(1);
         case mt_token(NL):
             mt_ast_inc_token(state);
             return mt_var_bool(true);
