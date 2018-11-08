@@ -86,6 +86,7 @@ static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
 
 static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tree) {
     mt_ast_state sub_state;
+    mt_var build_rst;
     if (state->cur_token == NULL) {
         return mt_var_bool(true);
     }
@@ -136,7 +137,12 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_inc_token2(state); // in fn def
             mt_ast_init(&sub_state);
             sub_state.mode = mt_ast_state(ARGS);
-            return mt_ast_build(&sub_state, state->cur_token);
+            build_rst = mt_ast_build(&sub_state, state->cur_token);
+            if (mt_var_is_err(build_rst)) {
+                return build_rst;
+            }
+            *cur_tree = sub_state.ast;
+            return mt_var_bool(true);
         case mt_token(QUESTION):
             if (!mt_ast_peek_token_is_type(state, L_BRACKET)) {
                 return mt_ast_token_invalid(state->cur_token);
