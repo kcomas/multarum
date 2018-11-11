@@ -34,12 +34,12 @@ typedef struct _mt_ast_op_list {
 } mt_ast_op_list;
 
 typedef struct {
-    mt_ast_sym_table** sym_table;
+    mt_ast_sym_table* sym_table;
     mt_ast_op_list* ops_head;
     mt_ast_op_list* ops_tail;
 } mt_ast_fn;
 
-#define mt_ast_fn_access(fn, target) (*fn->sym_table)->target
+#define mt_ast_fn_access(fn, target) fn->sym_table->target
 
 typedef struct _mt_ast_if_cond {
     mt_ast* cond;
@@ -48,7 +48,7 @@ typedef struct _mt_ast_if_cond {
 } mt_ast_if_cond;
 
 typedef struct {
-    mt_ast_sym_table** sym_table;
+    mt_ast_sym_table* sym_table;
     mt_ast_if_cond* head;
     mt_ast_if_cond* tail;
 } mt_ast_if;

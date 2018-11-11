@@ -2,8 +2,8 @@
 #include "ast.h"
 
 #define mt_ast_sym_table_init(tbl, target, size) \
-    (*tbl)->target.idx = 0; \
-    (*tbl)->target.hash = mt_hash_init(size)
+    tbl->target.idx = 0; \
+    tbl->target.hash = mt_hash_init(size)
 
 static inline mt_ast_op_list* mt_ast_add_op_list(void) {
     mt_ast_op_list* ops = (mt_ast_op_list*) malloc(sizeof(mt_ast_op_list));
@@ -32,8 +32,7 @@ static inline mt_ast_bop* mt_ast_create_bop(mt_ast* const left, mt_ast* const ri
 
 static mt_ast* mt_ast_fn_init(void) {
     mt_ast_fn* fn = (mt_ast_fn*) malloc(sizeof(mt_ast_fn));
-    fn->sym_table = (mt_ast_sym_table**) malloc(sizeof(mt_ast_sym_table*));
-    (*fn->sym_table) = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
+    fn->sym_table = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
     mt_ast_fn_access(fn, arg_table).hash = NULL;
     mt_ast_fn_access(fn, local_table).hash = NULL;
     mt_ast_fn_access(fn, fn_table).hash = NULL;
@@ -43,15 +42,15 @@ static mt_ast* mt_ast_fn_init(void) {
 }
 
 #define mt_ast_fn_add_table(tbl, buf, target, size) \
-    if ((*tbl)->target.hash == NULL) { \
+    if (tbl->target.hash == NULL) { \
         mt_ast_sym_table_init(tbl, target, size); \
     } \
-    if (mt_var_is_null(mt_hash_get((*tbl)->target.hash, buf))) { \
-        mt_hash_insert((*tbl)->target.hash, buf, mt_var_int((*tbl)->target.idx++)); \
+    if (mt_var_is_null(mt_hash_get(tbl->target.hash, buf))) { \
+        mt_hash_insert(tbl->target.hash, buf, mt_var_int(tbl->target.idx++)); \
     }
 
 #define mt_ast_symbol_in_args(tbl, buf) \
-    ((*tbl)->arg_table.hash != NULL && mt_var_is_null(mt_hash_get((*tbl)->arg_table.hash, buf)))
+    (tbl->arg_table.hash != NULL && mt_var_is_null(mt_hash_get(tbl->arg_table.hash, buf)))
 
 void mt_ast_init(mt_ast_state* const state) {
     state->mode = mt_ast_state(MAIN);
@@ -92,7 +91,7 @@ static inline mt_ast_if_cond* mt_ast_if_cond_init() {
 
 static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tree);
 
-static inline mt_ast_sym_table** mt_ast_get_sym(mt_ast* const ast) {
+static inline mt_ast_sym_table* mt_ast_get_sym(mt_ast* const ast) {
     switch (ast->type) {
         case mt_ast(FN):
             return ast->node.fn->sym_table;
@@ -131,6 +130,7 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                     *cur_tree = sub_state.ast;
                     return mt_var_bool(true);
                 }
+                mt_ast_debug_print(sub_state.ast, 0);
                 if_smt->tail->next = mt_ast_if_cond_init();
                 if_smt->tail = if_smt->tail->next;
                 break;
