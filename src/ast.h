@@ -34,12 +34,12 @@ typedef struct _mt_ast_op_list {
 } mt_ast_op_list;
 
 typedef struct {
-    mt_ast_sym_table sym_table;
+    mt_ast_sym_table** sym_table;
     mt_ast_op_list* ops_head;
     mt_ast_op_list* ops_tail;
 } mt_ast_fn;
 
-#define mt_ast_fn_access(fn, target) fn->sym_table.target
+#define mt_ast_fn_access(fn, target) (*fn->sym_table)->target
 
 typedef struct _mt_ast_if_cond {
     mt_ast* cond;
@@ -48,8 +48,9 @@ typedef struct _mt_ast_if_cond {
 } mt_ast_if_cond;
 
 typedef struct {
-    mt_ast_if_cond* conds;
-    mt_ast* def;
+    mt_ast_sym_table** sym_table;
+    mt_ast_if_cond* head;
+    mt_ast_if_cond* tail;
 } mt_ast_if;
 
 typedef struct {
@@ -67,6 +68,7 @@ typedef union {
     mt_ast_value value;
     mt_ast_fn* fn;
     mt_ast_bop* bop;
+    mt_ast_if* if_smt;
 } mt_ast_node;
 
 typedef enum {
@@ -77,6 +79,9 @@ typedef enum {
     mt_ast(ARG),
     mt_ast(INT),
     // mt_ast(FLOAT)
+    mt_ast(IF),
+    mt_ast(EQ),
+    mt_ast(OR)
 } mt_ast_type;
 
 typedef struct _mt_ast {
@@ -90,7 +95,8 @@ typedef enum {
     mt_ast_state(MAIN),
     mt_ast_state(FN),
     mt_ast_state(ARGS),
-    mt_ast_state(IF),
+    mt_ast_state(IF_COND),
+    mt_ast_state(IF_BODY),
 } mt_ast_state_mode;
 
 typedef struct {

@@ -65,6 +65,9 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 #define mt_err_ast_token_end() \
     mt_err_init(mt_pfx_err(TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("No More Tokens"))
 
+#define mt_err_ast_invalid_if_state() \
+    mt_err_init(mt_pfx_err(TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("Invalid If State"))
+
 void mt_err_free(mt_err* const err);
 
 #endif
