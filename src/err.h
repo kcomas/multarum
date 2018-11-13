@@ -23,7 +23,8 @@ typedef enum {
     mt_pfx_err(DUP_ARG),
     mt_pfx_err(TOKEN_END),
     mt_pfx_err(IF_TOKEN_END),
-    mt_pfx_err(CALL_TOKEN_END)
+    mt_pfx_err(CALL_TOKEN_END),
+    mt_pfx_err(UNDEF)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -72,6 +73,9 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 
 #define mt_err_ast_invalid_call_state() \
     mt_err_init(mt_pfx_err(CALL_TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("Invalid Call, No More Tokens"))
+
+#define mt_err_ast_undef() \
+    mt_err_init(mt_pfx_err(UNDEF), 0, 0, NULL, mt_buf_from_c_str("Undefined Variable"))
 
 void mt_err_free(mt_err* const err);
 

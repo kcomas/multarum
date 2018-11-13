@@ -49,8 +49,8 @@ static mt_ast* mt_ast_fn_init(void) {
         mt_hash_insert(tbl->target.hash, buf, mt_var_int(tbl->target.idx++)); \
     }
 
-#define mt_ast_symbol_in_args(tbl, buf) \
-    (tbl->arg_table.hash != NULL && mt_var_is_null(mt_hash_get(tbl->arg_table.hash, buf)))
+#define mt_ast_symbol_in(where, tbl, buf) \
+    (tbl->where.hash != NULL && !mt_var_is_null(mt_hash_get(tbl->where.hash, buf)))
 
 void mt_ast_init(mt_ast_state* const state) {
     state->mode = mt_ast_state(MAIN);
@@ -199,7 +199,16 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(IF_COND):
                 case mt_ast_state(IF_BODY):
                 case mt_ast_state(CALL):
-                    if (mt_ast_symbol_in_args(mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
+                    if (mt_ast_peek_token_is_type(state, L_BRACE)) {
+                        if (!mt_ast_symbol_in(arg_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var) && !mt_ast_symbol_in(local_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
+                            return mt_var_err(mt_err_ast_undef());
+                        }
+                        mt_buf* target = state->cur_token->data.mt_var;
+                        mt_buf_debug_print(state->cur_token->data.mt_var);
+                        mt_ast_inc_token2(state);
+                        return mt_ast_build_call(state, cur_tree, target);
+                    }
+                    if (mt_ast_symbol_in(arg_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
                         *cur_tree = mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
                     } else {
                         *cur_tree = mt_ast_node(VAR, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
@@ -207,7 +216,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                     }
                     break;
                 case mt_ast_state(ARGS):
-                    if (mt_ast_symbol_in_args(mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
+                    if (mt_ast_symbol_in(arg_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
                         return mt_var_err(mt_err_ast_dup_arg());
                     }
                     mt_ast_fn_add_table(mt_ast_get_sym(state->ast), state->cur_token->data.mt_var, arg_table, MT_AST_LOCAL_SIZE);
