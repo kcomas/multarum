@@ -313,6 +313,10 @@ int32_t mt_token_buf_info(mt_buf* const target, const mt_token* const token) {
         case mt_token(INT):
             sub_total = sprintf((char*) mt_buf_cur_raw(target), "%li", token->data.mt_int);
             break;
+        case mt_token(WRITE):
+            mt_buf_write(target, "<>", 2);
+            sub_total = 2;
+            break;
         case mt_token(NL):
             mt_buf_write(target, "\\n", 2);
             sub_total = 2;

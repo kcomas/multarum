@@ -97,6 +97,8 @@ static inline mt_ast_sym_table* mt_ast_get_sym(mt_ast* const ast) {
             return ast->node.fn->sym_table;
         case mt_ast(IF):
             return ast->node.if_smt->sym_table;
+        case mt_ast(CALL):
+            return ast->node.call->sym_table;
         default:
             return NULL;
     }
@@ -127,10 +129,10 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                 sub_state.mode = mt_ast_state(IF_COND);
                 if (sub_state.cur_token->next != NULL && sub_state.cur_token->next->type == mt_token(R_BRACKET)) {
                     state->cur_token = sub_state.cur_token;
+                    mt_ast_inc_token2(state);
                     *cur_tree = sub_state.ast;
-                    return mt_var_bool(true);
+                    return mt_ast_next_token(state, cur_tree);
                 }
-                mt_ast_debug_print(sub_state.ast, 0);
                 if_smt->tail->next = mt_ast_if_cond_init();
                 if_smt->tail = if_smt->tail->next;
                 break;
@@ -139,6 +141,37 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
         }
     }
     return mt_var_err(mt_err_ast_invalid_if_state());
+}
+
+static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt_buf* const target) {
+    mt_ast_call* call = (mt_ast_call*) malloc(sizeof(mt_ast_call));
+    call->arg_count = 0;
+    call->sym_table = mt_ast_get_sym(state->ast);
+    call->target = target;
+    call->args_head = mt_ast_add_op_list();
+    call->args_tail = call->args_head;
+    mt_ast_state sub_state;
+    sub_state.mode = mt_ast_state(CALL);
+    sub_state.cur_token = state->cur_token;
+    sub_state.ast = mt_ast_node(CALL, call, call);
+    while (sub_state.cur_token != NULL) {
+        mt_ast* sub_tree = NULL;
+        mt_var rst = mt_ast_next_token(&sub_state, &sub_tree);
+        if (mt_var_is_err(rst)) {
+            return rst;
+        }
+        call->args_tail->op = sub_tree;
+        call->arg_count++;
+        if (sub_state.cur_token->type == mt_token(R_BRACE)) {
+            state->cur_token = sub_state.cur_token;
+            mt_ast_inc_token(state);
+            *cur_tree = sub_state.ast;
+            return mt_ast_next_token(state, cur_tree);
+        }
+        call->args_tail->next = mt_ast_add_op_list();
+        call->args_tail = call->args_tail->next;
+    }
+    return mt_var_err(mt_err_ast_invalid_call_state());
 }
 
 #define mt_ast_quic_bop(TYPE) \
@@ -165,6 +198,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(FN):
                 case mt_ast_state(IF_COND):
                 case mt_ast_state(IF_BODY):
+                case mt_ast_state(CALL):
                     if (mt_ast_symbol_in_args(mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
                         *cur_tree = mt_ast_node(ARG, value, mt_ast_value(mt_var, state->cur_token->data.mt_var));
                     } else {
@@ -222,8 +256,15 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             *cur_tree = sub_tree;
             return mt_ast_next_token(state, cur_tree);
         case mt_token(R_BRACE):
-            mt_ast_inc_token(state);
+            if (state->mode != mt_ast_state(CALL)) {
+                mt_ast_inc_token(state);
+            }
             return mt_var_bool(true);
+        case mt_token(COMMA):
+            if (state->mode == mt_ast_state(CALL)) {
+                return mt_var_bool(true);
+            }
+            return mt_ast_token_invalid(state->cur_token);
         case mt_token(QUESTION):
             if (!mt_ast_peek_token_is_type(state, L_BRACKET)) {
                 return mt_ast_token_invalid(state->cur_token);
@@ -235,7 +276,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
         case mt_token(OR):
             mt_ast_quic_bop(OR);
         case mt_token(L_BRACKET):
-            if (state->mode == mt_ast_state(IF_COND) || cur_tree == NULL) {
+            if (state->mode == mt_ast_state(IF_COND)) {
                 mt_ast_inc_token(state);
                 return mt_var_bool(true);
             }
@@ -245,13 +286,31 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(FN):
                 case mt_ast_state(IF_BODY):
                     mt_ast_inc_token(state);
-                    return mt_var_bool(true);
+                    return mt_var_bool(false);
                 default:
                     return mt_ast_token_invalid(state->cur_token);
             }
+        case mt_token(DOLLAR):
+            mt_ast_invalid_state(IF_COND);
+            if (!mt_ast_peek_token_is_type(state, L_BRACE)) {
+                return mt_ast_token_invalid(state->cur_token);
+            }
+            mt_ast_inc_token2(state);
+            return mt_ast_build_call(state, cur_tree, NULL);
+        case mt_token(ADD):
+            mt_ast_invalid_state(IF_COND);
+            mt_ast_quic_bop(ADD);
+        case mt_token(SUB):
+            mt_ast_invalid_state(IF_COND);
+            mt_ast_quic_bop(SUB);
+        case mt_token(WRITE):
+            mt_ast_invalid_state(IF_COND);
+            mt_ast_quic_bop(WRITE);
         case mt_token(NL):
-            mt_ast_inc_token(state);
-            if (*cur_tree == NULL) {
+            while (state->cur_token != NULL && state->cur_token->type == mt_token(NL)) {
+                mt_ast_inc_token(state);
+            }
+            if (*cur_tree == NULL && state->cur_token != NULL) {
                 return mt_ast_next_token(state, cur_tree);
             }
             return mt_var_bool(true);
@@ -269,9 +328,11 @@ mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens) {
             return rst;
         }
         state->ast->node.fn->ops_tail->op = cur_tree;
+        if (mt_var_is_bool(rst) && mt_var_bool_value(rst) == false) {
+            break;
+        }
         state->ast->node.fn->ops_tail->next = mt_ast_add_op_list();
         state->ast->node.fn->ops_tail = state->ast->node.fn->ops_tail->next;
-        mt_ast_debug_print(state->ast, 0);
     }
     return mt_var_bool(true);
 }
@@ -282,12 +343,12 @@ static inline void mt_ast_print_spaces(uint32_t indent) {
     }
 }
 
-#define mt_ast_print_bop(c) \
-    printf("%c\n", c); \
-    mt_ast_debug_print(ast->node.bop->left, indent + 1); \
-    mt_ast_debug_print(ast->node.bop->right, indent + 1); \
-    break
-
+#define mt_ast_print_bop(CASE, c) \
+    case mt_ast(CASE): \
+        printf("%c\n", c); \
+        mt_ast_debug_print(ast->node.bop->left, indent + 1); \
+        mt_ast_debug_print(ast->node.bop->right, indent + 1); \
+        break
 
 void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
     if (ast == NULL) {
@@ -308,12 +369,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 list = list->next;
             }
             break;
-        case mt_ast(ASSIGN):
-            mt_ast_print_bop(':');
-        case mt_ast(EQ):
-            mt_ast_print_bop('=');
-        case mt_ast(OR):
-            mt_ast_print_bop('|');
+        mt_ast_print_bop(ASSIGN, ':');
         case mt_ast(VAR):
         case mt_ast(ARG):
             mt_buf_debug_print(ast->node.value.mt_var);
@@ -334,6 +390,29 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 mt_ast_debug_print(ifs->body, indent + 1);
                 ifs = ifs->next;
             }
+            break;
+        mt_ast_print_bop(EQ, '=');
+        mt_ast_print_bop(OR, '|');
+        case mt_ast(CALL):
+            printf("CALL %d ", ast->node.call->arg_count);
+            if (ast->node.call->target == NULL) {
+                printf("SELF");
+            } else {
+                mt_buf_debug_print(ast->node.call->target);
+            }
+            printf("\n");
+            list = ast->node.call->args_head;
+            while (list != NULL) {
+                mt_ast_debug_print(list->op, indent + 1);
+                list = list->next;
+            }
+            break;
+        mt_ast_print_bop(ADD, '+');
+        mt_ast_print_bop(SUB, '-');
+        case mt_ast(WRITE):
+            printf("<>\n");
+            mt_ast_debug_print(ast->node.bop->left, indent + 1);
+            mt_ast_debug_print(ast->node.bop->right, indent + 1);
             break;
     }
 }

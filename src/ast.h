@@ -41,6 +41,14 @@ typedef struct {
 
 #define mt_ast_fn_access(fn, target) fn->sym_table->target
 
+typedef struct {
+    uint8_t arg_count;
+    mt_ast_sym_table* sym_table;
+    mt_buf* target; // null for self
+    mt_ast_op_list* args_head;
+    mt_ast_op_list* args_tail;
+} mt_ast_call;
+
 typedef struct _mt_ast_if_cond {
     mt_ast* cond;
     mt_ast* body;
@@ -69,6 +77,7 @@ typedef union {
     mt_ast_fn* fn;
     mt_ast_bop* bop;
     mt_ast_if* if_smt;
+    mt_ast_call* call;
 } mt_ast_node;
 
 typedef enum {
@@ -81,7 +90,11 @@ typedef enum {
     // mt_ast(FLOAT)
     mt_ast(IF),
     mt_ast(EQ),
-    mt_ast(OR)
+    mt_ast(OR),
+    mt_ast(CALL),
+    mt_ast(ADD),
+    mt_ast(SUB),
+    mt_ast(WRITE),
 } mt_ast_type;
 
 typedef struct _mt_ast {
@@ -97,6 +110,7 @@ typedef enum {
     mt_ast_state(ARGS),
     mt_ast_state(IF_COND),
     mt_ast_state(IF_BODY),
+    mt_ast_state(CALL),
 } mt_ast_state_mode;
 
 typedef struct {

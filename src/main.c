@@ -44,12 +44,15 @@ int main(void) {
     mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
     mt_var_debug_print(ast_rst);
     printf("\n");
-
-    exit(1);
+    mt_ast_debug_print(ast_state.ast, 0);
 
     mt_token_state_free(&token_state);
 
     mt_mod* mod = mt_mod_init(500, 2);
+
+    // @TODO bytecode gen
+
+    exit(1);
 
     uint64_t fib = 30;
 

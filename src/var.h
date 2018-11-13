@@ -65,6 +65,8 @@ typedef struct _mt_var {
 
 #define mt_var_is_bool(var) (var.type == mt_pfx(BOOL))
 
+#define mt_var_bool_value(var) var.data.mt_bool
+
 #define mt_var_is_err(var) (var.type == mt_pfx(ERROR))
 
 void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
