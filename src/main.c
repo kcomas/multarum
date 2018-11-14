@@ -46,14 +46,13 @@ int main(void) {
     printf("\n");
     mt_ast_debug_print(ast_state.ast, 0);
 
-    mt_token_state_free(&token_state);
-
     mt_mod* mod = mt_mod_init(500, 2);
 
     // @TODO bytecode gen
 
-    exit(1);
+    mt_token_state_free(&token_state);
 
+    /*
     uint64_t fib = 30;
 
     mt_write_byte(mod, mt_pfx(PUSH));
@@ -109,8 +108,11 @@ int main(void) {
 
     mt_write_byte(mod, mt_pfx(ADD));
     mt_write_byte(mod, mt_pfx(RET));
+    */
 
     mt_mod_dis(mod);
+
+    exit(1);
 
     mt_vm vm;
     mt_vm_init(&vm, &ctx, mod);
