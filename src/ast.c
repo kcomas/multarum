@@ -35,7 +35,6 @@ static mt_ast* mt_ast_fn_init(void) {
     fn->sym_table = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
     mt_ast_fn_access(fn, arg_table).hash = NULL;
     mt_ast_fn_access(fn, local_table).hash = NULL;
-    mt_ast_fn_access(fn, fn_table).hash = NULL;
     fn->ops_head = mt_ast_add_op_list();
     fn->ops_tail = fn->ops_head;
     return mt_ast_node(FN, fn, fn);
@@ -131,7 +130,7 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                     state->cur_token = sub_state.cur_token;
                     mt_ast_inc_token2(state);
                     *cur_tree = sub_state.ast;
-                    return mt_ast_next_token(state, cur_tree);
+                    return mt_var_bool(true);
                 }
                 if_smt->tail->next = mt_ast_if_cond_init();
                 if_smt->tail = if_smt->tail->next;
@@ -204,7 +203,6 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                             return mt_var_err(mt_err_ast_undef());
                         }
                         mt_buf* target = state->cur_token->data.mt_var;
-                        mt_buf_debug_print(state->cur_token->data.mt_var);
                         mt_ast_inc_token2(state);
                         return mt_ast_build_call(state, cur_tree, target);
                     }

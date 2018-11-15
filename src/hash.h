@@ -21,9 +21,7 @@ mt_hash* mt_hash_init(size_t num_buckets);
 
 void mt_hash_free(mt_hash* const hash);
 
-#ifndef MT_HASH_MAX_NAME_SIZE // in bytes not chars
-#   define MT_HASH_MAX_NAME_SIZE 100
-#endif
+#define MT_HASH_MAX_NAME_SIZE 100 // bytes not chars
 
 mt_var mt_hash_insert(mt_hash* const hash, const mt_buf* const name, mt_var value);
 

@@ -10,6 +10,7 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
     mod->_f_size = _f_size;
     mod->f_len = 0;
     mod->fns = (uint8_t*) malloc(_f_size);
+    mod->globals = mt_hash_init(MT_MOD_GLOBAL_BUCKETS);
     return mod;
 }
 
@@ -19,6 +20,7 @@ void mt_mod_free(mt_mod* const mod) {
     }
     free(mod->bytes);
     free(mod->fns);
+    mt_hash_free(mod->globals);
     free(mod);
 }
 

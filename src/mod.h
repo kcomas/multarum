@@ -6,12 +6,15 @@
 #include "var.h"
 #include "op.h"
 
+typedef struct _mt_hash mt_hash;
+
 typedef struct _mt_mod {
     uint8_t _f_size, f_len;
     uint32_t ref_count;
     uint32_t _size, len;
     uint8_t* bytes;
     uint8_t* fns;
+    mt_hash* globals;
 } mt_mod;
 
 #define mt_write_byte(mod, byte) mod->bytes[mod->len++] = byte
@@ -21,6 +24,8 @@ typedef struct _mt_mod {
     mod->len += size
 
 #define mt_mod_tail(mod) mod->bytes[mod->len - 1]
+
+#define MT_MOD_GLOBAL_BUCKETS 20
 
 mt_mod* mt_mod_init(size_t _size, size_t _f_size);
 
