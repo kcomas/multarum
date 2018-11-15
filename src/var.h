@@ -73,6 +73,29 @@ void mt_var_write_bytes(mt_mod* const mod, const mt_var* const var);
 
 bool mt_var_as_bool(const mt_var* const var);
 
+void mt_mod_free(mt_mod* const mod);
+void mt_hash_free(mt_hash* const hash);
+void mt_err_free(mt_err* const err);
+
+inline void mt_var_free(mt_var var) {
+    switch (var.type) {
+        case mt_pfx(MODULE):
+        case mt_pfx(FN):
+            mt_mod_free(var.data.mt_mod);
+            break;
+        case mt_pfx(ERROR):
+            mt_err_free(var.data.mt_err);
+            break;
+        case mt_pfx(BUFFER):
+            mt_buf_free(var.data.mt_buf);
+            break;
+        case mt_pfx(HASH):
+            mt_hash_free(var.data.mt_hash);
+        default:
+            break;
+    }
+}
+
 void mt_var_debug_print(mt_var var);
 
 #endif

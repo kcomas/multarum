@@ -42,6 +42,8 @@ typedef struct _mt_err {
 
 mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const rsp, mt_buf* const msg);
 
+void mt_err_free(mt_err* const err);
+
 #define mt_err_type_err() mt_err_init(mt_pfx_err(ERR_TYPE), 0, 0, NULL, mt_buf_from_c_str("Invalid Type"))
 
 #define mt_err_file_open() \
@@ -76,7 +78,5 @@ mt_err* mt_err_init(mt_err_type type, int32_t no, size_t f_len, mt_frame* const 
 
 #define mt_err_ast_undef() \
     mt_err_init(mt_pfx_err(UNDEF), 0, 0, NULL, mt_buf_from_c_str("Undefined Variable"))
-
-void mt_err_free(mt_err* const err);
 
 #endif

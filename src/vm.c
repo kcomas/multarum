@@ -22,20 +22,8 @@ void mt_vm_free(mt_vm* const vm) {
     free(vm->rsp);
 }
 
-static void mt_vm_dec_stack(mt_vm* const vm) {
-    switch (vm->stack[--vm->s_len].type) {
-        case mt_pfx(MODULE):
-        case mt_pfx(FN):
-            mt_mod_free(mt_vm_cur_stack(vm).data.mt_mod);
-            break;
-        case mt_pfx(ERROR):
-            mt_err_free(mt_vm_cur_stack(vm).data.mt_err);
-            break;
-        case mt_pfx(BUFFER):
-            mt_buf_free(mt_vm_cur_stack(vm).data.mt_buf);
-        default:
-            break;
-    }
+static inline void mt_vm_dec_stack(mt_vm* const vm) {
+    mt_var_free(vm->stack[--vm->s_len]);
 }
 
 static inline bool mt_vm_stack_type_cmp(mt_vm* const vm, mt_var_type type) {

@@ -13,6 +13,11 @@ mt_hash* mt_hash_init(size_t num_buckets) {
     return h;
 }
 
+static inline void mt_hash_node_free(mt_hash_node* const node) {
+    mt_buf_free(node->name);
+    mt_var_free(node->value);
+}
+
 void mt_hash_free(mt_hash* const hash) {
     for (size_t i = 0; i < hash->_bsize; i++) {
         if (hash->buckets[i] == NULL) {
@@ -22,9 +27,9 @@ void mt_hash_free(mt_hash* const hash) {
         while (next != NULL) {
             mt_hash_node* tmp = next;
             next = next->next;
-            free(tmp);
+            mt_hash_node_free(tmp);
         }
-        free(hash->buckets[i]);
+        mt_hash_node_free(hash->buckets[i]);
     }
     free(hash->buckets);
 }
