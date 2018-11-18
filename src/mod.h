@@ -27,6 +27,10 @@ typedef struct _mt_mod {
 
 #define MT_MOD_GLOBAL_BUCKETS 20
 
+#define MT_MOD_DEFAULT_SIZE 500
+
+#define MT_MOD_DEFAULT_FN_SIZE 10
+
 mt_mod* mt_mod_init(size_t _size, size_t _f_size);
 
 #define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i

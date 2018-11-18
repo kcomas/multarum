@@ -81,11 +81,17 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp = 0;
+    uint16_t mt_al;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
 
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
             mt_vm_cur_byte(vm)++;
+            break;
+        case mt_pfx(AL):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            vm->s_len += mt_al;
             break;
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {

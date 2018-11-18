@@ -3,6 +3,7 @@
 
 static const char* op_str[] = {
     "NOP",
+    "AL",
     "PUSH",
     "ADD",
     "SUB",

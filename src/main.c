@@ -1,7 +1,7 @@
 
 #include "file.h"
 #include "vm.h"
-#include "ast.h"
+#include "cgen.h"
 
 int main(void) {
     mt_ctx ctx;
@@ -46,9 +46,11 @@ int main(void) {
     printf("\n");
     mt_ast_debug_print(ast_state.ast, 0);
 
-    mt_mod* mod = mt_mod_init(500, 2);
+    mt_mod* mod = mt_mod_init(MT_MOD_DEFAULT_SIZE, MT_MOD_DEFAULT_FN_SIZE);
 
-    // @TODO bytecode gen
+    mt_var code_rst = mt_cgen_build(ast_state.ast, &mod);
+    mt_var_debug_print(code_rst);
+    printf("\n");
 
     mt_token_state_free(&token_state);
 
@@ -111,8 +113,6 @@ int main(void) {
     */
 
     mt_mod_dis(mod);
-
-    exit(1);
 
     mt_vm vm;
     mt_vm_init(&vm, &ctx, mod);

@@ -83,6 +83,7 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
     int8_t char_conts;
     uint32_t mt_jmp;
+    uint16_t mt_al;
     int64_t mt_int;
     double mt_float;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
@@ -90,6 +91,12 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
     printf("%lu: ", i);
     mt_mod_space_bytes(i, count_total);
     switch (mod->bytes[i]) {
+        case mt_pfx(AL):
+            mt_print_byte_hex(mod, i, 3);
+            mt_mod_get_bytes(mod, &mt_al, sizeof(uint16_t), i);
+            mt_mod_print_even_spaces(3);
+            printf("AL %d\n", mt_al);
+            break;
         case mt_pfx(NOP):
         case mt_pfx(ADD):
         case mt_pfx(SUB):
