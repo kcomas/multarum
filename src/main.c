@@ -52,6 +52,8 @@ int main(void) {
     mt_var_debug_print(code_rst);
     printf("\n");
 
+    // @TODO free ast
+
     mt_token_state_free(&token_state);
 
     /*

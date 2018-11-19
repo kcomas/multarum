@@ -8,7 +8,7 @@ void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod) {
     vm->stack = (mt_var*) malloc(sizeof(mt_var) * MT_DEFAULT_STACK_SIZE);
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
     vm->rsp[vm->f_len].safe = false;
-    vm->rsp[vm->f_len].fn= 0;
+    vm->rsp[vm->f_len].fn = 0;
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
@@ -24,6 +24,10 @@ void mt_vm_free(mt_vm* const vm) {
 
 static inline void mt_vm_dec_stack(mt_vm* const vm) {
     mt_var_free(vm->stack[--vm->s_len]);
+}
+
+static inline void mt_vm_inc_ref(mt_vm* const vm) {
+    mt_var_inc_ref(mt_vm_cur_stack(vm));
 }
 
 static inline bool mt_vm_stack_type_cmp(mt_vm* const vm, mt_var_type type) {
@@ -54,6 +58,8 @@ static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, s
     mt_vm_inc_frame(vm);
     mt_vm_cur_safe(vm) = false;
     mt_vm_cur_fn(vm) = new_idx;
+    mt_vm_cur_args(vm) = num_args;
+    mt_vm_cur_locals(vm) = 0;
     mt_vm_cur_base(vm) = new_base - num_args;
     mt_vm_cur_mod(vm) = new_mod;
     mt_vm_cur_byte(vm) = &mt_vm_cur_mod(vm)->bytes[mt_vm_cur_mod(vm)->fns[mt_vm_cur_fn(vm)]];
@@ -92,6 +98,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
             vm->s_len += mt_al;
+            mt_vm_cur_locals(vm) = mt_al;
             break;
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {
@@ -191,6 +198,13 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             mt_arg = *mt_vm_cur_byte(vm)++;
             mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
+            mt_vm_inc_ref(vm);
+            break;
+        case mt_pfx(SV_LOCAL):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            vm->stack[mt_vm_cur_base(vm) + mt_vm_cur_args(vm) + mt_al] = mt_vm_cur_stack(vm);
+            mt_vm_dec_stack_atomic(vm);
             break;
         case mt_pfx(CALL):
             if (mt_vm_cur_stack(vm).type != mt_pfx(FN)) {

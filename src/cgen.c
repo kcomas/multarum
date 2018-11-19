@@ -1,7 +1,7 @@
 
 #include "cgen.h"
 
-#define mt_cgen_walk_side(ast, modd, tbl, side) \
+#define mt_cgen_walk_bop_side(ast, modd, tbl, side) \
     rst = mt_cgen_walk(ast->node.bop->side, modd, tbl); \
     if (mt_var_is_err(rst)) { \
         return rst; \
@@ -11,6 +11,7 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod** const modd, const m
     mt_mod* mod = *modd;
     mt_ast_op_list* ops;
     mt_var rst;
+    uint16_t mt_al;
     switch (ast->type) {
         case mt_ast(FN):
             ops = ast->node.fn->ops_head;
@@ -23,7 +24,21 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod** const modd, const m
             }
             break;
         case mt_ast(ASSIGN):
-            mt_cgen_walk_side(ast, modd, tbl, right);
+            mt_cgen_walk_bop_side(ast, modd, tbl, right);
+            switch (ast->node.bop->left->type) {
+                case mt_ast(VAR):
+                    rst = mt_hash_get(tbl->local_table.hash, ast->node.bop->left->node.value.mt_var);
+                    if (mt_var_is_null(rst)) {
+                        return mt_var_err(mt_err_cgen_tbl());
+                    }
+                    mt_write_byte(mod, mt_pfx(SV_LOCAL));
+                    mt_al = (uint16_t) rst.data.mt_int;
+                    mt_write_bytes(mod, &mt_al, sizeof(uint16_t));
+                    return mt_var_bool(true);
+                default:
+                    break;
+            }
+            return mt_var_err(mt_err_cgen_assign());
             break;
         case mt_ast(INT):
             mt_write_byte(mod, mt_pfx(PUSH));

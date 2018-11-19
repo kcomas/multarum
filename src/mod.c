@@ -92,9 +92,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
     mt_mod_space_bytes(i, count_total);
     switch (mod->bytes[i]) {
         case mt_pfx(AL):
-            mt_print_byte_hex(mod, i, 3);
-            mt_mod_get_bytes(mod, &mt_al, sizeof(uint16_t), i);
-            mt_mod_print_even_spaces(3);
+            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
             printf("AL %d\n", mt_al);
             break;
         case mt_pfx(NOP):
@@ -183,6 +181,10 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
         case mt_pfx(CALL_SELF):
         case mt_pfx(CALL):
             i = mt_mod_op2(mod, i);
+            break;
+        case mt_pfx(SV_LOCAL):
+            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
+            printf("SV_LOCAL %d\n", mt_al);
             break;
         default:
             i++;

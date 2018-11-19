@@ -24,7 +24,9 @@ typedef enum {
     mt_pfx_err(TOKEN_END),
     mt_pfx_err(IF_TOKEN_END),
     mt_pfx_err(CALL_TOKEN_END),
-    mt_pfx_err(UNDEF)
+    mt_pfx_err(AST_UNDEF),
+    mt_pfx_err(CGEN_ASSIGN),
+    mt_pfx_err(CGEN_TBL)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -77,6 +79,12 @@ void mt_err_free(mt_err* const err);
     mt_err_init(mt_pfx_err(CALL_TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("Invalid Call, No More Tokens"))
 
 #define mt_err_ast_undef() \
-    mt_err_init(mt_pfx_err(UNDEF), 0, 0, NULL, mt_buf_from_c_str("Undefined Variable"))
+    mt_err_init(mt_pfx_err(AST_UNDEF), 0, 0, NULL, mt_buf_from_c_str("Undefined Variable"))
+
+#define mt_err_cgen_assign() \
+    mt_err_init(mt_pfx_err(CGEN_ASSIGN), 0, 0, NULL, mt_buf_from_c_str("Invalid Assign Target"))
+
+#define mt_err_cgen_tbl() \
+    mt_err_init(mt_pfx_err(CGEN_TBL), 0, 0, NULL, mt_buf_from_c_str("Not Found In Symbol Table"))
 
 #endif

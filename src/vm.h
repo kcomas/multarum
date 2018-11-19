@@ -40,6 +40,10 @@ typedef struct {
 
 #define mt_vm_cur_fn(vm) mt_vm_cur_frame(vm).fn
 
+#define mt_vm_cur_args(vm) mt_vm_cur_frame(vm).args
+
+#define mt_vm_cur_locals(vm) mt_vm_cur_frame(vm).locals
+
 #define mt_vm_cur_byte(vm) mt_vm_cur_frame(vm).rip
 
 #define mt_vm_cur_mod(vm) mt_vm_cur_frame(vm).mod

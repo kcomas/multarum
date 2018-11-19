@@ -77,8 +77,7 @@ void mt_mod_free(mt_mod* const mod);
 void mt_hash_free(mt_hash* const hash);
 void mt_err_free(mt_err* const err);
 
-
-#define mt_var_free(var) { \
+#define mt_var_free(var) \
     switch (var.type) { \
         case mt_pfx(MODULE): \
         case mt_pfx(FN): \
@@ -94,8 +93,22 @@ void mt_err_free(mt_err* const err);
             mt_hash_free(var.data.mt_hash); \
         default: \
             break; \
+    }
+
+#define mt_var_inc_ref(var) \
+    switch (var.type) { \
+        case mt_pfx(MODULE): \
+        case mt_pfx(FN): \
+            var.data.mt_mod->ref_count++; \
+            break; \
+        case mt_pfx(ERROR): \
+            var.data.mt_err->ref_count++; \
+            break; \
+        case mt_pfx(HASH): \
+            var.data.mt_hash->ref_count++; \
+        default: \
+            break; \
     } \
-}
 
 void mt_var_debug_print(mt_var var);
 

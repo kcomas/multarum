@@ -7,7 +7,8 @@
 
 typedef struct _mt_frame {
     bool safe;
-    uint8_t fn;
+    uint8_t fn, args;
+    uint16_t locals;
     uint32_t rbp;
     uint8_t* rip;
     mt_mod* mod;
