@@ -211,6 +211,6 @@ void mt_mod_dis(const mt_mod* const mod) {
     while (i < mod->len) {
         mt_mod_show_fn(mod, fns, "FN");
         i = mt_print_next_op(mod, i, count_total);
-        mt_mod_show_fn(mod, fne, "FN END");
+        mt_mod_show_fn(mod, fne, "END FN");
     }
 }

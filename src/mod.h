@@ -36,7 +36,7 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size);
 
 #define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i
 
-#define mt_mod_reg_fne(mod, i) mod->fne[mod->f_len] = i
+#define mt_mod_reg_fne(mod, i) mod->fne[mod->f_len - 1] = i
 
 void mt_mod_free(mt_mod* const mod);
 
