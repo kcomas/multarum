@@ -26,7 +26,8 @@ typedef enum {
     mt_pfx_err(CALL_TOKEN_END),
     mt_pfx_err(AST_UNDEF),
     mt_pfx_err(CGEN_ASSIGN),
-    mt_pfx_err(CGEN_TBL)
+    mt_pfx_err(CGEN_TBL),
+    mt_pfx_err(CGEN_IF_DEF)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -86,5 +87,9 @@ void mt_err_free(mt_err* const err);
 
 #define mt_err_cgen_tbl() \
     mt_err_init(mt_pfx_err(CGEN_TBL), 0, 0, NULL, mt_buf_from_c_str("Not Found In Symbol Table"))
+
+#define mt_err_cgen_if_def() \
+    mt_err_init(mt_pfx_err(CGEN_IF_DEF), 0, 0, NULL, mt_buf_from_c_str("Invalid If Default"))
+
 
 #endif

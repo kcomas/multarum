@@ -14,6 +14,7 @@ typedef struct _mt_mod {
     uint32_t _size, len;
     uint8_t* bytes;
     uint8_t* fns;
+    uint8_t* fne;
     mt_hash* globals;
 } mt_mod;
 
@@ -34,6 +35,8 @@ typedef struct _mt_mod {
 mt_mod* mt_mod_init(size_t _size, size_t _f_size);
 
 #define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i
+
+#define mt_mod_reg_fne(mod, i) mod->fne[mod->f_len] = i
 
 void mt_mod_free(mt_mod* const mod);
 

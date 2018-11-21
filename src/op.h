@@ -12,6 +12,7 @@ typedef enum {
     mt_pfx(ADD),
     mt_pfx(SUB),
     mt_pfx(EQ),
+    mt_pfx(OR),
     mt_pfx(JMP),
     mt_pfx(JMPF),
     mt_pfx(LD_SELF),

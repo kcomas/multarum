@@ -8,6 +8,7 @@ static const char* op_str[] = {
     "ADD",
     "SUB",
     "EQ",
+    "OR",
     "JMP",
     "JMPF",
     "LD_SELF",

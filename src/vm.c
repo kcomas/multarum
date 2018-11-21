@@ -52,6 +52,10 @@ static inline void mt_vm_dec_stack_atomic(mt_vm* const vm) {
     vm->s_len--;
 }
 
+static inline void mt_vm_dec_stack_atomic2(mt_vm* const vm) {
+    vm->s_len =- 2;
+}
+
 static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, size_t new_base) {
     mt_vm_cur_byte(vm)++;
     uint8_t num_args = *mt_vm_cur_byte(vm)++;
@@ -168,6 +172,20 @@ static void mt_run_op(mt_vm* const vm) {
                 break;
             }
             mt_vm_push(vm, mt_var_bool(mt_bool));
+            break;
+        case mt_pfx(OR):
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(BOOL))) {
+                if (mt_vm_cur_stack(vm).data.mt_bool == true && mt_vm_prev_stack(vm).data.mt_bool == true) {
+                    mt_bool = true;
+                } else {
+                    mt_bool = false;
+                }
+            } else {
+                // @ TODO handle error
+                break;
+            }
+            mt_vm_dec_stack_atomic2(vm);
+            mt_vm_push(vm, mt_var_float(mt_bool));
             break;
         case mt_pfx(JMPF):
             mt_vm_cur_byte(vm)++;

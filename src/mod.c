@@ -10,6 +10,7 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
     mod->_f_size = _f_size;
     mod->f_len = 0;
     mod->fns = (uint8_t*) malloc(_f_size);
+    mod->fne = (uint8_t*) malloc(_f_size);
     mod->globals = mt_hash_init(MT_MOD_GLOBAL_BUCKETS);
     return mod;
 }
@@ -20,6 +21,7 @@ void mt_mod_free(mt_mod* const mod) {
     }
     free(mod->bytes);
     free(mod->fns);
+    free(mod->fne);
     mt_hash_free(mod->globals);
     free(mod);
 }
@@ -99,6 +101,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
         case mt_pfx(ADD):
         case mt_pfx(SUB):
         case mt_pfx(EQ):
+        case mt_pfx(OR):
         case mt_pfx(LD_SELF):
         case mt_pfx(RET):
         case mt_pfx(HALT):
@@ -194,16 +197,20 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
     return i;
 }
 
+#define mt_mod_show_fn(mod, target, msg) \
+    for (size_t fi = 0; fi < mod->f_len; fi++) { \
+        if (mod->target[fi] == i) { \
+            printf("%s: %lu\n", msg, fi); \
+            break; \
+        } \
+    }
+
 void mt_mod_dis(const mt_mod* const mod) {
     size_t i = 0;
     size_t count_total = mt_mod_num_len(mod->len);
     while (i < mod->len) {
-        for (size_t fi = 0; fi < mod->f_len; fi++) {
-            if (mod->fns[fi] == i) {
-                printf("FN: %lu\n", fi);
-                break;
-            }
-        }
+        mt_mod_show_fn(mod, fns, "FN");
         i = mt_print_next_op(mod, i, count_total);
+        mt_mod_show_fn(mod, fne, "FN END");
     }
 }
