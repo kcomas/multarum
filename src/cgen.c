@@ -50,7 +50,7 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
     mt_var rst;
     mt_op op;
     uint8_t mt_arg;
-    uint8_t mt_f;
+    uint8_t mt_f = 0;
     uint16_t mt_al;
     uint8_t* jmp_hdl = NULL;
     switch (ast->type) {
@@ -63,15 +63,15 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
             if (tbl != NULL) {
                 jmp_hdl = mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP));
                 mt_mod_reg_fn(mod, mod->len);
+                mt_f = mod->f_len - 1;
             }
             mt_cgen_ops_list_walk(ast, mod, fn, ops_head);
             if (tbl != NULL) {
                 mt_write_byte(mod, mt_pfx(RET));
-                mt_mod_reg_fne(mod, mod->len);
+                mt_mod_reg_fne(mod, mt_f, mod->len);
                 mt_cgen_walk_jmp_svb(mod, jmp_hdl);
                 mt_write_byte(mod, mt_pfx(LD_SELF));
                 mt_write_byte(mod, mt_pfx(LD_FN));
-                mt_f = mod->f_len - 1;
                 mt_write_bytes(mod, &mt_f, sizeof(uint8_t));
             }
             break;
@@ -145,8 +145,11 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
 }
 
 mt_var mt_cgen_build(const mt_ast* const ast, mt_mod* const mod) {
+    mt_mod_reg_fn(mod, mod->len);
+    uint8_t mt_f = mod->f_len - 1;
     mt_var rst = mt_cgen_walk(ast, mod, NULL);
     // mt_cgen_ck_err(rst);
     mt_write_byte(mod, mt_pfx(HALT));
+    mt_mod_reg_fne(mod, mt_f, mod->len);
     return mt_var_bool(true);
 }
