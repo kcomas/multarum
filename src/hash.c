@@ -16,6 +16,7 @@ mt_hash* mt_hash_init(size_t num_buckets) {
 static inline void mt_hash_node_free(mt_hash_node* const node) {
     mt_buf_free(node->name);
     mt_var_free(node->value);
+    free(node);
 }
 
 void mt_hash_free(mt_hash* const hash) {
@@ -35,6 +36,7 @@ void mt_hash_free(mt_hash* const hash) {
         mt_hash_node_free(hash->buckets[i]);
     }
     free(hash->buckets);
+    free(hash);
 }
 
 static mt_hash_node* mt_hash_create_node(size_t hashd, const mt_buf* const name, mt_var value) {
