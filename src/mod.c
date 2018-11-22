@@ -16,7 +16,7 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
 }
 
 void mt_mod_free(mt_mod* const mod) {
-    if (--mod->ref_count > 0) {
+    if ((--mod->ref_count) > 0) {
         return;
     }
     free(mod->bytes);

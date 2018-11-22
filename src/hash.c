@@ -19,6 +19,9 @@ static inline void mt_hash_node_free(mt_hash_node* const node) {
 }
 
 void mt_hash_free(mt_hash* const hash) {
+    if (--hash->ref_count > 0) {
+        return;
+    }
     for (size_t i = 0; i < hash->_bsize; i++) {
         if (hash->buckets[i] == NULL) {
             continue;

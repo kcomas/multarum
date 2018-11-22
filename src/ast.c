@@ -40,6 +40,86 @@ static mt_ast* mt_ast_fn_init(void) {
     return mt_ast_node(FN, fn, fn);
 }
 
+static void mt_ast_free_walk(mt_ast* const ast);
+
+static inline void mt_ast_free_bop(mt_ast* const ast) {
+    mt_ast_free_walk(ast->node.bop->left);
+    mt_ast_free_walk(ast->node.bop->right);
+    free(ast->node.bop);
+}
+
+#define mt_ast_free_bop_case(op, ast) \
+    case mt_ast(op): \
+        mt_ast_free_bop(ast); \
+        break
+
+#define mt_ast_free_sym_table(ast, tgt) \
+    if (ast->node.fn->sym_table->tgt.hash != NULL) { \
+        mt_hash_free(ast->node.fn->sym_table->tgt.hash); \
+    }
+
+#define mt_ast_free_list(ast, tgt, head) \
+    ops = ast->node.tgt->head; \
+    while (ops != NULL) { \
+        mt_ast_free_walk(ops->op); \
+        tmp = ops; \
+        ops = ops->next; \
+        free(tmp); \
+    }
+
+static void mt_ast_free_walk(mt_ast* const ast) {
+    if (ast == NULL) {
+        return;
+    }
+    mt_ast_op_list* ops;
+    mt_ast_op_list* tmp;
+    mt_ast_if_cond* conds;
+    mt_ast_if_cond* conds_tmp;
+    switch (ast->type) {
+        case mt_ast(NULL):
+            break;
+        case mt_ast(FN):
+            mt_ast_free_list(ast, fn, ops_head);
+            mt_ast_free_sym_table(ast, arg_table);
+            mt_ast_free_sym_table(ast, local_table);
+            free(ast->node.fn->sym_table);
+            free(ast->node.fn);
+            break;
+        case mt_ast(VAR):
+        case mt_ast(ARG):
+        case mt_ast(INT):
+            break;
+        mt_ast_free_bop_case(ASSIGN, ast);
+        mt_ast_free_bop_case(EQ, ast);
+        case mt_ast(IF):
+            conds = ast->node.if_smt->head;
+            while (conds != NULL) {
+                if (conds->cond != NULL) {
+                    mt_ast_free_walk(conds->cond);
+                }
+                mt_ast_free_walk(conds->body);
+                conds_tmp = conds;
+                conds = conds->next;
+                free(conds_tmp);
+            }
+            free(ast->node.if_smt);
+            break;
+        mt_ast_free_bop_case(OR, ast);
+        case mt_ast(CALL):
+            mt_ast_free_list(ast, call, args_head);
+            free(ast->node.call);
+            break;
+        mt_ast_free_bop_case(ADD, ast);
+        mt_ast_free_bop_case(SUB, ast);
+        mt_ast_free_bop_case(WRITE, ast);
+    }
+    free(ast);
+}
+
+void mt_ast_free(mt_ast_state* const state) {
+    mt_ast_free_walk(state->ast);
+}
+
 #define mt_ast_fn_add_table(tbl, buf, target, size) \
     if (tbl->target.hash == NULL) { \
         mt_ast_sym_table_init(tbl, target, size); \

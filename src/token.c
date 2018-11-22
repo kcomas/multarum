@@ -156,6 +156,7 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
     bool has_chars = mt_buf_iter_peek(&state->iter, &peek_char);
     if (!(has_chars && ((peek_char.a >= '0' && peek_char.a <= '9') || peek_char.a == '_'))) {
         // @TODO check if valid var char
+        state->cur_data->data[state->cur_data->len++] = '\0';
         uint8_t* endptr = &state->cur_data->data[state->cur_data->len];
         int64_t value = strtol((char*) state->cur_data->data, (char**) &endptr, 10);
         mt_buf_zero(state->cur_data);

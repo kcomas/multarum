@@ -117,6 +117,8 @@ typedef struct {
 
 void mt_ast_init(mt_ast_state* const state);
 
+void mt_ast_free(mt_ast_state* const state);
+
 mt_var mt_ast_build(mt_ast_state* const state, mt_token* const tokens);
 
 void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent);
