@@ -65,6 +65,8 @@ typedef struct _mt_var {
 
 #define mt_var_is_bool(var) (var.type == mt_pfx(BOOL))
 
+#define mt_var_is_int(var) (var.type == mt_pfx(INT))
+
 #define mt_var_bool_value(var) var.data.mt_bool
 
 #define mt_var_is_err(var) (var.type == mt_pfx(ERROR))

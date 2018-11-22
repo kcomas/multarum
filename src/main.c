@@ -123,7 +123,7 @@ int main(void) {
     mt_vm vm;
     mt_vm_init(&vm, &ctx, mod);
     mt_var rst = mt_vm_run(&vm);
-    printf("Rst: %li\n", rst.data.mt_int);
+    printf("Stack is empty %d\n", mt_var_is_null(rst));
     mt_vm_debug_stack_print(&vm);
     mt_vm_free(&vm);
     mt_ctx_free(&ctx);

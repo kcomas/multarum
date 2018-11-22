@@ -52,6 +52,37 @@ static inline void mt_cgen_walk_jmp_svb(mt_mod* const mod, uint8_t* jmp_hdl) {
         ops = ops->next; \
     }
 
+static inline mt_var mt_cgen_ld_arg(const mt_buf* const buf, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
+    mt_var rst = mt_hash_get(tbl->arg_table.hash, buf);
+    if (mt_var_is_null(rst)) {
+        return rst;
+    }
+    mt_write_byte(mod, mt_pfx(LD_ARG));
+    uint8_t mt_arg = (uint8_t) rst.data.mt_int;
+    mt_write_bytes(mod, &mt_arg, sizeof(uint8_t));
+    return mt_var_bool(true);
+}
+
+#define mt_cgen_arg_exists(tgt, mod, tbl) \
+    (tbl->arg_table.hash != NULL && !mt_var_is_null(mt_cgen_ld_arg(tgt, mod, tbl)))
+
+static inline mt_var mt_cgen_ld_var(const mt_buf* const buf, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
+    mt_var rst = mt_hash_get(tbl->local_table.hash, buf);
+    if (mt_var_is_null(rst)) {
+        return rst;
+    }
+    mt_write_byte(mod, mt_pfx(LD_LOCAL));
+    uint16_t mt_al = (uint16_t) rst.data.mt_int;
+    mt_write_bytes(mod, &mt_al, sizeof(uint16_t));
+    return mt_var_bool(true);
+}
+
+#define mt_cgen_var_exists(tgt, mod, tbl) \
+    (tbl->local_table.hash != NULL && !mt_var_is_null(mt_cgen_ld_var(tgt, mod, tbl)))
+
+#define mt_cgen_value_in_tbl(tgt, mod,tbl) \
+    (mt_cgen_arg_exists(tgt, mod, tbl) || mt_cgen_var_exists(tgt, mod, tbl))
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
@@ -60,7 +91,6 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
     mt_ast_if_cond* conds;
     mt_var rst;
     mt_op op;
-    uint8_t mt_arg;
     uint8_t mt_f = 0;
     uint16_t mt_al;
     uint8_t* jmp_hdl = NULL;
@@ -102,14 +132,17 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     break;
             }
             return mt_var_err(mt_err_cgen_assign());
-        case mt_ast(ARG):
-            rst = mt_hash_get(tbl->arg_table.hash, ast->node.value.mt_var);
+        case mt_ast(VAR):
+            rst = mt_cgen_ld_var(ast->node.value.mt_var, mod, tbl);
             if (mt_var_is_null(rst)) {
                 return mt_var_err(mt_err_cgen_tbl());
             }
-            mt_write_byte(mod, mt_pfx(LD_ARG));
-            mt_arg = (uint8_t) rst.data.mt_int;
-            mt_write_bytes(mod, &mt_arg, sizeof(uint8_t));
+            break;
+        case mt_ast(ARG):
+            rst = mt_cgen_ld_arg(ast->node.value.mt_var, mod, tbl);
+            if (mt_var_is_null(rst)) {
+                return mt_var_err(mt_err_cgen_tbl());
+            }
             break;
         case mt_ast(INT):
             mt_write_byte(mod, mt_pfx(PUSH));
@@ -142,14 +175,17 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
         mt_cgen_basic_bop_case(state, ast, mod, tbl, EQ);
         mt_cgen_basic_bop_case(state, ast, mod, tbl, OR);
         case mt_ast(CALL):
-            // @TODO load var or arg
             mt_cgen_ops_list_walk(state, ast, mod, call, args_head);
+            if (ast->node.call->target != NULL && !mt_cgen_value_in_tbl(ast->node.call->target, mod, tbl)) {
+                return mt_var_err(mt_err_cgen_tbl());
+            }
             op = ast->node.call->target == NULL ? mt_pfx(CALL_SELF) : mt_pfx(CALL);
             mt_write_byte(mod, op);
             mt_write_byte(mod, ast->node.call->arg_count);
             break;
         mt_cgen_basic_bop_case(state, ast, mod, tbl, ADD);
         mt_cgen_basic_bop_case(state, ast, mod, tbl, SUB);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, WRITE);
         default:
             return mt_var_err(mt_err_ast_undef());
     }
@@ -160,7 +196,7 @@ mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod
     mt_mod_reg_fn(mod, mod->len);
     uint8_t mt_f = mod->f_len - 1;
     mt_var rst = mt_cgen_walk(state, ast, mod, NULL);
-    // mt_cgen_ck_err(rst);
+    mt_cgen_ck_err(rst);
     mt_write_byte(mod, mt_pfx(HALT));
     mt_mod_reg_fne(mod, mt_f, mod->len);
     return mt_var_bool(true);

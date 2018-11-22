@@ -38,6 +38,10 @@ static inline void mt_vm_push(mt_vm* const vm, mt_var var) {
     vm->stack[vm->s_len++] = var;
 }
 
+static inline void mt_vm_update(mt_vm* const vm, mt_var var) {
+    vm->stack[vm->s_len - 1] = var;
+}
+
 static inline void mt_vm_get_bytes(mt_vm* restrict vm, void* restrict dest, size_t size) {
     memcpy(dest, mt_vm_cur_byte(vm), size);
     mt_vm_cur_byte(vm) += size;
@@ -50,10 +54,6 @@ static inline void mt_vm_jmp(mt_vm* const vm, uint32_t mt_jmp) {
 
 static inline void mt_vm_dec_stack_atomic(mt_vm* const vm) {
     vm->s_len--;
-}
-
-static inline void mt_vm_dec_stack_atomic2(mt_vm* const vm) {
-    vm->s_len =- 2;
 }
 
 static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, size_t new_base) {
@@ -93,7 +93,6 @@ static void mt_run_op(mt_vm* const vm) {
     uint32_t mt_jmp = 0;
     uint16_t mt_al;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
-
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
             mt_vm_cur_byte(vm)++;
@@ -174,8 +173,9 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_push(vm, mt_var_bool(mt_bool));
             break;
         case mt_pfx(OR):
+            mt_vm_cur_byte(vm)++;
             if (mt_vm_stack_type_cmp(vm, mt_pfx(BOOL))) {
-                if (mt_vm_cur_stack(vm).data.mt_bool == true && mt_vm_prev_stack(vm).data.mt_bool == true) {
+                if (mt_vm_cur_stack(vm).data.mt_bool == true || mt_vm_prev_stack(vm).data.mt_bool == true) {
                     mt_bool = true;
                 } else {
                     mt_bool = false;
@@ -184,8 +184,9 @@ static void mt_run_op(mt_vm* const vm) {
                 // @ TODO handle error
                 break;
             }
-            mt_vm_dec_stack_atomic2(vm);
-            mt_vm_push(vm, mt_var_float(mt_bool));
+            mt_vm_dec_stack_atomic(vm);
+            mt_vm_dec_stack_atomic(vm);
+            mt_vm_push(vm, mt_var_bool(mt_bool));
             break;
         case mt_pfx(JMPF):
             mt_vm_cur_byte(vm)++;
@@ -209,13 +210,18 @@ static void mt_run_op(mt_vm* const vm) {
         case mt_pfx(LD_FN):
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_fn, sizeof(uint8_t));
-            mt_vm_push(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
-            mt_vm_dec_stack_atomic(vm);
+            mt_vm_update(vm, mt_var_fn(mt_vm_cur_stack(vm).data.mt_mod, mt_fn));
             break;
         case mt_pfx(LD_ARG):
             mt_vm_cur_byte(vm)++;
             mt_arg = *mt_vm_cur_byte(vm)++;
             mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
+            mt_vm_inc_ref(vm);
+            break;
+        case mt_pfx(LD_LOCAL):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_vm_cur_args(vm) + mt_al]);
             mt_vm_inc_ref(vm);
             break;
         case mt_pfx(SV_LOCAL):
@@ -234,6 +240,20 @@ static void mt_run_op(mt_vm* const vm) {
         case mt_pfx(CALL_SELF):
             mt_vm_call(vm, mt_vm_cur_frame(vm).mod, mt_vm_cur_frame(vm).fn, vm->s_len + 1);
             mt_vm_cur_mod(vm)->ref_count++;
+            break;
+        case mt_pfx(WRITE):
+            mt_vm_cur_byte(vm)++;
+            if (mt_var_is_int(mt_vm_prev_stack(vm))) {
+                if (mt_vm_prev_stack(vm).data.mt_int == 1) {
+                    // @TODO remove new lines
+                    mt_var_debug_print(mt_vm_cur_stack(vm));
+                    printf("\n");
+                }
+            } else {
+                // @TODO handle error
+            }
+            mt_vm_dec_stack(vm);
+            mt_vm_dec_stack(vm);
             break;
         case mt_pfx(RET):
             mt_vm_ret(vm);

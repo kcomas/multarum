@@ -104,6 +104,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
         case mt_pfx(OR):
         case mt_pfx(LD_SELF):
         case mt_pfx(RET):
+        case mt_pfx(WRITE):
         case mt_pfx(HALT):
             i = mt_mod_single_byte_cmd(mod, i);
             break;
@@ -184,6 +185,10 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
         case mt_pfx(CALL_SELF):
         case mt_pfx(CALL):
             i = mt_mod_op2(mod, i);
+            break;
+        case mt_pfx(LD_LOCAL):
+            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
+            printf("LD_LOCAL %d\n", mt_al);
             break;
         case mt_pfx(SV_LOCAL):
             i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);

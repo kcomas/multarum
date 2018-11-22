@@ -14,10 +14,12 @@ static const char* op_str[] = {
     "LD_SELF",
     "LD_FN",
     "LD_ARG",
+    "LD_LOCAL",
     "SV_LOCAL",
     "CALL",
     "CALL_SELF",
     "RET",
+    "WRITE",
     "HALT"
 };
 
