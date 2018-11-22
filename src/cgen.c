@@ -83,6 +83,13 @@ static inline mt_var mt_cgen_ld_var(const mt_buf* const buf, mt_mod* const mod, 
 #define mt_cgen_value_in_tbl(tgt, mod,tbl) \
     (mt_cgen_arg_exists(tgt, mod, tbl) || mt_cgen_var_exists(tgt, mod, tbl))
 
+#define mt_cgen_set_locals(ast, mod, op, mt_al) \
+    if (mt_ast_fn_access(ast->node.fn, local_table).hash != NULL && mt_ast_fn_access(ast->node.fn, local_table).hash->len > 0) { \
+        mt_write_byte(mod, mt_pfx(op)); \
+        mt_al = (uint16_t) mt_ast_fn_access(ast->node.fn, local_table).hash->len; \
+        mt_write_bytes(mod, &mt_al, sizeof(uint16_t)); \
+    }
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
@@ -96,17 +103,14 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
     uint8_t* jmp_hdl = NULL;
     switch (ast->type) {
         case mt_ast(FN):
-            if (mt_ast_fn_access(ast->node.fn, local_table).hash != NULL && mt_ast_fn_access(ast->node.fn, local_table).hash->len > 0) {
-                mt_write_byte(mod, mt_pfx(AL));
-                mt_al = (uint16_t) mt_ast_fn_access(ast->node.fn, local_table).hash->len;
-                mt_write_bytes(mod, &mt_al, sizeof(uint16_t));
-            }
+            mt_cgen_set_locals(ast, mod, AL, mt_al);
             if (tbl != NULL) {
                 jmp_hdl = mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP));
                 mt_mod_reg_fn(mod, mod->len);
                 mt_f = mod->f_len - 1;
             }
             mt_cgen_ops_list_walk(state, ast, mod, fn, ops_head);
+            mt_cgen_set_locals(ast, mod, FL, mt_al);
             if (tbl != NULL) {
                 mt_write_byte(mod, mt_pfx(RET));
                 mt_mod_reg_fne(mod, mt_f, mod->len);

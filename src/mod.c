@@ -69,6 +69,14 @@ static size_t mt_mod_op2(const mt_mod* const mod, size_t i) {
     return i + 2;
 }
 
+static size_t mt_mod_op16(const mt_mod* const mod, size_t i) {
+    uint16_t mt_al = 0;
+    uint8_t op = mod->bytes[i];
+    i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
+    printf("%s %d\n", mt_op_str(op), mt_al);
+    return i;
+}
+
 static inline void mt_mod_space_bytes(size_t i, size_t count_total) {
     for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
         putchar(' ');
@@ -85,7 +93,6 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
     int8_t char_conts;
     uint32_t mt_jmp;
-    uint16_t mt_al;
     int64_t mt_int;
     double mt_float;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
@@ -94,8 +101,8 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
     mt_mod_space_bytes(i, count_total);
     switch (mod->bytes[i]) {
         case mt_pfx(AL):
-            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
-            printf("AL %d\n", mt_al);
+        case mt_pfx(FL):
+            i = mt_mod_op16(mod, i);
             break;
         case mt_pfx(NOP):
         case mt_pfx(ADD):
@@ -187,12 +194,8 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
             i = mt_mod_op2(mod, i);
             break;
         case mt_pfx(LD_LOCAL):
-            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
-            printf("LD_LOCAL %d\n", mt_al);
-            break;
         case mt_pfx(SV_LOCAL):
-            i = mt_mod_op_w_data(mod, i, sizeof(uint16_t), &mt_al);
-            printf("SV_LOCAL %d\n", mt_al);
+            i = mt_mod_op16(mod, i);
             break;
         default:
             i++;

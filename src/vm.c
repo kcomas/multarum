@@ -23,8 +23,13 @@ void mt_vm_free(mt_vm* const vm) {
     free(vm->rsp);
 }
 
+static inline void mt_vm_dec_stack_atomic(mt_vm* const vm) {
+    vm->s_len--;
+}
+
 static inline void mt_vm_dec_stack(mt_vm* const vm) {
-    mt_var_free(vm->stack[--vm->s_len]);
+    mt_var_free(vm->stack[vm->s_len - 1]);
+    mt_vm_dec_stack_atomic(vm);
 }
 
 static inline void mt_vm_inc_ref(mt_vm* const vm) {
@@ -51,10 +56,6 @@ static inline void mt_vm_get_bytes(mt_vm* restrict vm, void* restrict dest, size
 static inline void mt_vm_jmp(mt_vm* const vm, uint32_t mt_jmp) {
     mt_vm_get_bytes(vm, &mt_jmp, sizeof(uint32_t));
     mt_vm_cur_byte(vm) = mt_vm_cur_mod(vm)->bytes + mt_jmp;
-}
-
-static inline void mt_vm_dec_stack_atomic(mt_vm* const vm) {
-    vm->s_len--;
 }
 
 static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, size_t new_base) {
@@ -103,6 +104,14 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
             vm->s_len += mt_al;
             mt_vm_cur_locals(vm) = mt_al;
+            break;
+        case mt_pfx(FL):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            while (mt_al > 0) {
+                mt_vm_dec_stack(vm);
+                mt_al--;
+            }
             break;
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {
