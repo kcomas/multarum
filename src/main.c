@@ -3,11 +3,16 @@
 #include "vm.h"
 #include "cgen.h"
 
-int main(void) {
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        printf("Usage %s file\n", argv[0]);
+        exit(1);
+    }
+
     mt_ctx ctx;
     mt_ctx_init(&ctx);
 
-    mt_buf* to_open = mt_buf_from_c_str("./examples/fib.mul");
+    mt_buf* to_open = mt_buf_from_c_str(argv[1]);
 
     mt_var script = mt_file_open(to_open);
     mt_var_debug_print(script);
