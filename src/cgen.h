@@ -12,7 +12,9 @@ typedef struct {
 
 #define mt_cgen_state_push_if(state, pos) state->if_pos[state->if_len++] = pos
 
-#define MT_CGEN_STATE_DEFAULT_IF_SIZE 30
+#ifndef MT_CGEN_STATE_DEFAULT_IF_SIZE
+#   define MT_CGEN_STATE_DEFAULT_IF_SIZE 30
+#endif
 
 void mt_cgen_state_init(mt_cgen_state* const state, size_t if_size);
 
