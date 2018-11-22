@@ -232,7 +232,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_dec_stack_atomic(vm);
             break;
         case mt_pfx(CALL_SELF):
-            mt_vm_call(vm, mt_vm_prev_frame(vm).mod, mt_vm_prev_frame(vm).fn, vm->s_len + 1);
+            mt_vm_call(vm, mt_vm_cur_frame(vm).mod, mt_vm_cur_frame(vm).fn, vm->s_len + 1);
             mt_vm_cur_mod(vm)->ref_count++;
             break;
         case mt_pfx(RET):
