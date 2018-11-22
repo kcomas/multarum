@@ -1,23 +1,34 @@
 
 #include "cgen.h"
 
+
+void mt_cgen_state_init(mt_cgen_state* const state, size_t if_size) {
+    state->if_size = if_size;
+    state->if_len = 0;
+    state->if_pos = (uint8_t**) malloc(sizeof(uint8_t*) * if_size);
+}
+
+void mt_cgen_state_free(mt_cgen_state* const state) {
+    free(state->if_pos);
+}
+
 #define mt_cgen_ck_err(rst) \
     if (mt_var_is_err(rst)) { \
         return rst; \
     }
 
-#define mt_cgen_walk_bop_side(ast, mod, tbl, side) \
-    rst = mt_cgen_walk(ast->node.bop->side, mod, tbl); \
+#define mt_cgen_walk_bop_side(state, ast, mod, tbl, side) \
+    rst = mt_cgen_walk(state, ast->node.bop->side, mod, tbl); \
     mt_cgen_ck_err(rst)
 
-#define mt_cgen_basic_bop(ast, mod, tbl, op) \
-    mt_cgen_walk_bop_side(ast, mod, tbl, left); \
-    mt_cgen_walk_bop_side(ast, mod, tbl, right); \
+#define mt_cgen_basic_bop(state, ast, mod, tbl, op) \
+    mt_cgen_walk_bop_side(state, ast, mod, tbl, left); \
+    mt_cgen_walk_bop_side(state, ast, mod, tbl, right); \
     mt_write_byte(mod, op)
 
-#define mt_cgen_basic_bop_case(ast, mod, tbl, op) \
+#define mt_cgen_basic_bop_case(state, ast, mod, tbl, op) \
     case mt_ast(op): \
-        mt_cgen_basic_bop(ast, mod, tbl, mt_pfx(op)); \
+        mt_cgen_basic_bop(state, ast, mod, tbl, mt_pfx(op)); \
         break
 
 static inline uint8_t* mt_cgen_walk_jmp_sva(mt_mod* const mod, mt_op op) {
@@ -33,15 +44,15 @@ static inline void mt_cgen_walk_jmp_svb(mt_mod* const mod, uint8_t* jmp_hdl) {
     }
 }
 
-#define mt_cgen_ops_list_walk(ast, mod, target, head) \
+#define mt_cgen_ops_list_walk(state, ast, mod, target, head) \
     ops = ast->node.target->head; \
     while (ops != NULL) { \
-        rst = mt_cgen_walk(ops->op, mod, ast->node.target->sym_table); \
+        rst = mt_cgen_walk(state, ops->op, mod, ast->node.target->sym_table); \
         mt_cgen_ck_err(rst); \
         ops = ops->next; \
     }
 
-static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
+static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
     }
@@ -65,7 +76,7 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
                 mt_mod_reg_fn(mod, mod->len);
                 mt_f = mod->f_len - 1;
             }
-            mt_cgen_ops_list_walk(ast, mod, fn, ops_head);
+            mt_cgen_ops_list_walk(state, ast, mod, fn, ops_head);
             if (tbl != NULL) {
                 mt_write_byte(mod, mt_pfx(RET));
                 mt_mod_reg_fne(mod, mt_f, mod->len);
@@ -76,7 +87,7 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
             }
             break;
         case mt_ast(ASSIGN):
-            mt_cgen_walk_bop_side(ast, mod, tbl, right);
+            mt_cgen_walk_bop_side(state, ast, mod, tbl, right);
             switch (ast->node.bop->left->type) {
                 case mt_ast(VAR):
                     rst = mt_hash_get(tbl->local_table.hash, ast->node.bop->left->node.value.mt_var);
@@ -111,43 +122,44 @@ static mt_var mt_cgen_walk(const mt_ast* const ast, mt_mod* const mod, const mt_
                     if (conds->next != NULL) {
                         return mt_var_err(mt_err_cgen_if_def());
                     }
-                    rst = mt_cgen_walk(conds->body, mod, ast->node.if_smt->sym_table);
+                    rst = mt_cgen_walk(state, conds->body, mod, ast->node.if_smt->sym_table);
                     mt_cgen_ck_err(rst);
-                    // @TODO fill jmps
+                    for (size_t i = 0; i < state->if_len; i++) {
+                        mt_cgen_walk_jmp_svb(mod, state->if_pos[i]);
+                    }
                     return mt_var_bool(true);
                 }
-                rst = mt_cgen_walk(conds->cond, mod, ast->node.if_smt->sym_table);
+                rst = mt_cgen_walk(state, conds->cond, mod, ast->node.if_smt->sym_table);
                 mt_cgen_ck_err(rst);
                 jmp_hdl = mt_cgen_walk_jmp_sva(mod, mt_pfx(JMPF));
-                rst = mt_cgen_walk(conds->body, mod, ast->node.if_smt->sym_table);
+                rst = mt_cgen_walk(state, conds->body, mod, ast->node.if_smt->sym_table);
                 mt_cgen_ck_err(rst);
-                // @TODO write jmp to end of if
-                (void) mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP));
+                mt_cgen_state_push_if(state, mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP)));
                 mt_cgen_walk_jmp_svb(mod, jmp_hdl);
                 conds = conds->next;
             }
             break;
-        mt_cgen_basic_bop_case(ast, mod, tbl, EQ);
-        mt_cgen_basic_bop_case(ast, mod, tbl, OR);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, EQ);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, OR);
         case mt_ast(CALL):
             // @TODO load var or arg
-            mt_cgen_ops_list_walk(ast, mod, call, args_head);
+            mt_cgen_ops_list_walk(state, ast, mod, call, args_head);
             op = ast->node.call->target == NULL ? mt_pfx(CALL_SELF) : mt_pfx(CALL);
             mt_write_byte(mod, op);
             mt_write_byte(mod, ast->node.call->arg_count);
             break;
-        mt_cgen_basic_bop_case(ast, mod, tbl, ADD);
-        mt_cgen_basic_bop_case(ast, mod, tbl, SUB);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, ADD);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, SUB);
         default:
             return mt_var_err(mt_err_ast_undef());
     }
     return mt_var_bool(true);
 }
 
-mt_var mt_cgen_build(const mt_ast* const ast, mt_mod* const mod) {
+mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod) {
     mt_mod_reg_fn(mod, mod->len);
     uint8_t mt_f = mod->f_len - 1;
-    mt_var rst = mt_cgen_walk(ast, mod, NULL);
+    mt_var rst = mt_cgen_walk(state, ast, mod, NULL);
     // mt_cgen_ck_err(rst);
     mt_write_byte(mod, mt_pfx(HALT));
     mt_mod_reg_fne(mod, mt_f, mod->len);

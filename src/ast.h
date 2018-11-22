@@ -17,10 +17,6 @@ typedef struct _mt_ast mt_ast;
 #   define MT_AST_LOCAL_SIZE 20
 #endif
 
-#ifndef MT_AST_FN_SIZE
-#   define MT_AST_FN_SIZE 30
-#endif
-
 typedef struct {
     struct {
         uint64_t idx;

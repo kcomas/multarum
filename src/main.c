@@ -48,7 +48,11 @@ int main(void) {
 
     mt_mod* mod = mt_mod_init(MT_MOD_DEFAULT_SIZE, MT_MOD_DEFAULT_FN_SIZE);
 
-    mt_var code_rst = mt_cgen_build(ast_state.ast, mod);
+    mt_cgen_state cgen_state;
+    mt_cgen_state_init(&cgen_state, MT_CGEN_STATE_DEFAULT_IF_SIZE);
+
+    mt_var code_rst = mt_cgen_build(&cgen_state, ast_state.ast, mod);
+    mt_cgen_state_free(&cgen_state);
     mt_var_debug_print(code_rst);
     printf("\n");
 
