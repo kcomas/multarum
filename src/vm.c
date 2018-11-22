@@ -9,6 +9,7 @@ void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod) {
     vm->rsp = (mt_frame*) malloc(sizeof(mt_frame) * MT_DEFAULT_FRAME_SIZE);
     vm->rsp[vm->f_len].safe = false;
     vm->rsp[vm->f_len].fn = 0;
+    vm->rsp[vm->f_len].args = 0;
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
