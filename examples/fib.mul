@@ -1,8 +1,7 @@
 
-// Comment
+total: 30
 
-total: 5
-
+// fibonacci numbers
 fib: .(n) {
     ? {
         (n = 0) | (n = 1) { n }
