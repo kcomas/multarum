@@ -109,6 +109,7 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             mt_ast_free_list(ast, call, args_head);
             free(ast->node.call);
             break;
+        mt_ast_free_bop_case(MUL, ast);
         mt_ast_free_bop_case(ADD, ast);
         mt_ast_free_bop_case(SUB, ast);
         mt_ast_free_bop_case(WRITE, ast);
@@ -152,6 +153,8 @@ static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
     (state->cur_token->next != NULL && state->cur_token->next->type == mt_token(TYPE))
 
 #define mt_ast_inc_token(state) state->cur_token = mt_ast_peek_token(state);
+
+#define mt_ast_inc_token_sub(state) state.cur_token = state.cur_token->next;
 
 #define mt_ast_inc_token2(state) \
     mt_ast_inc_token(state); \
@@ -211,13 +214,18 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                 break;
             case mt_ast_state(IF_BODY):
                 if_smt->tail->body = sub_tree;
-                sub_state.mode = mt_ast_state(IF_COND);
-                mt_ast_flush_nl(&sub_state);
                 if (sub_state.cur_token != NULL && sub_state.cur_token->type == mt_token(R_BRACKET)) {
-                    state->cur_token = sub_state.cur_token;
-                    mt_ast_inc_token2(state);
-                    *cur_tree = sub_state.ast;
-                    return mt_var_bool(true);
+                    mt_ast_inc_token_sub(sub_state);
+                    while (sub_state.cur_token->type == mt_token(NL)) {
+                        mt_ast_inc_token_sub(sub_state);
+                    }
+                    if (sub_state.cur_token != NULL && sub_state.cur_token->type == mt_token(R_BRACKET)) {
+                        mt_ast_inc_token_sub(sub_state);
+                        state->cur_token = sub_state.cur_token;
+                        *cur_tree = sub_state.ast;
+                        return mt_var_bool(true);
+                    }
+                    sub_state.mode = mt_ast_state(IF_COND);
                 }
                 if_smt->tail->next = mt_ast_if_cond_init();
                 if_smt->tail = if_smt->tail->next;
@@ -379,8 +387,8 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
         case mt_token(R_BRACKET):
             switch (state->mode) {
                 case mt_ast_state(FN):
-                case mt_ast_state(IF_BODY):
                     mt_ast_inc_token(state);
+                case mt_ast_state(IF_BODY):
                     return mt_var_bool(false);
                 default:
                     return mt_ast_token_invalid(state->cur_token);
@@ -392,6 +400,9 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             }
             mt_ast_inc_token2(state);
             return mt_ast_build_call(state, cur_tree, NULL);
+        case mt_token(MUL):
+            mt_ast_invalid_state(IF_COND);
+            mt_ast_quic_bop(MUL);
         case mt_token(ADD):
             mt_ast_invalid_state(IF_COND);
             mt_ast_quic_bop(ADD);
@@ -500,6 +511,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 list = list->next;
             }
             break;
+        mt_ast_print_bop(MUL, '*');
         mt_ast_print_bop(ADD, '+');
         mt_ast_print_bop(SUB, '-');
         case mt_ast(WRITE):

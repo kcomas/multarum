@@ -10,6 +10,7 @@ typedef enum {
     mt_pfx(AL),
     mt_pfx(FL),
     mt_pfx(PUSH),
+    mt_pfx(MUL),
     mt_pfx(ADD),
     mt_pfx(SUB),
     mt_pfx(EQ),

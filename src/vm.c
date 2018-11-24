@@ -153,6 +153,15 @@ static void mt_run_op(mt_vm* const vm) {
                     break;
             }
             break;
+        case mt_pfx(MUL):
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
+                mt_vm_math_op(vm, *=, mt_int);
+            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
+                mt_vm_math_op(vm, *=, mt_float);
+            } else {
+                // @TODO handle error
+            }
+        break;
         case mt_pfx(ADD):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, +=, mt_int);

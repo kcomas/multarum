@@ -5,12 +5,12 @@
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        printf("Usage %s file\n", argv[0]);
+        printf("Usage %s file [opts]\n", argv[0]);
         exit(1);
     }
 
     mt_ctx ctx;
-    mt_ctx_init(&ctx);
+    mt_ctx_init(&ctx, argc, argv);
 
     mt_buf* to_open = mt_buf_from_c_str(argv[1]);
 
@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
 
     mt_var read_status = mt_read_file_chunk(script.data.mt_file, ctx.read_buf);
 
+    printf("Read Status: ");
     mt_var_debug_print(read_status);
     printf("\n");
 
@@ -32,6 +33,7 @@ int main(int argc, char** argv) {
     mt_token_state token_state;
     mt_token_state_init(&token_state);
     mt_var tokenize_rst = mt_tokenize_buf(&token_state, ctx.read_buf);
+    printf("Tokenizer Status: ");
     mt_var_debug_print(tokenize_rst);
     printf("\n");
 
@@ -47,6 +49,7 @@ int main(int argc, char** argv) {
     mt_ast_init(&ast_state);
 
     mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
+    printf("AST Status: ");
     mt_var_debug_print(ast_rst);
     printf("\n");
     mt_ast_debug_print(ast_state.ast, 0);
@@ -58,6 +61,7 @@ int main(int argc, char** argv) {
 
     mt_var code_rst = mt_cgen_build(&cgen_state, ast_state.ast, mod);
     mt_cgen_state_free(&cgen_state);
+    printf("CGEN Status: ");
     mt_var_debug_print(code_rst);
     printf("\n");
 
@@ -69,10 +73,12 @@ int main(int argc, char** argv) {
 
     mt_vm vm;
     mt_vm_init(&vm, &ctx, mod);
+    printf("Output\n");
     mt_var rst = mt_vm_run(&vm);
+    printf("End Output\n");
+    printf("Vm Retured Value: ");
     mt_var_debug_print(rst);
-    printf("\n");
-    printf("Stack len %lu\n", vm.s_len);
+    printf(", Stack len %lu\n", vm.s_len);
     mt_vm_debug_stack_print(&vm);
     mt_vm_free(&vm);
     mt_ctx_free(&ctx);

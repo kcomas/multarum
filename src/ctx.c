@@ -1,7 +1,9 @@
 
 #include "ctx.h"
 
-void mt_ctx_init(mt_ctx* const ctx) {
+void mt_ctx_init(mt_ctx* const ctx, int32_t argc, char** argv) {
+    ctx->argc = argc;
+    ctx->argv = argv;
     ctx->read_buf = mt_buf_init(MT_DEFAULT_CTX_BUF_SIZE);
     ctx->write_buf = mt_buf_init(MT_DEFAULT_CTX_BUF_SIZE);
 }

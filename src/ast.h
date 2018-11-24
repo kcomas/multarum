@@ -88,6 +88,7 @@ typedef enum {
     mt_ast(EQ),
     mt_ast(OR),
     mt_ast(CALL),
+    mt_ast(MUL),
     mt_ast(ADD),
     mt_ast(SUB),
     mt_ast(WRITE),

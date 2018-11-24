@@ -105,6 +105,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
             i = mt_mod_op16(mod, i);
             break;
         case mt_pfx(NOP):
+        case mt_pfx(MUL):
         case mt_pfx(ADD):
         case mt_pfx(SUB):
         case mt_pfx(EQ):
