@@ -164,6 +164,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     for (size_t i = 0; i < state->if_len; i++) {
                         mt_cgen_walk_jmp_svb(mod, state->if_pos[i]);
                     }
+                    state->if_len = 0;
                     return mt_var_bool(true);
                 }
                 rst = mt_cgen_walk(state, conds->cond, mod, ast->node.if_smt->sym_table);
