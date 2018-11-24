@@ -264,7 +264,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             if (mt_var_is_int(mt_vm_prev_stack(vm))) {
                 if (mt_vm_prev_stack(vm).data.mt_int == 1) {
-                    // @TODO remove new lines
+                    // @TODO remove new lines and write to write buffer
                     mt_var_debug_print(mt_vm_cur_stack(vm));
                     printf("\n");
                 }
