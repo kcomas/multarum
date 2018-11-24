@@ -160,6 +160,12 @@ static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
     } \
     mt_ast_inc_token(state);
 
+static inline void mt_ast_flush_nl(mt_ast_state* const state) {
+    while (state->cur_token != NULL && state->cur_token->type == mt_token(NL)) {
+        mt_ast_inc_token(state);
+    }
+}
+
 static inline mt_ast_if_cond* mt_ast_if_cond_init() {
     mt_ast_if_cond* cond = malloc(sizeof(mt_ast_if_cond));
     cond->cond = NULL;
@@ -206,7 +212,8 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
             case mt_ast_state(IF_BODY):
                 if_smt->tail->body = sub_tree;
                 sub_state.mode = mt_ast_state(IF_COND);
-                if (sub_state.cur_token->next != NULL && sub_state.cur_token->next->type == mt_token(R_BRACKET)) {
+                mt_ast_flush_nl(&sub_state);
+                if (sub_state.cur_token != NULL && sub_state.cur_token->type == mt_token(R_BRACKET)) {
                     state->cur_token = sub_state.cur_token;
                     mt_ast_inc_token2(state);
                     *cur_tree = sub_state.ast;
@@ -395,9 +402,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_invalid_state(IF_COND);
             mt_ast_quic_bop(WRITE);
         case mt_token(NL):
-            while (state->cur_token != NULL && state->cur_token->type == mt_token(NL)) {
-                mt_ast_inc_token(state);
-            }
+            mt_ast_flush_nl(state);
             if (*cur_tree == NULL && state->cur_token != NULL) {
                 return mt_ast_next_token(state, cur_tree);
             }
