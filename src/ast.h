@@ -47,7 +47,8 @@ typedef struct {
 
 typedef struct _mt_ast_if_cond {
     mt_ast* cond;
-    mt_ast* body;
+    mt_ast_op_list* body_head;
+    mt_ast_op_list* body_tail;
     struct _mt_ast_if_cond* next;
 } mt_ast_if_cond;
 

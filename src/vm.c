@@ -107,7 +107,11 @@ static void mt_run_op(mt_vm* const vm) {
             break;
         case mt_pfx(FL):
             mt_vm_cur_byte(vm)++;
-            mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            if (vm->f_len == 1) {
+                mt_al = vm->s_len;
+            } else {
+                mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
+            }
             while (mt_al > 0) {
                 mt_vm_dec_stack(vm);
                 mt_al--;
@@ -222,9 +226,9 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_jmp(vm, mt_jmp);
             break;
         case mt_pfx(LD_SELF):
-            mt_vm_cur_mod(vm)->ref_count++;
             mt_vm_push(vm, mt_var_mod(mt_vm_cur_mod(vm)));
             mt_vm_cur_byte(vm)++;
+            mt_vm_inc_ref(vm);
             break;
         case mt_pfx(LD_FN):
             mt_vm_cur_byte(vm)++;

@@ -90,6 +90,18 @@ static inline mt_var mt_cgen_ld_var(const mt_buf* const buf, mt_mod* const mod, 
         mt_write_bytes(mod, &mt_al, sizeof(uint16_t)); \
     }
 
+
+static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl);
+
+static inline mt_var mt_cgen_walk_if(mt_ast_op_list* ops, mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod) {
+    while (ops != NULL) {
+        mt_var rst = mt_cgen_walk(state, ops->op, mod, ast->node.if_smt->sym_table);
+        mt_cgen_ck_err(rst);
+        ops = ops->next;
+    }
+    return mt_var_bool(true);
+}
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
@@ -159,7 +171,8 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     if (conds->next != NULL) {
                         return mt_var_err(mt_err_cgen_if_def());
                     }
-                    rst = mt_cgen_walk(state, conds->body, mod, ast->node.if_smt->sym_table);
+                    rst = mt_cgen_walk(state, conds->body_head->op, mod, ast->node.if_smt->sym_table);
+                    mt_cgen_walk_if(conds->body_head, state, ast, mod );
                     mt_cgen_ck_err(rst);
                     for (size_t i = 0; i < state->if_len; i++) {
                         mt_cgen_walk_jmp_svb(mod, state->if_pos[i]);
@@ -170,7 +183,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                 rst = mt_cgen_walk(state, conds->cond, mod, ast->node.if_smt->sym_table);
                 mt_cgen_ck_err(rst);
                 jmp_hdl = mt_cgen_walk_jmp_sva(mod, mt_pfx(JMPF));
-                rst = mt_cgen_walk(state, conds->body, mod, ast->node.if_smt->sym_table);
+                rst = mt_cgen_walk_if(conds->body_head, state, ast, mod);
                 mt_cgen_ck_err(rst);
                 mt_cgen_state_push_if(state, mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP)));
                 mt_cgen_walk_jmp_svb(mod, jmp_hdl);
