@@ -361,10 +361,19 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             *cur_tree = sub_tree;
             return mt_ast_next_token(state, cur_tree);
         case mt_token(R_BRACE):
-            if (state->mode != mt_ast_state(CALL)) {
-                mt_ast_inc_token(state);
+            switch (state->mode) {
+                case mt_ast_state(ARGS):
+                    if (mt_ast_peek_token_is_type(state, L_BRACKET)) {
+                        mt_ast_inc_token2(state);
+                        state->mode = mt_ast_state(FN);
+                        return mt_ast_next_token(state, cur_tree);
+                    }
+                case mt_ast_state(CALL):
+                    return mt_var_bool(true);
+                default:
+                    break;
             }
-            return mt_var_bool(true);
+            return mt_ast_token_invalid(state->cur_token);
         case mt_token(COMMA):
             if (state->mode == mt_ast_state(CALL)) {
                 mt_ast_inc_token(state);
