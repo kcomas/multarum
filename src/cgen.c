@@ -122,7 +122,6 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                 mt_f = mod->f_len - 1;
             }
             mt_cgen_ops_list_walk(state, ast, mod, fn, ops_head);
-            mt_cgen_set_locals(ast, mod, FL, mt_al);
             if (tbl != NULL) {
                 mt_write_byte(mod, mt_pfx(RET));
                 mt_mod_reg_fne(mod, mt_f, mod->len);

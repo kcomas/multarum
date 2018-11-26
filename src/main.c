@@ -78,8 +78,7 @@ int main(int argc, char** argv) {
     printf("End Output\n");
     printf("Vm Retured Value: ");
     mt_var_debug_print(rst);
-    printf(", Stack len %lu\n", vm.s_len);
-    mt_vm_debug_stack_print(&vm);
+    printf("\n");
     mt_vm_free(&vm);
     mt_ctx_free(&ctx);
     return 0;

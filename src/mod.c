@@ -101,7 +101,6 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
     mt_mod_space_bytes(i, count_total);
     switch (mod->bytes[i]) {
         case mt_pfx(AL):
-        case mt_pfx(FL):
             i = mt_mod_op16(mod, i);
             break;
         case mt_pfx(NOP):
