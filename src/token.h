@@ -27,6 +27,7 @@ typedef enum {
     mt_token(R_BRACE) = ')',
     mt_token(COMMA) = ',',
     mt_token(QUESTION) = '?',
+    mt_token(QUOTE) = '"',
     mt_token(EQ) = '=',
     mt_token(OR) = '|',
     mt_token(L_BRACKET) = '{',
@@ -59,6 +60,7 @@ typedef struct {
         mt_token_state(VAR),
         mt_token_state(INT),
         // mt_token_state(FLOAT)
+        mt_token_state(STR)
     } state;
     size_t line, c;
     mt_buf_iter iter;

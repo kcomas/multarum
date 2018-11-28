@@ -371,9 +371,10 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(CALL):
                     return mt_var_bool(true);
                 default:
+                    mt_ast_inc_token(state);
+                    return mt_var_bool(true);
                     break;
             }
-            return mt_ast_token_invalid(state->cur_token);
         case mt_token(COMMA):
             if (state->mode == mt_ast_state(CALL)) {
                 mt_ast_inc_token(state);

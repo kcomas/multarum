@@ -100,6 +100,10 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, R_BRACE);
         mt_token_quick_nothing(state, COMMA);
         mt_token_quick_nothing(state, QUESTION);
+        case mt_token(QUOTE):
+                has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+                state->state = mt_token_state(STR);
+            break;
         mt_token_quick_nothing(state, EQ);
         mt_token_quick_nothing(state, OR);
         mt_token_quick_nothing(state, L_BRACKET);
@@ -152,6 +156,30 @@ static mt_var mt_token_state_comment(mt_token_state* const state) {
     return mt_var_bool(has_chars);
 }
 
+static mt_var mt_token_state_var(mt_token_state* const state) {
+    mt_char cur_char, peek_char;
+    bool has_chars = mt_buf_iter_peek(&state->iter, &peek_char);
+    if (!has_chars || !mt_token_is_var(peek_char)) {
+        mt_token_add(state, mt_token(VAR), (mt_token_data) { .mt_var = state->cur_data });
+        state->cur_data = NULL;
+        state->state = mt_token_state(NOTHING);
+        return mt_var_bool(true);
+    }
+    has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+    mt_token_inc_char(state);
+    if (!has_chars) {
+        return mt_var_bool(false);
+    }
+    if (mt_token_is_var(cur_char)) {
+        if (!mt_buf_push_char(state->cur_data, cur_char)) {
+            return mt_var_err(mt_err_token_buf_full());
+        }
+    } else {
+        // @TODO invalid char
+    }
+    return mt_var_bool(has_chars);
+}
+
 static mt_var mt_token_state_int(mt_token_state* const state) {
     mt_char cur_char, peek_char;
     bool has_chars = mt_buf_iter_peek(&state->iter, &peek_char);
@@ -180,28 +208,8 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
     return mt_var_bool(has_chars);
 }
 
-static mt_var mt_token_state_var(mt_token_state* const state) {
-    mt_char cur_char, peek_char;
-    bool has_chars = mt_buf_iter_peek(&state->iter, &peek_char);
-    if (!has_chars || !mt_token_is_var(peek_char)) {
-        mt_token_add(state, mt_token(VAR), (mt_token_data) { .mt_var = state->cur_data });
-        state->cur_data = NULL;
-        state->state = mt_token_state(NOTHING);
-        return mt_var_bool(true);
-    }
-    has_chars = mt_buf_iter_next(&state->iter, &cur_char);
-    mt_token_inc_char(state);
-    if (!has_chars) {
-        return mt_var_bool(false);
-    }
-    if (mt_token_is_var(cur_char)) {
-        if (!mt_buf_push_char(state->cur_data, cur_char)) {
-            return mt_var_err(mt_err_token_buf_full());
-        }
-    } else {
-        // @TODO invalid char
-    }
-    return mt_var_bool(has_chars);
+static mt_var mt_token_state_str(mt_token_state* const state) {
+
 }
 
 mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
@@ -221,6 +229,9 @@ mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
                 break;
             case mt_token_state(INT):
                 has_chars = mt_token_state_int(state);
+                break;
+            case mt_token_state(STR):
+                has_chars = mt_token_state_str(state);
                 break;
         }
     }
