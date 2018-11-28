@@ -57,9 +57,6 @@ static size_t mt_hash_hash(const mt_buf* const name) {
 }
 
 mt_var mt_hash_insert(mt_hash* const hash, const mt_buf* const name, mt_var value) {
-    if (name->len > MT_HASH_MAX_NAME_SIZE) {
-        return mt_var_err(mt_err_hash_key_len());
-    }
     size_t hashd = mt_hash_hash(name);
     size_t pos = hashd % hash->_bsize;
     if (hash->buckets[pos] == NULL) {

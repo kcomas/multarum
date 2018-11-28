@@ -11,11 +11,11 @@
 #include "ctx.h"
 
 #ifndef MT_DEFAULT_STACK_SIZE
-#   define MT_DEFAULT_STACK_SIZE 100000
+#   define MT_DEFAULT_STACK_SIZE 10000
 #endif
 
 #ifndef MT_DEFAULT_FRAME_SIZE
-#   define MT_DEFAULT_FRAME_SIZE 10000
+#   define MT_DEFAULT_FRAME_SIZE 5000
 #endif
 
 typedef enum {
