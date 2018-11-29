@@ -100,9 +100,10 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, R_BRACE);
         mt_token_quick_nothing(state, COMMA);
         mt_token_quick_nothing(state, QUESTION);
-        case mt_token(QUOTE):
-                has_chars = mt_buf_iter_next(&state->iter, &cur_char);
-                state->state = mt_token_state(STR);
+        case mt_token(STR):
+            has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+            mt_token_set_cur_data(state, cur_char);
+            state->state = mt_token_state(STR);
             break;
         mt_token_quick_nothing(state, EQ);
         mt_token_quick_nothing(state, OR);
@@ -156,13 +157,21 @@ static mt_var mt_token_state_comment(mt_token_state* const state) {
     return mt_var_bool(has_chars);
 }
 
+#define mt_token_push_data(state, cur_char) \
+    if (!mt_buf_push_char(state->cur_data, cur_char)) { \
+        return mt_var_err(mt_err_token_buf_full()); \
+    }
+
+#define mt_token_state_reset(state) \
+    state->state = mt_token_state(NOTHING)
+
 static mt_var mt_token_state_var(mt_token_state* const state) {
     mt_char cur_char, peek_char;
     bool has_chars = mt_buf_iter_peek(&state->iter, &peek_char);
     if (!has_chars || !mt_token_is_var(peek_char)) {
         mt_token_add(state, mt_token(VAR), (mt_token_data) { .mt_var = state->cur_data });
         state->cur_data = NULL;
-        state->state = mt_token_state(NOTHING);
+        mt_token_state_reset(state);
         return mt_var_bool(true);
     }
     has_chars = mt_buf_iter_next(&state->iter, &cur_char);
@@ -171,9 +180,7 @@ static mt_var mt_token_state_var(mt_token_state* const state) {
         return mt_var_bool(false);
     }
     if (mt_token_is_var(cur_char)) {
-        if (!mt_buf_push_char(state->cur_data, cur_char)) {
-            return mt_var_err(mt_err_token_buf_full());
-        }
+        mt_token_push_data(state, cur_char);
     } else {
         // @TODO invalid char
     }
@@ -188,9 +195,9 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
         state->cur_data->data[state->cur_data->len++] = '\0';
         uint8_t* endptr = &state->cur_data->data[state->cur_data->len];
         int64_t value = strtol((char*) state->cur_data->data, (char**) &endptr, 10);
-        mt_buf_zero(state->cur_data);
         mt_token_add(state, mt_token(INT), (mt_token_data) { .mt_int = value });
-        state->state = mt_token_state(NOTHING);
+        mt_buf_zero(state->cur_data);
+        mt_token_state_reset(state);
         return mt_var_bool(true);
     }
     has_chars = mt_buf_iter_next(&state->iter, &cur_char);
@@ -199,9 +206,7 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
         return mt_var_bool(false);
     }
     if (mt_token_is_num(cur_char)) {
-        if (!mt_buf_push_char(state->cur_data, cur_char)) {
-            return mt_var_err(mt_err_token_buf_full());
-        }
+        mt_token_push_data(state, cur_char);
     } else if (cur_char.a != '_') {
         // @TODO invalid char
     }
@@ -209,12 +214,21 @@ static mt_var mt_token_state_int(mt_token_state* const state) {
 }
 
 static mt_var mt_token_state_str(mt_token_state* const state) {
-
+    mt_char cur_char;
+    bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+    while (has_chars && cur_char.a != '"') {
+        mt_token_inc_char(state);
+        mt_token_push_data(state, cur_char);
+        has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+    }
+    mt_token_add(state, mt_token(STR), (mt_token_data) { .mt_str = state->cur_data });
+    state->cur_data = NULL;
+    mt_token_state_reset(state);
+    return mt_var_bool(has_chars);
 }
 
 mt_var mt_tokenize_buf(mt_token_state* const state, const mt_buf* const buf) {
     mt_var has_chars = mt_var_bool(true);
-
     mt_buf_iter_init(buf, &state->iter);
     while (mt_var_is_bool(has_chars) && has_chars.data.mt_bool == true) {
         switch (state->state) {
@@ -264,6 +278,11 @@ void mt_token_state_debug_print(const mt_token_state* const state) {
                 break;
             case mt_token(INT):
                 printf("%lu:%lu:%li ", t->line, t->c, t->data.mt_int);
+                break;
+            case mt_token(STR):
+                putchar('"');
+                mt_buf_debug_print(t->data.mt_str);
+                putchar('"');
                 break;
             case mt_token(WRITE):
                 printf("%lu:%lu:<> ", t->line, t->c);
@@ -318,6 +337,7 @@ int32_t mt_token_buf_info(mt_buf* const target, const mt_token* const token) {
     switch (token->type) {
         case mt_token(VAR):
             if (token->data.mt_var->len > mt_buf_space_free(target)) {
+                // @TODO resize
                 return total;
             }
             mt_buf_write(target, token->data.mt_var->data, token->data.mt_var->len);
@@ -325,6 +345,16 @@ int32_t mt_token_buf_info(mt_buf* const target, const mt_token* const token) {
             break;
         case mt_token(INT):
             sub_total = sprintf((char*) mt_buf_cur_raw(target), "%li", token->data.mt_int);
+            break;
+        case mt_token(STR):
+            mt_buf_write(target, "\"", 1);
+            if (token->data.mt_str->len > mt_buf_space_free(target)) {
+                // @TODO resize
+                return total;
+            }
+            mt_buf_write(target, token->data.mt_str->data, token->data.mt_str->len);
+            total += token->data.mt_str->len;
+            mt_buf_write(target, "\"", 1);
             break;
         case mt_token(WRITE):
             mt_buf_write(target, "<>", 2);

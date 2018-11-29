@@ -15,6 +15,7 @@ typedef union {
     int64_t mt_int;
     double mt_float;
     mt_buf* mt_var;
+    mt_buf* mt_str;
 } mt_token_data;
 
 typedef enum {
@@ -27,7 +28,7 @@ typedef enum {
     mt_token(R_BRACE) = ')',
     mt_token(COMMA) = ',',
     mt_token(QUESTION) = '?',
-    mt_token(QUOTE) = '"',
+    mt_token(STR) = '"',
     mt_token(EQ) = '=',
     mt_token(OR) = '|',
     mt_token(L_BRACKET) = '{',
