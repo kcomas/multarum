@@ -92,7 +92,7 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
     int8_t char_conts;
-    uint32_t mt_jmp;
+    uint32_t mt_jmp, str_len;
     int64_t mt_int;
     double mt_float;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
@@ -178,6 +178,27 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                     printf("PUSH %lf\n", mt_float);
                     break;
             }
+            break;
+        case mt_pfx(ISTR):
+            i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &str_len);
+            printf("ISTR %d ", str_len);
+            for (size_t x = 0; x < str_len; x++, i++) {
+                switch (mod->bytes[i]) {
+                    case '\\':
+                        printf("\\\\");
+                        break;
+                    case '\t':
+                        printf("\\t");
+                        break;
+                    case '\n':
+                        printf("\\n");
+                        break;
+                    default:
+                        putchar(mod->bytes[i]);
+                        break;
+                }
+            }
+            printf("\n");
             break;
         case mt_pfx(JMP):
             i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &mt_jmp);

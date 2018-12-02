@@ -7,7 +7,7 @@
 #include "var.h"
 #include "buf.h"
 
-#define mt_token(NAME) mt_pfx(_T_##NAME)
+#define mt_token(NAME) mt_pfx(T_##NAME)
 
 #define MT_TOKEN_DATA_CHAR_BUF_SIZE 200
 

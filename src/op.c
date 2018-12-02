@@ -5,6 +5,7 @@ static const char* op_str[] = {
     "NOP",
     "AL",
     "PUSH",
+    "ISTR",
     "MUL",
     "ADD",
     "SUB",

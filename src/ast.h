@@ -5,7 +5,7 @@
 #include "token.h"
 #include "hash.h"
 
-#define mt_ast(NAME) mt_pfx(_A_##NAME)
+#define mt_ast(NAME) mt_pfx(A_##NAME)
 
 typedef struct _mt_ast mt_ast;
 
@@ -67,6 +67,7 @@ typedef union {
     int64_t mt_int;
     double mt_float;
     mt_buf* mt_var;
+    mt_buf* mt_str;
 } mt_ast_value;
 
 typedef union {
@@ -85,6 +86,7 @@ typedef enum {
     mt_ast(ARG),
     mt_ast(INT),
     // mt_ast(FLOAT)
+    mt_ast(STR),
     mt_ast(IF),
     mt_ast(EQ),
     mt_ast(OR),

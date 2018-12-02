@@ -113,7 +113,6 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, MUL);
         mt_token_quick_nothing(state, ADD);
         mt_token_quick_nothing(state, SUB);
-        mt_token_quick_nothing(state, END);
         mt_token_quick_nothing(state, GREATER);
         case mt_token(LESS):
             has_chars = mt_buf_iter_peek(&state->iter, &cur_char);
@@ -136,6 +135,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
             mt_token_add_no_data(state, mt_token(NL));
             mt_token_inc_line(state);
             break;
+        mt_token_quick_nothing(state, END);
         default:
             break;
     }
@@ -217,9 +217,32 @@ static mt_var mt_token_state_str(mt_token_state* const state) {
     mt_char cur_char;
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
     while (has_chars && cur_char.a != '"') {
-        mt_token_inc_char(state);
-        mt_token_push_data(state, cur_char);
-        has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+        if (cur_char.a == '\\') {
+            if (!mt_buf_iter_peek(&state->iter, &cur_char)) {
+                return mt_var_bool(false);
+            }
+            switch (cur_char.a) {
+                case '\\':
+                    mt_token_push_data(state, mt_char_init('\\', 0, 0, 0));
+                    break;
+                case 't':
+                    mt_token_push_data(state, mt_char_init('\t', 0, 0, 0));
+                    break;
+                case 'n':
+                    mt_token_push_data(state, mt_char_init('\n', 0, 0, 0));
+                    break;
+                default:
+                    return mt_var_err(mt_err_token_esc());
+            }
+            mt_token_inc_char(state);
+            has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+            mt_token_inc_char(state);
+            has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+        } else {
+            mt_token_inc_char(state);
+            mt_token_push_data(state, cur_char);
+            has_chars = mt_buf_iter_next(&state->iter, &cur_char);
+        }
     }
     mt_token_add(state, mt_token(STR), (mt_token_data) { .mt_str = state->cur_data });
     state->cur_data = NULL;

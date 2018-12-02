@@ -89,6 +89,9 @@ static void mt_ast_free_walk(mt_ast* const ast) {
         case mt_ast(ARG):
         case mt_ast(INT):
             break;
+        case mt_ast(STR):
+            mt_buf_free(ast->node.value.mt_str);
+            break;
         mt_ast_free_bop_case(ASSIGN, ast);
         mt_ast_free_bop_case(EQ, ast);
         case mt_ast(IF):
@@ -334,6 +337,10 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             *cur_tree = mt_ast_node(INT, value, mt_ast_value(mt_int, state->cur_token->data.mt_int));
             mt_ast_inc_token(state);
             return mt_ast_next_token(state, cur_tree);
+        case mt_token(STR):
+            *cur_tree = mt_ast_node(STR, value, mt_ast_value(mt_str, state->cur_token->data.mt_str));
+            mt_ast_inc_token(state);
+            return mt_ast_next_token(state, cur_tree);
         case mt_token(ASSIGN):
             mt_ast_invalid_state(IF_COND);
             mt_ast_quic_bop(ASSIGN);
@@ -501,6 +508,11 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
             break;
         case mt_ast(INT):
             printf("%lu\n", ast->node.value.mt_int);
+            break;
+        case mt_ast(STR):
+            putchar('"');
+            mt_buf_debug_print(ast->node.value.mt_str);
+            printf("\"\n");
             break;
         case mt_ast(IF):
             printf("IF\n");

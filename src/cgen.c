@@ -113,6 +113,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
     uint8_t mt_f = 0;
     uint16_t mt_al;
     uint8_t* jmp_hdl = NULL;
+    uint32_t str_len; // in bytes
     switch (ast->type) {
         case mt_ast(FN):
             mt_cgen_set_locals(ast, mod, AL, mt_al);
@@ -162,6 +163,12 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
         case mt_ast(INT):
             mt_write_byte(mod, mt_pfx(PUSH));
             mt_var_write_bytes(mod, &mt_var_int(ast->node.value.mt_int));
+            break;
+        case mt_ast(STR):
+            mt_write_byte(mod, mt_pfx(ISTR));
+            str_len = (uint32_t) ast->node.value.mt_str->len;
+            mt_write_bytes(mod, &str_len, sizeof(uint32_t));
+            mt_write_bytes(mod, ast->node.value.mt_str->data, ast->node.value.mt_str->len);
             break;
         case mt_ast(IF):
             conds = ast->node.if_smt->head;
