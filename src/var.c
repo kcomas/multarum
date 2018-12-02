@@ -55,6 +55,7 @@ bool mt_var_as_bool(const mt_var* const var) {
         case mt_pfx(MFILE):
         case mt_pfx(ERROR):
         case mt_pfx(BUFFER):
+        case mt_pfx(STR):
         default:
             return false;
     }
@@ -109,6 +110,9 @@ void mt_var_debug_print(mt_var const var) {
             break;
         case mt_pfx(HASH):
             mt_hash_debug_print(var.data.mt_hash);
+            break;
+        case mt_pfx(STR):
+            mt_str_debug_print(var.data.mt_str);
             break;
     }
 }

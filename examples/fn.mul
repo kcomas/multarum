@@ -14,6 +14,7 @@ a: .(fn value) {
     }
 }
 
+
 b: .() { "Hello World\n" }
 
 a(b, 0)

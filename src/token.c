@@ -53,10 +53,14 @@ static inline void mt_token_add_no_data(mt_token_state* const state, mt_token_ty
     mt_token_add(state, type, (mt_token_data) { .mt_int = 0 });
 }
 
-static inline void mt_token_set_cur_data(mt_token_state* const state, mt_char c) {
+static inline void mt_token_init_data(mt_token_state* const state) {
     if (state->cur_data == NULL) {
         state->cur_data = mt_buf_init(MT_TOKEN_DATA_CHAR_BUF_SIZE);
     }
+}
+
+static inline void mt_token_set_cur_data(mt_token_state* const state, mt_char c) {
+    mt_token_init_data(state);
     mt_buf_push_char(state->cur_data, c);
 }
 
@@ -101,10 +105,9 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, COMMA);
         mt_token_quick_nothing(state, QUESTION);
         case mt_token(STR):
-            has_chars = mt_buf_iter_next(&state->iter, &cur_char);
-            mt_token_set_cur_data(state, cur_char);
+            mt_token_init_data(state);
             state->state = mt_token_state(STR);
-            break;
+            return mt_var_bool(true);
         mt_token_quick_nothing(state, EQ);
         mt_token_quick_nothing(state, OR);
         mt_token_quick_nothing(state, L_BRACKET);

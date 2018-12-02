@@ -96,7 +96,9 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp = 0;
+    uint32_t str_len;
     uint16_t mt_al;
+    mt_buf* mt_buf;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
     switch (*mt_vm_cur_byte(vm)) {
         case mt_pfx(NOP):
@@ -149,6 +151,13 @@ static void mt_run_op(mt_vm* const vm) {
             }
             break;
         case mt_pfx(ISTR):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &str_len, sizeof(uint32_t));
+            mt_buf = mt_buf_init((size_t) str_len);
+            for (size_t i = 0; i < mt_buf->_size; i++) {
+                mt_buf->data[mt_buf->len++] = *mt_vm_cur_byte(vm)++;
+            }
+            mt_vm_push(vm, mt_var_str(mt_str_init(mt_buf)));
             break;
         case mt_pfx(MUL):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
@@ -263,7 +272,6 @@ static void mt_run_op(mt_vm* const vm) {
                 if (mt_vm_prev_stack(vm).data.mt_int == 1) {
                     // @TODO remove new lines and write to write buffer
                     mt_var_debug_print(mt_vm_cur_stack(vm));
-                    printf("\n");
                 }
             } else {
                 // @TODO handle error

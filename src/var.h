@@ -62,6 +62,10 @@ typedef struct _mt_var {
 
 #define mt_var_buf(value) (mt_var) { .type = mt_pfx(BUFFER), .data = { .mt_buf = value } }
 
+#define mt_var_hash(value) (mt_var) { .type = mt_pfx(HASH), .data = { .mt_hash = value } }
+
+#define mt_var_str(value) (mt_var) { .type = mt_pfx(STR), .data = { .mt_str = value } }
+
 #define mt_var_is_null(var) (var.type == mt_pfx(NULL))
 
 #define mt_var_is_bool(var) (var.type == mt_pfx(BOOL))
@@ -94,6 +98,9 @@ void mt_err_free(mt_err* const err);
             break; \
         case mt_pfx(HASH): \
             mt_hash_free(var.data.mt_hash); \
+            break; \
+        case mt_pfx(STR): \
+            mt_str_free(var.data.mt_str); \
         default: \
             break; \
     }
