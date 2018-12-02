@@ -9,8 +9,8 @@
 #include "common.h"
 #include "char.h"
 #include "mod.h"
-#include "buf.h"
 #include "err.h"
+#include "str.h"
 
 typedef struct _mt_mod mt_mod;
 typedef struct _mt_err mt_err;
@@ -36,6 +36,7 @@ typedef struct _mt_var {
         mt_err* mt_err;
         mt_buf* mt_buf;
         mt_hash* mt_hash;
+        mt_str* mt_str;
     } data;
 } mt_var;
 

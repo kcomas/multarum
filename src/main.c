@@ -71,8 +71,6 @@ int main(int argc, char** argv) {
 
     mt_mod_dis(mod);
 
-    exit(1);
-
     mt_vm vm;
     mt_vm_init(&vm, &ctx, mod);
     printf("Output\n");

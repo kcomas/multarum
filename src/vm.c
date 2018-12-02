@@ -148,6 +148,8 @@ static void mt_run_op(mt_vm* const vm) {
                     break;
             }
             break;
+        case mt_pfx(ISTR):
+            break;
         case mt_pfx(MUL):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, *=, mt_int);
@@ -242,7 +244,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
             vm->stack[mt_vm_cur_base(vm) + mt_vm_cur_args(vm) + mt_al] = mt_vm_cur_stack(vm);
-            mt_vm_dec_stack_atomic(vm);
+            mt_vm_inc_ref(vm);
             break;
         case mt_pfx(CALL):
             if (mt_vm_cur_stack(vm).type != mt_pfx(FN)) {
