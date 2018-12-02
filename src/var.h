@@ -116,6 +116,8 @@ void mt_err_free(mt_err* const err);
             break; \
         case mt_pfx(HASH): \
             var.data.mt_hash->ref_count++; \
+        case mt_pfx(STR): \
+            var.data.mt_str->ref_count++; \
         default: \
             break; \
     } \
