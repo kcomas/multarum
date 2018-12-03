@@ -438,7 +438,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 return mt_ast_next_token(state, cur_tree);
             }
             return mt_var_bool(true);
-        case mt_token(END):
+        case mt_token(SEMICOLON):
             mt_ast_inc_token(state);
             return mt_var_bool(true);
         default:

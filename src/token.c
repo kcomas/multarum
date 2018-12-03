@@ -138,7 +138,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
             mt_token_add_no_data(state, mt_token(NL));
             mt_token_inc_line(state);
             break;
-        mt_token_quick_nothing(state, END);
+        mt_token_quick_nothing(state, SEMICOLON);
         default:
             break;
     }

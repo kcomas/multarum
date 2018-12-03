@@ -42,7 +42,7 @@ typedef enum {
     mt_token(WRITE) = 131,
     mt_token(SLASH) = '/',
     mt_token(NL) = '\n',
-    mt_token(END) = ';'
+    mt_token(SEMICOLON) = ';'
 } mt_token_type;
 
 typedef struct _mt_token {
