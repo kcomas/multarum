@@ -359,6 +359,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 return mt_var_bool(true);
             } else if (mt_ast_peek_token_is_type(state, VAR)) {
                 mt_ast_inc_token(state);
+                // @TODO global
             }
             return mt_ast_token_invalid(state->cur_token);
         case mt_token(L_BRACE):
