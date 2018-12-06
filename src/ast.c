@@ -35,6 +35,7 @@ static mt_ast* mt_ast_fn_init(void) {
     fn->sym_table = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
     mt_ast_fn_access(fn, arg_table).hash = NULL;
     mt_ast_fn_access(fn, local_table).hash = NULL;
+    mt_ast_fn_access(fn, global_table).hash = NULL;
     fn->ops_head = mt_ast_add_op_list();
     fn->ops_tail = fn->ops_head;
     return mt_ast_node(FN, fn, fn);
@@ -345,19 +346,21 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_invalid_state(IF_COND);
             mt_ast_quic_bop(ASSIGN);
         case mt_token(PERIOD):
-            if (!mt_ast_peek_token_is_type(state, L_BRACE)) {
-                return mt_ast_token_invalid(state->cur_token);
+            if (mt_ast_peek_token_is_type(state, L_BRACE)) {
+                mt_ast_inc_token2(state); // in fn def
+                mt_ast_init(&sub_state);
+                sub_state.mode = mt_ast_state(ARGS);
+                build_rst = mt_ast_build(&sub_state, state->cur_token);
+                if (mt_var_is_err(build_rst)) {
+                    return build_rst;
+                }
+                state->cur_token = sub_state.cur_token;
+                *cur_tree = sub_state.ast;
+                return mt_var_bool(true);
+            } else if (mt_ast_peek_token_is_type(state, VAR)) {
+                mt_ast_inc_token(state);
             }
-            mt_ast_inc_token2(state); // in fn def
-            mt_ast_init(&sub_state);
-            sub_state.mode = mt_ast_state(ARGS);
-            build_rst = mt_ast_build(&sub_state, state->cur_token);
-            if (mt_var_is_err(build_rst)) {
-                return build_rst;
-            }
-            state->cur_token = sub_state.cur_token;
-            *cur_tree = sub_state.ast;
-            return mt_var_bool(true);
+            return mt_ast_token_invalid(state->cur_token);
         case mt_token(L_BRACE):
             mt_ast_inc_token(state);
             sub_tree = NULL;

@@ -21,7 +21,7 @@ typedef struct {
     struct {
         uint64_t idx;
         mt_hash* hash;
-    } arg_table, local_table;
+    } arg_table, local_table, global_table;
 } mt_ast_sym_table;
 
 typedef struct _mt_ast_op_list {

@@ -243,6 +243,12 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_push(vm, vm->stack[mt_vm_cur_base(vm) + mt_arg - 1]);
             mt_vm_inc_ref(vm);
             break;
+        case mt_pfx(SV_ARG):
+            mt_vm_cur_byte(vm)++;
+            mt_arg = *mt_vm_cur_byte(vm)++;
+            vm->stack[mt_vm_cur_base(vm) + mt_arg - 1] = mt_vm_cur_stack(vm);
+            mt_vm_inc_ref(vm);
+            break;
         case mt_pfx(LD_LOCAL):
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));

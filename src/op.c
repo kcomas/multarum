@@ -16,6 +16,7 @@ static const char* op_str[] = {
     "LD_SELF",
     "LD_FN",
     "LD_ARG",
+    "SV_ARG",
     "LD_LOCAL",
     "SV_LOCAL",
     "CALL",

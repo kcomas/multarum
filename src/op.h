@@ -20,6 +20,7 @@ typedef enum {
     mt_pfx(LD_SELF),
     mt_pfx(LD_FN),
     mt_pfx(LD_ARG),
+    mt_pfx(SV_ARG),
     mt_pfx(LD_LOCAL),
     mt_pfx(SV_LOCAL),
     mt_pfx(CALL),

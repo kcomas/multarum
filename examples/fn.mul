@@ -17,5 +17,9 @@ a: .(fn value) {
 
 b: .() { "Hello World\n" }
 
+c: .(x) { x: x + 1; x }
+
 a(b, 0)
 a(b, 1)
+1 <> c(2)
+1 <> "\n"

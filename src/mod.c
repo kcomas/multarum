@@ -210,6 +210,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
             break;
         case mt_pfx(LD_FN):
         case mt_pfx(LD_ARG):
+        case mt_pfx(SV_ARG):
         case mt_pfx(CALL_SELF):
         case mt_pfx(CALL):
             i = mt_mod_op2(mod, i);

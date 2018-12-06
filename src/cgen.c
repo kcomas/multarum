@@ -58,8 +58,7 @@ static inline mt_var mt_cgen_ld_arg(const mt_buf* const buf, mt_mod* const mod, 
         return rst;
     }
     mt_write_byte(mod, mt_pfx(LD_ARG));
-    uint8_t mt_arg = (uint8_t) rst.data.mt_int;
-    mt_write_bytes(mod, &mt_arg, sizeof(uint8_t));
+    mt_write_byte(mod, (uint8_t) rst.data.mt_int);
     return mt_var_bool(true);
 }
 
@@ -144,6 +143,14 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     mt_al = (uint16_t) rst.data.mt_int;
                     mt_write_bytes(mod, &mt_al, sizeof(uint16_t));
                     return mt_var_bool(true);
+                case mt_ast(ARG):
+                    rst = mt_hash_get(tbl->arg_table.hash, ast->node.bop->left->node.value.mt_var);
+                    if (mt_var_is_null(rst)) {
+                        return mt_var_err(mt_err_cgen_tbl());
+                    }
+                    mt_write_byte(mod, mt_pfx(SV_ARG));
+                    mt_write_byte(mod, (uint8_t) rst.data.mt_int);
+                    return mt_var_bool(true);
                 default:
                     break;
             }
@@ -209,7 +216,13 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
             break;
         mt_cgen_basic_bop_case(state, ast, mod, tbl, MUL);
         mt_cgen_basic_bop_case(state, ast, mod, tbl, ADD);
-        mt_cgen_basic_bop_case(state, ast, mod, tbl, SUB);
+        case mt_ast(SUB):
+            if (ast->node.bop->left == NULL) {
+                // @TODO NEG
+            } else {
+                mt_cgen_basic_bop(state, ast, mod, tbl, mt_pfx(SUB));
+            }
+            break;
         mt_cgen_basic_bop_case(state, ast, mod, tbl, WRITE);
         default:
             return mt_var_err(mt_err_ast_undef());
