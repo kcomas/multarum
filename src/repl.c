@@ -4,6 +4,7 @@
 #define mt_ck_err(rst) \
     if (mt_var_is_err(rst)) { \
         mt_var_debug_print(rst); \
+        printf("\n"); \
         exit(1); \
     }
 
