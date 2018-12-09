@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
     mt_ast_state ast_state;
     mt_ast_table* global_table = mt_ast_empty_table();
-    mt_ast_init(&ast_state, mt_ast_init_sym_table(global_table));
+    mt_ast_init(&ast_state, mt_ast_init_sym_table(global_table, false));
 
     mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
     printf("AST Status: ");
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     mt_cgen_state cgen_state;
     mt_cgen_state_init(&cgen_state, MT_CGEN_STATE_DEFAULT_IF_SIZE);
 
-    mt_var code_rst = mt_cgen_build(&cgen_state, ast_state.ast, mod);
+    mt_var code_rst = mt_cgen_build(&cgen_state, ast_state.ast, mod, false);
     mt_cgen_state_free(&cgen_state);
     printf("CGEN Status: ");
     mt_var_debug_print(code_rst);

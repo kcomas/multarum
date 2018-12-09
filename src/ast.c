@@ -38,12 +38,27 @@ static inline mt_ast_bop* mt_ast_create_bop(mt_ast* const left, mt_ast* const ri
 }
 
 
-mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table) {
+mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table, bool persist) {
     mt_ast_sym_table* tbl = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
+    tbl->persist = persist;
     tbl->arg_table = mt_ast_empty_table();
     tbl->local_table = mt_ast_empty_table();
     tbl->global_table = global_table;
     return tbl;
+}
+
+#define mt_ast_free_table(sym_table, tgt) \
+    if (sym_table->tgt->hash != NULL) { \
+        mt_hash_free(sym_table->tgt->hash); \
+    } \
+    free(sym_table->tgt)
+
+void mt_ast_free_sym_table(mt_ast_sym_table* sym_table, bool force) {
+    if (sym_table->persist == false || force == true) {
+        mt_ast_free_table(sym_table, arg_table);
+        mt_ast_free_table(sym_table, local_table);
+        free(sym_table);
+    }
 }
 
 static mt_ast* mt_ast_fn_init(mt_ast_sym_table* const table) {
@@ -67,11 +82,6 @@ static inline void mt_ast_free_bop(mt_ast* const ast) {
         mt_ast_free_bop(ast); \
         break
 
-#define mt_ast_free_sym_table(ast, tgt) \
-    if (ast->node.fn->sym_table->tgt->hash != NULL) { \
-        mt_hash_free(ast->node.fn->sym_table->tgt->hash); \
-    } \
-    free(ast->node.fn->sym_table->tgt)
 
 #define mt_ast_free_list(ast, tgt) \
     ops = tgt; \
@@ -95,9 +105,7 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             break;
         case mt_ast(FN):
             mt_ast_free_list(ast, ast->node.fn->ops_head);
-            mt_ast_free_sym_table(ast, arg_table);
-            mt_ast_free_sym_table(ast, local_table);
-            free(ast->node.fn->sym_table);
+            mt_ast_free_sym_table(ast->node.fn->sym_table, false);
             free(ast->node.fn);
             break;
         case mt_ast(VAR):
@@ -362,7 +370,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
         case mt_token(PERIOD):
             if (mt_ast_peek_token_is_type(state, L_BRACE)) {
                 mt_ast_inc_token2(state); // in fn def
-                mt_ast_init(&sub_state, mt_ast_init_sym_table(state->ast->node.fn->sym_table->global_table));
+                mt_ast_init(&sub_state, mt_ast_init_sym_table(state->ast->node.fn->sym_table->global_table, false));
                 sub_state.mode = mt_ast_state(ARGS);
                 build_rst = mt_ast_build(&sub_state, state->cur_token);
                 if (mt_var_is_err(build_rst)) {

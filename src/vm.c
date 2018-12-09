@@ -109,7 +109,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
             vm->s_len += mt_al;
-            mt_vm_cur_locals(vm) = mt_al; // for repl
+            mt_vm_cur_locals(vm) = mt_al;
             break;
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {

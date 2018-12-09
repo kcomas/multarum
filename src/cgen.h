@@ -20,6 +20,6 @@ void mt_cgen_state_init(mt_cgen_state* const state, size_t if_size);
 
 void mt_cgen_state_free(mt_cgen_state* const state);
 
-mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod);
+mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, bool repl);
 
 #endif

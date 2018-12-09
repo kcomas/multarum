@@ -25,12 +25,15 @@ typedef struct {
 mt_ast_table* mt_ast_empty_table(void);
 
 typedef struct {
+    bool persist;
     mt_ast_table* arg_table;
     mt_ast_table* local_table;
     mt_ast_table* global_table;
 } mt_ast_sym_table;
 
-mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table);
+mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table, bool persist);
+
+void mt_ast_free_sym_table(mt_ast_sym_table* sym_table, bool force);
 
 typedef struct _mt_ast_op_list {
     mt_ast* op;

@@ -232,12 +232,16 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
     return mt_var_bool(true);
 }
 
-mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod) {
-    mt_mod_reg_fn(mod, mod->len);
+mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, bool repl) {
+    if (repl == false) {
+        mt_mod_reg_fn(mod, mod->len);
+    }
     uint8_t mt_f = mod->f_len - 1;
     mt_var rst = mt_cgen_walk(state, ast, mod, NULL);
     mt_cgen_ck_err(rst);
     mt_write_byte(mod, mt_pfx(HALT));
-    mt_mod_reg_fne(mod, mt_f, mod->len);
+    if (repl == false) {
+        mt_mod_reg_fne(mod, mt_f, mod->len);
+    }
     return mt_var_bool(true);
 }

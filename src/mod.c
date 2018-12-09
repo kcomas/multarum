@@ -15,13 +15,6 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
     return mod;
 }
 
-
-void mt_mod_reset(mt_mod* const mod) {
-    mod->ref_count = 1;
-    mod->len = 0;
-    mod->f_len = 0;
-}
-
 void mt_mod_free(mt_mod* const mod) {
     if ((--mod->ref_count) > 0) {
         return;

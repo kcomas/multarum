@@ -34,8 +34,6 @@ typedef struct _mt_mod {
 
 mt_mod* mt_mod_init(size_t _size, size_t _f_size);
 
-void mt_mod_reset(mt_mod* const mod);
-
 #define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i
 
 #define mt_mod_reg_fne(mod, f_idx, i) mod->fne[f_idx] = i
