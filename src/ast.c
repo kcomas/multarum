@@ -114,6 +114,8 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             free(ast->node.call);
             break;
         mt_ast_free_bop_case(MUL, ast);
+        mt_ast_free_bop_case(MOD, ast);
+        mt_ast_free_bop_case(DIV, ast);
         mt_ast_free_bop_case(ADD, ast);
         mt_ast_free_bop_case(SUB, ast);
         mt_ast_free_bop_case(WRITE, ast);
@@ -280,10 +282,9 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
     mt_ast_inc_token(state); \
     return mt_ast_next_token(state, &(*cur_tree)->node.bop->right); \
 
-#define mt_ast_invalid_state(TYPE) \
-    if (state->mode == mt_ast_state(TYPE)) { \
-        return mt_ast_token_invalid(state->cur_token); \
-    }
+#define mt_ast_quic_bop_case(CASE, TYPE) \
+    case mt_token(CASE): \
+        mt_ast_quic_bop(TYPE)
 
 static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tree) {
     mt_ast_state sub_state;
@@ -343,7 +344,6 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_inc_token(state);
             return mt_ast_next_token(state, cur_tree);
         case mt_token(ASSIGN):
-            mt_ast_invalid_state(IF_COND);
             mt_ast_quic_bop(ASSIGN);
         case mt_token(PERIOD):
             if (mt_ast_peek_token_is_type(state, L_BRACE)) {
@@ -418,24 +418,21 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                     return mt_ast_token_invalid(state->cur_token);
             }
         case mt_token(DOLLAR):
-            mt_ast_invalid_state(IF_COND);
             if (!mt_ast_peek_token_is_type(state, L_BRACE)) {
                 return mt_ast_token_invalid(state->cur_token);
             }
             mt_ast_inc_token2(state);
             return mt_ast_build_call(state, cur_tree, NULL);
-        case mt_token(MUL):
-            mt_ast_invalid_state(IF_COND);
-            mt_ast_quic_bop(MUL);
-        case mt_token(ADD):
-            mt_ast_invalid_state(IF_COND);
-            mt_ast_quic_bop(ADD);
-        case mt_token(SUB):
-            mt_ast_invalid_state(IF_COND);
-            mt_ast_quic_bop(SUB);
-        case mt_token(WRITE):
-            mt_ast_invalid_state(IF_COND);
-            mt_ast_quic_bop(WRITE);
+        mt_ast_quic_bop_case(MUL, MUL);
+        /**
+        case mt_token(MOD):
+            // @TODO check if hash
+            break;
+        */
+        mt_ast_quic_bop_case(ADD, ADD);
+        mt_ast_quic_bop_case(SUB, SUB);
+        mt_ast_quic_bop_case(WRITE, WRITE);
+        mt_ast_quic_bop_case(SLASH, DIV);
         case mt_token(NL):
             mt_ast_flush_nl(state);
             if (*cur_tree == NULL && state->cur_token != NULL) {
@@ -547,6 +544,8 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 mt_ast_debug_ops_list(ast, indent, ast->node.call->args_head);
             break;
         mt_ast_print_bop(MUL, '*');
+        mt_ast_print_bop(MOD, '%');
+        mt_ast_print_bop(DIV, '/');
         mt_ast_print_bop(ADD, '+');
         mt_ast_print_bop(SUB, '-');
         case mt_ast(WRITE):

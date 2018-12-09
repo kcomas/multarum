@@ -35,11 +35,13 @@ typedef enum {
     mt_token(R_BRACKET) = '}',
     mt_token(DOLLAR) = '$',
     mt_token(MUL) = '*',
+    mt_token(MOD) = '%',
     mt_token(ADD) = '+',
     mt_token(SUB) = '-',
+    mt_token(GLOBALS) = 131, // $%
     mt_token(GREATER) = '>',
     mt_token(LESS) = '<',
-    mt_token(WRITE) = 131,
+    mt_token(WRITE) = 132, // <>
     mt_token(SLASH) = '/',
     mt_token(NL) = '\n',
     mt_token(SEMICOLON) = ';'

@@ -159,33 +159,19 @@ static void mt_run_op(mt_vm* const vm) {
             }
             mt_vm_push(vm, mt_var_str(mt_str_init(mt_buf)));
             break;
-        case mt_pfx(MUL):
+        mt_vm_math_case(MUL, vm, *=);
+        case mt_pfx(MOD):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
-                mt_vm_math_op(vm, *=, mt_int);
+                mt_vm_math_op(vm, %=, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
-                mt_vm_math_op(vm, *=, mt_float);
+                // @TODO double rem
             } else {
-                // @TODO handle error
-            }
-        break;
-        case mt_pfx(ADD):
-            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
-                mt_vm_math_op(vm, +=, mt_int);
-            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
-                mt_vm_math_op(vm, +=, mt_float);
-            } else {
-                // @TODO handle error
+                // @TODO handle err
             }
             break;
-        case mt_pfx(SUB):
-            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
-                mt_vm_math_op(vm, -=, mt_int);
-            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
-                mt_vm_math_op(vm, -=, mt_float);
-            } else {
-                // @TODO handle error
-            }
-            break;
+        mt_vm_math_case(DIV, vm, /=);
+        mt_vm_math_case(ADD, vm, +=);
+        mt_vm_math_case(SUB, vm, -=);
         case mt_pfx(EQ):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                mt_vm_eq_op(vm, mt_bool, mt_int);

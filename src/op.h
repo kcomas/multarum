@@ -11,6 +11,8 @@ typedef enum {
     mt_pfx(PUSH),
     mt_pfx(ISTR),
     mt_pfx(MUL),
+    mt_pfx(MOD),
+    mt_pfx(DIV),
     mt_pfx(ADD),
     mt_pfx(SUB),
     mt_pfx(EQ),

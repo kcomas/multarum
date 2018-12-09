@@ -215,6 +215,8 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
             mt_write_byte(mod, ast->node.call->arg_count);
             break;
         mt_cgen_basic_bop_case(state, ast, mod, tbl, MUL);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, MOD);
+        mt_cgen_basic_bop_case(state, ast, mod, tbl, DIV);
         mt_cgen_basic_bop_case(state, ast, mod, tbl, ADD);
         case mt_ast(SUB):
             if (ast->node.bop->left == NULL) {

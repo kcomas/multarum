@@ -63,6 +63,17 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
+#define mt_vm_math_case(CASE, vm, op) \
+    case mt_pfx(CASE): \
+        if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) { \
+            mt_vm_math_op(vm, op, mt_int); \
+        } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) { \
+            mt_vm_math_op(vm, op, mt_float); \
+        } else { \
+        } \
+        break
+
+
 #define mt_vm_eq_op(vm, target, v_data) \
     target = mt_vm_prev_stack(vm).data.v_data == mt_vm_cur_stack(vm).data.v_data; \
     mt_vm_dec_stack(vm); \
