@@ -21,6 +21,12 @@ Usage
 ./multarum path_to_file
 ```
 
+Or to start a REPL
+
+```bash
+./multarum
+```
+
 Currently dumps all debugging output when ran, this will be removed in the future.
 
 Examples are included in the examples folder.
