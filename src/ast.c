@@ -1,9 +1,16 @@
 
 #include "ast.h"
 
-#define mt_ast_sym_table_init(tbl, target, size) \
-    tbl->target.idx = 0; \
-    tbl->target.hash = mt_hash_init(size)
+mt_ast_table* mt_ast_empty_table(void) {
+    mt_ast_table* t = (mt_ast_table*) malloc(sizeof(mt_ast_table));
+    t->idx = 0;
+    t->hash = NULL;
+    return t;
+}
+
+#define mt_ast_table_init(tbl, target, size) \
+    tbl->target->idx = 0; \
+    tbl->target->hash = mt_hash_init(size)
 
 static inline mt_ast_op_list* mt_ast_add_op_list(void) {
     mt_ast_op_list* ops = (mt_ast_op_list*) malloc(sizeof(mt_ast_op_list));
@@ -30,12 +37,18 @@ static inline mt_ast_bop* mt_ast_create_bop(mt_ast* const left, mt_ast* const ri
     return bop;
 }
 
-static mt_ast* mt_ast_fn_init(void) {
+
+mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table) {
+    mt_ast_sym_table* tbl = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
+    tbl->arg_table = mt_ast_empty_table();
+    tbl->local_table = mt_ast_empty_table();
+    tbl->global_table = global_table;
+    return tbl;
+}
+
+static mt_ast* mt_ast_fn_init(mt_ast_sym_table* const table) {
     mt_ast_fn* fn = (mt_ast_fn*) malloc(sizeof(mt_ast_fn));
-    fn->sym_table = (mt_ast_sym_table*) malloc(sizeof(mt_ast_sym_table));
-    mt_ast_fn_access(fn, arg_table).hash = NULL;
-    mt_ast_fn_access(fn, local_table).hash = NULL;
-    mt_ast_fn_access(fn, global_table).hash = NULL;
+    fn->sym_table = table;
     fn->ops_head = mt_ast_add_op_list();
     fn->ops_tail = fn->ops_head;
     return mt_ast_node(FN, fn, fn);
@@ -55,9 +68,10 @@ static inline void mt_ast_free_bop(mt_ast* const ast) {
         break
 
 #define mt_ast_free_sym_table(ast, tgt) \
-    if (ast->node.fn->sym_table->tgt.hash != NULL) { \
-        mt_hash_free(ast->node.fn->sym_table->tgt.hash); \
-    }
+    if (ast->node.fn->sym_table->tgt->hash != NULL) { \
+        mt_hash_free(ast->node.fn->sym_table->tgt->hash); \
+    } \
+    free(ast->node.fn->sym_table->tgt)
 
 #define mt_ast_free_list(ast, tgt) \
     ops = tgt; \
@@ -128,20 +142,20 @@ void mt_ast_free(mt_ast_state* const state) {
 }
 
 #define mt_ast_fn_add_table(tbl, buf, target, size) \
-    if (tbl->target.hash == NULL) { \
-        mt_ast_sym_table_init(tbl, target, size); \
+    if (tbl->target->hash == NULL) { \
+        mt_ast_table_init(tbl, target, size); \
     } \
-    if (mt_var_is_null(mt_hash_get(tbl->target.hash, buf))) { \
-        mt_hash_insert(tbl->target.hash, buf, mt_var_int(tbl->target.idx++)); \
+    if (mt_var_is_null(mt_hash_get(tbl->target->hash, buf))) { \
+        mt_hash_insert(tbl->target->hash, buf, mt_var_int(tbl->target->idx++)); \
     }
 
 #define mt_ast_symbol_in(where, tbl, buf) \
-    (tbl->where.hash != NULL && !mt_var_is_null(mt_hash_get(tbl->where.hash, buf)))
+    (tbl->where->hash != NULL && !mt_var_is_null(mt_hash_get(tbl->where->hash, buf)))
 
-void mt_ast_init(mt_ast_state* const state) {
+void mt_ast_init(mt_ast_state* const state, mt_ast_sym_table* const table) {
     state->mode = mt_ast_state(MAIN);
     state->cur_token = NULL;
-    state->ast = mt_ast_fn_init();
+    state->ast = mt_ast_fn_init(table);
 }
 
 static mt_var mt_ast_token_invalid(const mt_token* const cur_token) {
@@ -348,7 +362,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
         case mt_token(PERIOD):
             if (mt_ast_peek_token_is_type(state, L_BRACE)) {
                 mt_ast_inc_token2(state); // in fn def
-                mt_ast_init(&sub_state);
+                mt_ast_init(&sub_state, mt_ast_init_sym_table(state->ast->node.fn->sym_table->global_table));
                 sub_state.mode = mt_ast_state(ARGS);
                 build_rst = mt_ast_build(&sub_state, state->cur_token);
                 if (mt_var_is_err(build_rst)) {

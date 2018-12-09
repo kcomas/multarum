@@ -31,6 +31,8 @@ typedef struct {
 
 #define mt_buf_cur_raw(buf) buf->data + buf->len
 
+#define mt_buf_tail(buf) buf->data[buf->len - 1]
+
 void mt_buf_iter_init(const mt_buf* const buf, mt_buf_iter* const iter);
 
 bool mt_buf_iter_next(mt_buf_iter* const iter, mt_char* const c);

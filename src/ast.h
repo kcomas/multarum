@@ -18,11 +18,19 @@ typedef struct _mt_ast mt_ast;
 #endif
 
 typedef struct {
-    struct {
-        uint64_t idx;
-        mt_hash* hash;
-    } arg_table, local_table, global_table;
+    uint64_t idx;
+    mt_hash* hash;
+} mt_ast_table;
+
+mt_ast_table* mt_ast_empty_table(void);
+
+typedef struct {
+    mt_ast_table* arg_table;
+    mt_ast_table* local_table;
+    mt_ast_table* global_table;
 } mt_ast_sym_table;
+
+mt_ast_sym_table* mt_ast_init_sym_table(mt_ast_table* const global_table);
 
 typedef struct _mt_ast_op_list {
     mt_ast* op;
@@ -121,7 +129,8 @@ typedef struct {
     mt_ast* ast;
 } mt_ast_state;
 
-void mt_ast_init(mt_ast_state* const state);
+
+void mt_ast_init(mt_ast_state* const state, mt_ast_sym_table* const table);
 
 void mt_ast_free(mt_ast_state* const state);
 

@@ -53,7 +53,7 @@ static inline void mt_cgen_walk_jmp_svb(mt_mod* const mod, uint8_t* jmp_hdl) {
     }
 
 static inline mt_var mt_cgen_ld_arg(const mt_buf* const buf, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
-    mt_var rst = mt_hash_get(tbl->arg_table.hash, buf);
+    mt_var rst = mt_hash_get(tbl->arg_table->hash, buf);
     if (mt_var_is_null(rst)) {
         return rst;
     }
@@ -63,10 +63,10 @@ static inline mt_var mt_cgen_ld_arg(const mt_buf* const buf, mt_mod* const mod, 
 }
 
 #define mt_cgen_arg_exists(tgt, mod, tbl) \
-    (tbl->arg_table.hash != NULL && !mt_var_is_null(mt_cgen_ld_arg(tgt, mod, tbl)))
+    (tbl->arg_table->hash != NULL && !mt_var_is_null(mt_cgen_ld_arg(tgt, mod, tbl)))
 
 static inline mt_var mt_cgen_ld_var(const mt_buf* const buf, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
-    mt_var rst = mt_hash_get(tbl->local_table.hash, buf);
+    mt_var rst = mt_hash_get(tbl->local_table->hash, buf);
     if (mt_var_is_null(rst)) {
         return rst;
     }
@@ -77,15 +77,15 @@ static inline mt_var mt_cgen_ld_var(const mt_buf* const buf, mt_mod* const mod, 
 }
 
 #define mt_cgen_var_exists(tgt, mod, tbl) \
-    (tbl->local_table.hash != NULL && !mt_var_is_null(mt_cgen_ld_var(tgt, mod, tbl)))
+    (tbl->local_table->hash != NULL && !mt_var_is_null(mt_cgen_ld_var(tgt, mod, tbl)))
 
 #define mt_cgen_value_in_tbl(tgt, mod,tbl) \
     (mt_cgen_arg_exists(tgt, mod, tbl) || mt_cgen_var_exists(tgt, mod, tbl))
 
 #define mt_cgen_set_locals(ast, mod, op, mt_al) \
-    if (mt_ast_fn_access(ast->node.fn, local_table).hash != NULL && mt_ast_fn_access(ast->node.fn, local_table).hash->len > 0) { \
+    if (mt_ast_fn_access(ast->node.fn, local_table)->hash != NULL && mt_ast_fn_access(ast->node.fn, local_table)->hash->len > 0) { \
         mt_write_byte(mod, mt_pfx(op)); \
-        mt_al = (uint16_t) mt_ast_fn_access(ast->node.fn, local_table).hash->len; \
+        mt_al = (uint16_t) mt_ast_fn_access(ast->node.fn, local_table)->hash->len; \
         mt_write_bytes(mod, &mt_al, sizeof(uint16_t)); \
     }
 
@@ -135,7 +135,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
             mt_cgen_walk_bop_side(state, ast, mod, tbl, right);
             switch (ast->node.bop->left->type) {
                 case mt_ast(VAR):
-                    rst = mt_hash_get(tbl->local_table.hash, ast->node.bop->left->node.value.mt_var);
+                    rst = mt_hash_get(tbl->local_table->hash, ast->node.bop->left->node.value.mt_var);
                     if (mt_var_is_null(rst)) {
                         return mt_var_err(mt_err_cgen_tbl());
                     }
@@ -144,7 +144,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     mt_write_bytes(mod, &mt_al, sizeof(uint16_t));
                     return mt_var_bool(true);
                 case mt_ast(ARG):
-                    rst = mt_hash_get(tbl->arg_table.hash, ast->node.bop->left->node.value.mt_var);
+                    rst = mt_hash_get(tbl->arg_table->hash, ast->node.bop->left->node.value.mt_var);
                     if (mt_var_is_null(rst)) {
                         return mt_var_err(mt_err_cgen_tbl());
                     }

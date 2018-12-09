@@ -10,6 +10,7 @@ void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod) {
     vm->rsp[vm->f_len].safe = false;
     vm->rsp[vm->f_len].fn = 0;
     vm->rsp[vm->f_len].args = 0;
+    vm->rsp[vm->f_len].locals = 0;
     vm->rsp[vm->f_len].rbp = vm->s_len;
     vm->rsp[vm->f_len].mod = mod;
     vm->rsp[vm->f_len++].rip = mod->bytes;
@@ -108,7 +109,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &mt_al, sizeof(uint16_t));
             vm->s_len += mt_al;
-            mt_vm_cur_locals(vm) = mt_al;
+            mt_vm_cur_locals(vm) = mt_al; // for repl
             break;
         case mt_pfx(PUSH):
             switch (*++mt_vm_cur_byte(vm)) {

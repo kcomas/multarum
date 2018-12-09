@@ -2,11 +2,13 @@
 #include "file.h"
 #include "vm.h"
 #include "cgen.h"
+#include "repl.h"
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        printf("Usage %s file [opts]\n", argv[0]);
-        exit(1);
+        // printf("Usage %s file [opts]\n", argv[0]);
+        mt_repl_run(argc, argv);
+        return 0;
     }
 
     mt_ctx ctx;
@@ -46,7 +48,8 @@ int main(int argc, char** argv) {
     printf("\n");
 
     mt_ast_state ast_state;
-    mt_ast_init(&ast_state);
+    mt_ast_table* global_table = mt_ast_empty_table();
+    mt_ast_init(&ast_state, mt_ast_init_sym_table(global_table));
 
     mt_var ast_rst = mt_ast_build(&ast_state, token_state.head);
     printf("AST Status: ");
@@ -68,6 +71,8 @@ int main(int argc, char** argv) {
     mt_ast_free(&ast_state);
 
     mt_token_state_free(&token_state);
+
+    free(global_table);
 
     mt_mod_dis(mod);
 
