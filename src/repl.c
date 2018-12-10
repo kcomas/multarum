@@ -8,7 +8,10 @@
         exit(1); \
     }
 
+#define MT_REPL_MSG " Multarum Ver %s, CTRL-D To Quit\n"
+
 void mt_repl_run(int argc, char** argv) {
+    printf(MT_REPL_MSG, MT_VERSION);
     mt_repl repl;
     mt_ctx_init(&repl.ctx, argc, argv);
     mt_ast_table* global_table = mt_ast_empty_table();

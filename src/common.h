@@ -2,6 +2,8 @@
 #ifndef MT_COMMON_H
 #define MT_COMMON_H
 
+#define MT_VERSION "0.0.0"
+
 #define mt_pfx(NAME) MT_##NAME
 
 #define MT_TYPES \
