@@ -33,6 +33,8 @@ typedef enum {
     mt_token(OR) = '|',
     mt_token(L_BRACKET) = '{',
     mt_token(R_BRACKET) = '}',
+    mt_token(L_SQUARE) = '[',
+    mt_token(R_SQUARE) = ']',
     mt_token(DOLLAR) = '$',
     mt_token(MUL) = '*',
     mt_token(MOD) = '%',
