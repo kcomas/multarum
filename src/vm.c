@@ -160,7 +160,7 @@ static void mt_run_op(mt_vm* const vm) {
             }
             mt_vm_push(vm, mt_var_str(mt_str_init(mt_buf)));
             break;
-        mt_vm_math_case(MUL, vm, *=);
+        mt_vm_math_case(vm, MUL, *=);
         case mt_pfx(MOD):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, %=, mt_int);
@@ -170,9 +170,9 @@ static void mt_run_op(mt_vm* const vm) {
                 // @TODO handle err
             }
             break;
-        mt_vm_math_case(DIV, vm, /=);
-        mt_vm_math_case(ADD, vm, +=);
-        mt_vm_math_case(SUB, vm, -=);
+        mt_vm_math_case(vm, DIV, /=);
+        mt_vm_math_case(vm, ADD, +=);
+        mt_vm_math_case(vm, SUB, -=);
         case mt_pfx(EQ):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                mt_vm_eq_op(vm, mt_bool, mt_int);

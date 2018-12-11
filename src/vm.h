@@ -63,7 +63,7 @@ typedef struct {
     mt_vm_dec_stack(vm); \
     mt_vm_cur_byte(vm)++
 
-#define mt_vm_math_case(CASE, vm, op) \
+#define mt_vm_math_case(vm, CASE, op) \
     case mt_pfx(CASE): \
         if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) { \
             mt_vm_math_op(vm, op, mt_int); \
