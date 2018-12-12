@@ -446,6 +446,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
         mt_ast_quic_bop_case(state, MUL, MUL);
         case mt_token(MOD):
             if (mt_ast_peek_token_is_type(state, L_SQUARE)) {
+                mt_ast_inc_token2(state);
                 // @TODO build hash
             }
             mt_ast_quic_bop(state, MOD);

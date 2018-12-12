@@ -124,6 +124,8 @@ typedef enum {
     mt_ast_state(IF_COND),
     mt_ast_state(IF_BODY),
     mt_ast_state(CALL),
+    mt_ast_state(HASH_KEY),
+    mt_ast_state(HASH_VALUE)
 } mt_ast_state_mode;
 
 typedef struct {
