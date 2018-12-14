@@ -13,8 +13,8 @@ typedef struct _mt_mod {
     uint32_t ref_count;
     uint32_t _size, len;
     uint8_t* bytes;
-    uint8_t* fns;
-    uint8_t* fne;
+    uint32_t* fns;
+    uint32_t* fne;
     mt_hash* globals;
 } mt_mod;
 

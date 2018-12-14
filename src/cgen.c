@@ -101,6 +101,13 @@ static inline mt_var mt_cgen_walk_if(mt_ast_op_list* ops, mt_cgen_state* const s
     return mt_var_bool(true);
 }
 
+static inline void mt_cgen_fill_if_jmps(mt_cgen_state* const state, mt_mod* const mod) {
+    for (size_t i = 0; i < state->if_len; i++) {
+        mt_cgen_walk_jmp_svb(mod, state->if_pos[i]);
+    }
+    state->if_len = 0;
+}
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
@@ -184,13 +191,11 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                     if (conds->next != NULL) {
                         return mt_var_err(mt_err_cgen_if_def());
                     }
-                    rst = mt_cgen_walk(state, conds->body_head->op, mod, ast->node.if_smt->sym_table);
-                    mt_cgen_walk_if(conds->body_head, state, ast, mod );
-                    mt_cgen_ck_err(rst);
-                    for (size_t i = 0; i < state->if_len; i++) {
-                        mt_cgen_walk_jmp_svb(mod, state->if_pos[i]);
+                    if (conds->body_head != NULL) {
+                        rst = mt_cgen_walk_if(conds->body_head, state, ast, mod);
+                        mt_cgen_ck_err(rst);
                     }
-                    state->if_len = 0;
+                    mt_cgen_fill_if_jmps(state, mod);
                     return mt_var_bool(true);
                 }
                 rst = mt_cgen_walk(state, conds->cond, mod, ast->node.if_smt->sym_table);
@@ -198,6 +203,11 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                 jmp_hdl = mt_cgen_walk_jmp_sva(mod, mt_pfx(JMPF));
                 rst = mt_cgen_walk_if(conds->body_head, state, ast, mod);
                 mt_cgen_ck_err(rst);
+                if (conds->next == NULL) {
+                    mt_cgen_fill_if_jmps(state, mod);
+                    mt_cgen_walk_jmp_svb(mod, jmp_hdl);
+                    return mt_var_bool(true);
+                }
                 mt_cgen_state_push_if(state, mt_cgen_walk_jmp_sva(mod, mt_pfx(JMP)));
                 mt_cgen_walk_jmp_svb(mod, jmp_hdl);
                 conds = conds->next;
@@ -233,10 +243,11 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
 }
 
 mt_var mt_cgen_build(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, bool repl) {
+    uint8_t mt_f;
     if (repl == false) {
         mt_mod_reg_fn(mod, mod->len);
+        mt_f = mod->f_len - 1;
     }
-    uint8_t mt_f = mod->f_len - 1;
     mt_var rst = mt_cgen_walk(state, ast, mod, NULL);
     mt_cgen_ck_err(rst);
     mt_write_byte(mod, mt_pfx(HALT));

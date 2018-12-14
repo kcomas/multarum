@@ -70,6 +70,10 @@ typedef struct {
 } mt_ast_if;
 
 typedef struct {
+    mt_ast_sym_table* sym_table;
+} mt_ast_hash;
+
+typedef struct {
     mt_ast* left;
     mt_ast* right;
 } mt_ast_bop;
@@ -115,7 +119,7 @@ typedef struct _mt_ast {
     mt_ast_node node;
 } mt_ast;
 
-#define mt_ast_state(NAME) mt_pfx(_S_M_##NAME)
+#define mt_ast_state(NAME) mt_pfx(S_M_##NAME)
 
 typedef enum {
     mt_ast_state(MAIN),

@@ -56,7 +56,7 @@ typedef struct _mt_token {
     struct _mt_token* next;
 } mt_token;
 
-#define mt_token_state(NAME) mt_pfx(_T_S_##NAME)
+#define mt_token_state(NAME) mt_pfx(T_S_##NAME)
 
 typedef struct {
     enum {
