@@ -9,8 +9,8 @@ mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
     mod->bytes = (uint8_t*) malloc(_size);
     mod->_f_size = _f_size;
     mod->f_len = 0;
-    mod->fns = (uint32_t*) malloc(sizeof(uint32_t) * _f_size);
-    mod->fne = (uint32_t*) malloc(sizeof(uint32_t) * _f_size);
+    mod->fns = (uint16_t*) malloc(sizeof(uint16_t) * _f_size);
+    mod->fne = (uint16_t*) malloc(sizeof(uint16_t) * _f_size);
     mod->globals = mt_hash_init(MT_MOD_GLOBAL_BUCKETS);
     return mod;
 }
