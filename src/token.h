@@ -37,7 +37,7 @@ typedef enum {
     mt_token(R_SQUARE) = ']',
     mt_token(DOLLAR) = '$',
     mt_token(MUL) = '*',
-    mt_token(MOD) = '%',
+    mt_token(REM) = '%',
     mt_token(ADD) = '+',
     mt_token(SUB) = '-',
     mt_token(GLOBALS) = 131, // $%

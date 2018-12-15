@@ -116,7 +116,7 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         mt_token_quick_nothing(state, R_SQUARE);
         mt_token_quick_nothing(state, DOLLAR);
         mt_token_quick_nothing(state, MUL);
-        mt_token_quick_nothing(state, MOD);
+        mt_token_quick_nothing(state, REM);
         mt_token_quick_nothing(state, ADD);
         mt_token_quick_nothing(state, SUB);
         mt_token_quick_nothing(state, GREATER);

@@ -107,7 +107,7 @@ typedef enum {
     mt_ast(OR),
     mt_ast(CALL),
     mt_ast(MUL),
-    mt_ast(MOD),
+    mt_ast(REM),
     mt_ast(DIV),
     mt_ast(ADD),
     mt_ast(SUB),

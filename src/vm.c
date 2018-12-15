@@ -161,7 +161,7 @@ static void mt_run_op(mt_vm* const vm) {
             mt_vm_push(vm, mt_var_str(mt_str_init(mt_buf)));
             break;
         mt_vm_math_case(vm, MUL, *=);
-        case mt_pfx(MOD):
+        case mt_pfx(REM):
             if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                 mt_vm_math_op(vm, %=, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {

@@ -136,7 +136,7 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             free(ast->node.call);
             break;
         mt_ast_free_bop_case(ast, MUL);
-        mt_ast_free_bop_case(ast, MOD);
+        mt_ast_free_bop_case(ast, REM);
         mt_ast_free_bop_case(ast, DIV);
         mt_ast_free_bop_case(ast, ADD);
         mt_ast_free_bop_case(ast, SUB);
@@ -444,12 +444,12 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
             mt_ast_inc_token2(state);
             return mt_ast_build_call(state, cur_tree, NULL);
         mt_ast_quic_bop_case(state, MUL, MUL);
-        case mt_token(MOD):
+        case mt_token(REM):
             if (mt_ast_peek_token_is_type(state, L_SQUARE)) {
                 mt_ast_inc_token2(state);
                 // @TODO build hash
             }
-            mt_ast_quic_bop(state, MOD);
+            mt_ast_quic_bop(state, REM);
             break;
         mt_ast_quic_bop_case(state, ADD, ADD);
         mt_ast_quic_bop_case(state, SUB, SUB);
@@ -566,7 +566,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 mt_ast_debug_ops_list(ast, indent, ast->node.call->args_head);
             break;
         mt_ast_print_bop(MUL, '*');
-        mt_ast_print_bop(MOD, '%');
+        mt_ast_print_bop(REM, '%');
         mt_ast_print_bop(DIV, '/');
         mt_ast_print_bop(ADD, '+');
         mt_ast_print_bop(SUB, '-');
