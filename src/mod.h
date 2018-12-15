@@ -11,7 +11,7 @@ typedef struct _mt_hash mt_hash;
 typedef struct _mt_mod {
     uint8_t _f_size, f_len;
     uint32_t ref_count;
-    uint32_t _size, len;
+    uint16_t _size, len;
     uint8_t* bytes;
     uint16_t* fns;
     uint16_t* fne;
@@ -28,11 +28,11 @@ typedef struct _mt_mod {
 
 #define MT_MOD_GLOBAL_BUCKETS 20
 
-#define MT_MOD_DEFAULT_SIZE 500
+#define MT_MOD_DEFAULT_SIZE UINT16_MAX // prevents massive files
 
-#define MT_MOD_DEFAULT_FN_SIZE 10
+#define MT_MOD_DEFAULT_FN_SIZE UINT8_MAX
 
-mt_mod* mt_mod_init(size_t _size, size_t _f_size);
+mt_mod* mt_mod_init(uint16_t _size, uint8_t _f_size);
 
 #define mt_mod_reg_fn(mod, i) mod->fns[mod->f_len++] = i
 

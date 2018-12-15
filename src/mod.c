@@ -1,7 +1,7 @@
 
 #include "mod.h"
 
-mt_mod* mt_mod_init(size_t _size, size_t _f_size) {
+mt_mod* mt_mod_init(uint16_t _size, uint8_t _f_size) {
     mt_mod* mod = (mt_mod*) malloc(sizeof(mt_mod));
     mod->ref_count = 1;
     mod->_size = _size;
