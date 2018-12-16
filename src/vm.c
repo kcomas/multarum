@@ -174,7 +174,9 @@ static void mt_run_op(mt_vm* const vm) {
         mt_vm_math_case(vm, ADD, +=);
         mt_vm_math_case(vm, SUB, -=);
         case mt_pfx(EQ):
-            if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(BOOL))) {
+               mt_vm_eq_op(vm, mt_bool, mt_bool);
+            } else if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {
                mt_vm_eq_op(vm, mt_bool, mt_int);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(FLOAT))) {
                mt_vm_eq_op(vm, mt_bool, mt_float);

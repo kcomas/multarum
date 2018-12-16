@@ -68,7 +68,7 @@ void mt_var_debug_print(mt_var const var) {
             printf("NULL");
             break;
         case mt_pfx(BOOL):
-            printf("#%s", var.data.mt_bool ? "t" : "f");
+            printf("%c", var.data.mt_bool ? 't' : 'f');
             break;
         case mt_pfx(CHAR):
             putchar(var.data.mt_char.a);

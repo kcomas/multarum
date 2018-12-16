@@ -50,6 +50,7 @@ typedef struct {
 
 typedef struct {
     uint8_t arg_count;
+    bool anon; // we are calling a function on the stack
     mt_ast_sym_table* sym_table;
     mt_buf* target; // null for self
     mt_ast_op_list* args_head;
@@ -69,8 +70,17 @@ typedef struct {
     mt_ast_if_cond* tail;
 } mt_ast_if;
 
+typedef struct _mt_ast_hash_list {
+    mt_buf* key;
+    mt_ast_op_list* value_head;
+    mt_ast_op_list* value_tail;
+    struct _mt_ast_hash_list* next;
+} mt_ast_hash_list;
+
 typedef struct {
     mt_ast_sym_table* sym_table;
+    mt_ast_hash_list* hash_head;
+    mt_ast_hash_list* hash_tail;
 } mt_ast_hash;
 
 typedef struct {
@@ -79,6 +89,7 @@ typedef struct {
 } mt_ast_bop;
 
 typedef union {
+    bool mt_bool;
     int64_t mt_int;
     double mt_float;
     mt_buf* mt_var;
@@ -91,6 +102,7 @@ typedef union {
     mt_ast_bop* bop;
     mt_ast_if* if_smt;
     mt_ast_call* call;
+    mt_ast_hash* hash;
 } mt_ast_node;
 
 typedef enum {
@@ -99,9 +111,11 @@ typedef enum {
     mt_ast(ASSIGN),
     mt_ast(VAR),
     mt_ast(ARG),
+    mt_ast(BOOL),
     mt_ast(INT),
     // mt_ast(FLOAT)
     mt_ast(STR),
+    mt_ast(HASH),
     mt_ast(IF),
     mt_ast(EQ),
     mt_ast(OR),
@@ -138,6 +152,7 @@ typedef struct {
     mt_ast* ast;
 } mt_ast_state;
 
+#define mt_ast_state_init(m, c, a) (mt_ast_state) { .mode = m, .cur_token = c, .ast = a }
 
 void mt_ast_init(mt_ast_state* const state, mt_ast_sym_table* const table);
 

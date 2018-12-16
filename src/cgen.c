@@ -108,6 +108,12 @@ static inline void mt_cgen_fill_if_jmps(mt_cgen_state* const state, mt_mod* cons
     state->if_len = 0;
 }
 
+#define mt_cgen_quic_push(mod, CASE, tm, target) \
+    case mt_ast(CASE): \
+        mt_write_byte(mod, mt_pfx(PUSH)); \
+        mt_var_write_bytes(mod, &tm(ast->node.value.target)); \
+        break
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
@@ -174,10 +180,8 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
                 return mt_var_err(mt_err_cgen_tbl());
             }
             break;
-        case mt_ast(INT):
-            mt_write_byte(mod, mt_pfx(PUSH));
-            mt_var_write_bytes(mod, &mt_var_int(ast->node.value.mt_int));
-            break;
+        mt_cgen_quic_push(mod, INT, mt_var_int, mt_int);
+        mt_cgen_quic_push(mod, BOOL, mt_var_bool, mt_bool);
         case mt_ast(STR):
             mt_write_byte(mod, mt_pfx(ISTR));
             str_len = (uint32_t) ast->node.value.mt_str->len;
@@ -220,7 +224,7 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
             if (ast->node.call->target != NULL && !mt_cgen_value_in_tbl(ast->node.call->target, mod, tbl)) {
                 return mt_var_err(mt_err_cgen_tbl());
             }
-            op = ast->node.call->target == NULL ? mt_pfx(CALL_SELF) : mt_pfx(CALL);
+            op = ast->node.call->target == NULL && ast->node.call->anon == false ? mt_pfx(CALL_SELF) : mt_pfx(CALL);
             mt_write_byte(mod, op);
             mt_write_byte(mod, ast->node.call->arg_count);
             break;

@@ -82,6 +82,7 @@ static inline bool mt_token_is_num(mt_char c) {
 
 static mt_var mt_token_state_nothing(mt_token_state* const state) {
     mt_char cur_char;
+    mt_char peek_char;
     bool has_chars = mt_buf_iter_next(&state->iter, &cur_char);
     mt_token_inc_char(state);
     if (!has_chars || mt_token_is_skip(cur_char)) {
@@ -93,6 +94,14 @@ static mt_var mt_token_state_nothing(mt_token_state* const state) {
         return mt_var_bool(has_chars);
     }
     if (mt_token_is_var(cur_char)) {
+        if (cur_char.a == 't' || cur_char.a == 'f') {
+            bool has_next_chars = mt_buf_iter_peek(&state->iter, &peek_char);
+            if (has_next_chars && !mt_token_is_num(peek_char) && !mt_token_is_var(peek_char)) {
+                bool value = cur_char.a == 't' ? true : false;
+                mt_token_add(state, mt_token(BOOL), (mt_token_data) { .mt_bool = value });
+                return mt_var_bool(true);
+            }
+        }
         mt_token_set_cur_data(state, cur_char);
         state->state = mt_token_state(VAR);
         return mt_var_bool(has_chars);
@@ -304,6 +313,9 @@ void mt_token_state_debug_print(const mt_token_state* const state) {
                 printf("%lu:%lu:", t->line, t->c);
                 mt_buf_debug_print(t->data.mt_var);
                 putchar(' ');
+                break;
+            case mt_token(BOOL):
+                printf("%lu:%lu:%c ", t->line, t->c, t->data.mt_bool ? 't' : 'f');
                 break;
             case mt_token(INT):
                 printf("%lu:%lu:%li ", t->line, t->c, t->data.mt_int);

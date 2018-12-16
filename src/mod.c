@@ -127,7 +127,7 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                 case mt_pfx(BOOL):
                     mt_print_byte_hex(mod, i, 2);
                     mt_mod_print_even_spaces(3);
-                    printf("PUSH %s\n", mod->bytes[++i] == true ? "true" : "false");
+                    printf("PUSH %s\n", mod->bytes[++i] == true ? "t" : "f");
                     i++;
                     break;
                 case mt_pfx(CHAR):

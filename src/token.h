@@ -12,6 +12,7 @@
 #define MT_TOKEN_DATA_CHAR_BUF_SIZE 200
 
 typedef union {
+    bool mt_bool;
     int64_t mt_int;
     double mt_float;
     mt_buf* mt_var;
@@ -20,8 +21,9 @@ typedef union {
 
 typedef enum {
     mt_token(VAR) = 128,
-    mt_token(INT) = 129,
-    mt_token(FLOAT) = 130,
+    mt_token(BOOL) = 129,
+    mt_token(INT) = 130,
+    mt_token(FLOAT) = 131,
     mt_token(ASSIGN) = ':',
     mt_token(PERIOD) = '.',
     mt_token(L_BRACE) = '(',
@@ -40,10 +42,10 @@ typedef enum {
     mt_token(REM) = '%',
     mt_token(ADD) = '+',
     mt_token(SUB) = '-',
-    mt_token(GLOBALS) = 131, // $%
+    mt_token(GLOBALS) = 132, // $%
     mt_token(GREATER) = '>',
     mt_token(LESS) = '<',
-    mt_token(WRITE) = 132, // <>
+    mt_token(WRITE) = 133, // <>
     mt_token(SLASH) = '/',
     mt_token(NL) = '\n',
     mt_token(SEMICOLON) = ';'
