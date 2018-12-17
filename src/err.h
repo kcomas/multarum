@@ -22,13 +22,15 @@ typedef enum {
     mt_pfx_err(AST_BUILD),
     mt_pfx_err(DUP_ARG),
     mt_pfx_err(TOKEN_END),
-    mt_pfx_err(IF_TOKEN_END),
-    mt_pfx_err(CALL_TOKEN_END),
+    mt_pfx_err(IF_INVALID),
+    mt_pfx_err(CALL_INVALID),
     mt_pfx_err(AST_UNDEF),
     mt_pfx_err(CGEN_ASSIGN),
     mt_pfx_err(CGEN_TBL),
     mt_pfx_err(CGEN_IF_DEF),
-    mt_pfx_err(TOKEN_INVALID_STR_ESC)
+    mt_pfx_err(TOKEN_INVALID_STR_ESC),
+    mt_pfx_err(HASH_INVALID),
+    mt_pfx_err(HASH_KEY_NULL)
 } mt_err_type;
 
 #ifndef MT_ERR_STACK_COPY
@@ -74,11 +76,11 @@ void mt_err_free(mt_err* const err);
 #define mt_err_ast_token_end() \
     mt_err_init(mt_pfx_err(TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("No More Tokens"))
 
-#define mt_err_ast_invalid_if_state() \
-    mt_err_init(mt_pfx_err(IF_TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("Invalid If, No More Tokens"))
+#define mt_err_ast_invalid_if_state(msg) \
+    mt_err_init(mt_pfx_err(IF_INVALID), 0, 0, NULL, mt_buf_from_c_str(msg))
 
-#define mt_err_ast_invalid_call_state() \
-    mt_err_init(mt_pfx_err(CALL_TOKEN_END), 0, 0, NULL, mt_buf_from_c_str("Invalid Call, No More Tokens"))
+#define mt_err_ast_invalid_call_state(msg) \
+    mt_err_init(mt_pfx_err(CALL_INVALID), 0, 0, NULL, mt_buf_from_c_str(msg))
 
 #define mt_err_ast_undef() \
     mt_err_init(mt_pfx_err(AST_UNDEF), 0, 0, NULL, mt_buf_from_c_str("Undefined Variable"))
@@ -94,5 +96,11 @@ void mt_err_free(mt_err* const err);
 
 #define mt_err_token_esc() \
     mt_err_init(mt_pfx_err(TOKEN_INVALID_STR_ESC), 0, 0, NULL, mt_buf_from_c_str("Invalid Escape Sequence Found"))
+
+#define mt_err_ast_invalid_hash_state(msg) \
+    mt_err_init(mt_pfx_err(HASH_INVALID), 0, 0, NULL, mt_buf_from_c_str(msg))
+
+#define mt_err_ast_no_hash_key() \
+    mt_err_init(mt_pfx_err(HASH_KEY_NULL), 0, 0, NULL, mt_buf_from_c_str("Hash Key Null"))
 
 #endif

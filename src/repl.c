@@ -4,7 +4,9 @@
 #define mt_ck_err(rst) \
     if (mt_var_is_err(rst)) { \
         mt_var_debug_print(rst); \
+        mt_var_free(rst); \
         printf("\n"); \
+        continue; \
     }
 
 #define MT_REPL_MSG " Multarum Ver %s, CTRL-D To Quit\n"

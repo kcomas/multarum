@@ -262,10 +262,10 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                 if_smt->tail->body_tail = if_smt->tail->body_tail->next;
                 break;
             default:
-                return mt_var_err(mt_err_ast_invalid_if_state());
+                return mt_var_err(mt_err_ast_invalid_if_state("Invalid If State"));
         }
     }
-    return mt_var_err(mt_err_ast_invalid_if_state());
+    return mt_var_err(mt_err_ast_invalid_if_state("No More Tokens"));
 }
 
 static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt_buf* const target, bool anon) {
@@ -294,12 +294,35 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
         call->args_tail->next = mt_ast_add_op_list();
         call->args_tail = call->args_tail->next;
     }
-    return mt_var_err(mt_err_ast_invalid_call_state());
+    return mt_var_err(mt_err_ast_invalid_call_state("No More Tokens"));
 }
 
 static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
     mt_ast_hash* hash = (mt_ast_hash*) malloc(sizeof(mt_ast_hash));
     hash->sym_table = mt_ast_get_sym(state->ast);
+    mt_ast_state sub_state = mt_ast_state_init(mt_ast_state(HASH_KEY), state->cur_token, mt_ast_node(HASH, hash,  hash));
+    mt_buf* key = NULL;
+    while (sub_state.cur_token != NULL) {
+        switch (sub_state.mode) {
+            case mt_ast_state(HASH_KEY):
+                if (sub_state.cur_token->type != mt_token(STR)) {
+                    return mt_ast_token_invalid(sub_state.cur_token);
+                }
+                key = sub_state.cur_token->data.mt_str;
+                mt_ast_inc_token_sub(sub_state);
+                sub_state.mode = mt_ast_state(HASH_VALUE);
+                break;
+            case mt_ast_state(HASH_VALUE):
+                if (key == NULL) {
+                    return mt_var_err(mt_err_ast_no_hash_key());
+                }
+                // @TODO .load hash item value
+                break;
+            default:
+                return mt_var_err(mt_err_ast_invalid_hash_state("Invalid State"));
+        }
+    }
+    return mt_var_err(mt_err_ast_invalid_hash_state("No More Tokens"));
 }
 
 #define mt_ast_quic_bop(state, TYPE) \
@@ -414,11 +437,14 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                     break;
             }
         case mt_token(COMMA):
-            if (state->mode == mt_ast_state(CALL)) {
-                mt_ast_inc_token(state);
-                return mt_var_bool(true);
+            switch (state->mode) {
+                case mt_ast_state(CALL):
+                case mt_ast_state(HASH_VALUE):
+                    mt_ast_inc_token(state);
+                    return mt_var_bool(true);
+                default:
+                    return mt_ast_token_invalid(state->cur_token);
             }
-            return mt_ast_token_invalid(state->cur_token);
         case mt_token(QUESTION):
             if (!mt_ast_peek_token_is_type(state, L_BRACKET)) {
                 return mt_ast_token_invalid(state->cur_token);
