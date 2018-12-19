@@ -72,8 +72,7 @@ typedef struct {
 
 typedef struct _mt_ast_hash_list {
     mt_buf* key;
-    mt_ast_op_list* value_head;
-    mt_ast_op_list* value_tail;
+    mt_ast* value;
     struct _mt_ast_hash_list* next;
 } mt_ast_hash_list;
 

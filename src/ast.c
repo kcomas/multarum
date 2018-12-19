@@ -297,26 +297,35 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
     return mt_var_err(mt_err_ast_invalid_call_state("No More Tokens"));
 }
 
+static inline mt_ast_hash_list* mt_ast_add_hash_list(void) {
+    mt_ast_hash_list* list = (mt_ast_hash_list*) malloc(sizeof(mt_ast_hash_list));
+    list->key = NULL;
+    list->value = NULL;
+    list->next = NULL;
+    return list;
+}
+
 static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
     mt_ast_hash* hash = (mt_ast_hash*) malloc(sizeof(mt_ast_hash));
     hash->sym_table = mt_ast_get_sym(state->ast);
+    hash->hash_head = mt_ast_add_hash_list();
+    hash->hash_tail = hash->hash_head;
     mt_ast_state sub_state = mt_ast_state_init(mt_ast_state(HASH_KEY), state->cur_token, mt_ast_node(HASH, hash,  hash));
-    mt_buf* key = NULL;
     while (sub_state.cur_token != NULL) {
         switch (sub_state.mode) {
             case mt_ast_state(HASH_KEY):
                 if (sub_state.cur_token->type != mt_token(STR)) {
                     return mt_ast_token_invalid(sub_state.cur_token);
                 }
-                key = sub_state.cur_token->data.mt_str;
+                hash->hash_tail->key = sub_state.cur_token->data.mt_str;
                 mt_ast_inc_token_sub(sub_state);
                 sub_state.mode = mt_ast_state(HASH_VALUE);
                 break;
             case mt_ast_state(HASH_VALUE):
-                if (key == NULL) {
+                if (hash->hash_tail->key == NULL) {
                     return mt_var_err(mt_err_ast_no_hash_key());
                 }
-                // @TODO .load hash item value
+                // @TODO load hash item value
                 break;
             default:
                 return mt_var_err(mt_err_ast_invalid_hash_state("Invalid State"));
@@ -356,6 +365,7 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 case mt_ast_state(IF_COND):
                 case mt_ast_state(IF_BODY):
                 case mt_ast_state(CALL):
+                case mt_ast_state(HASH_VALUE):
                     if (mt_ast_peek_token_is_type(state, L_BRACE)) {
                         if (!mt_ast_symbol_in(arg_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var) && !mt_ast_symbol_in(local_table, mt_ast_get_sym(state->ast), state->cur_token->data.mt_var)) {
                             return mt_var_err(mt_err_ast_undef());
@@ -387,6 +397,8 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                         return mt_ast_token_invalid(state->cur_token);
                     }
                     break;
+                case mt_ast_state(HASH_KEY):
+                    return mt_ast_token_invalid(state->cur_token);
             }
             mt_ast_inc_token(state);
             return mt_ast_next_token(state, cur_tree);
@@ -531,7 +543,7 @@ static inline void mt_ast_print_spaces(uint32_t indent) {
         mt_ast_debug_print(ast->node.bop->right, indent + 1); \
         break
 
-#define mt_ast_debug_ops_list(ast, indent, tgt) \
+#define mt_ast_debug_ops_list(ast, tgt, indent) \
     list = tgt; \
     while (list != NULL) { \
         mt_ast_debug_print(list->op, indent + 1); \
@@ -585,7 +597,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 printf("\n");
                 mt_ast_print_spaces(indent);
                 printf("V: ");
-                mt_ast_debug_ops_list(ast, indent, hash_items->value_head);
+                mt_ast_debug_print(hash_items->value, indent + 1);
                 hash_items = hash_items->next;
             }
             break;
@@ -598,7 +610,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 mt_ast_debug_print(ifs->cond, indent + 1);
                 mt_ast_print_spaces(indent);
                 printf("BODY\n");
-                mt_ast_debug_ops_list(ast, indent, ifs->body_head);
+                mt_ast_debug_ops_list(ast, ifs->body_head, indent);
                 ifs = ifs->next;
             }
             break;
@@ -612,7 +624,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 mt_buf_debug_print(ast->node.call->target);
             }
             printf("\n");
-                mt_ast_debug_ops_list(ast, indent, ast->node.call->args_head);
+                mt_ast_debug_ops_list(ast, ast->node.call->args_head, indent);
             break;
         mt_ast_print_bop(MUL, '*');
         mt_ast_print_bop(REM, '%');
