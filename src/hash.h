@@ -21,7 +21,7 @@ mt_hash* mt_hash_init(size_t num_buckets);
 
 void mt_hash_free(mt_hash* const hash);
 
-mt_var mt_hash_insert(mt_hash* const hash, const mt_buf* const name, mt_var value);
+mt_var mt_hash_insert(mt_hash* const hash, mt_buf* const name, mt_var value);
 
 mt_var mt_hash_get(mt_hash* const hash, const mt_buf* const name);
 

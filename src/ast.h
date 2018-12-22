@@ -77,6 +77,7 @@ typedef struct _mt_ast_hash_list {
 } mt_ast_hash_list;
 
 typedef struct {
+    uint32_t _bsize;
     mt_ast_sym_table* sym_table;
     mt_ast_hash_list* hash_head;
     mt_ast_hash_list* hash_tail;

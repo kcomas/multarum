@@ -167,7 +167,7 @@ void mt_ast_free(mt_ast_state* const state) {
         mt_ast_table_init(tbl, target, size); \
     } \
     if (mt_var_is_null(mt_hash_get(tbl->target->hash, buf))) { \
-        mt_hash_insert(tbl->target->hash, buf, mt_var_int(tbl->target->idx++)); \
+        mt_hash_insert(tbl->target->hash, mt_buf_clone(buf), mt_var_int(tbl->target->idx++)); \
     }
 
 #define mt_ast_symbol_in(where, tbl, buf) \
@@ -320,6 +320,7 @@ static inline mt_ast_hash_list* mt_ast_add_hash_list(void) {
 
 static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
     mt_ast_hash* hash = (mt_ast_hash*) malloc(sizeof(mt_ast_hash));
+    hash->_bsize = 0;
     hash->sym_table = mt_ast_get_sym(state->ast);
     hash->hash_head = mt_ast_add_hash_list();
     hash->hash_tail = hash->hash_head;
@@ -328,6 +329,7 @@ static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
         switch (sub_state.mode) {
             case mt_ast_state(HASH_KEY):
                 mt_ast_flush_nl(&sub_state);
+                hash->_bsize++;
                 if (sub_state.cur_token->type != mt_token(STR)) {
                     return mt_ast_token_invalid(sub_state.cur_token);
                 }
@@ -346,6 +348,7 @@ static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
                     return rst;
                 }
                 hash->hash_tail->value = sub_tree;
+                mt_ast_flush_nl(&sub_state);
                 if (sub_state.cur_token->type == mt_token(R_SQUARE)) {
                     return mt_ast_sub_done(state, &sub_state, cur_tree);
                 }
@@ -621,7 +624,7 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
             printf("\"\n");
             break;
         case mt_ast(HASH):
-            printf("HASH\n");
+            printf("HASH %d\n", ast->node.hash->_bsize);
             hash_items = ast->node.hash->hash_head;
             while (hash_items != NULL) {
                 mt_ast_print_spaces(indent);

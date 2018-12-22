@@ -97,7 +97,7 @@ static void mt_run_op(mt_vm* const vm) {
     int64_t mt_int;
     double mt_float;
     uint32_t mt_jmp = 0;
-    uint32_t str_len;
+    uint32_t str_len, _bsize;
     uint16_t mt_al;
     mt_buf* mt_buf;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
@@ -151,14 +151,37 @@ static void mt_run_op(mt_vm* const vm) {
                     break;
             }
             break;
-        case mt_pfx(ISTR):
+        case mt_pfx(IBUF):
             mt_vm_cur_byte(vm)++;
             mt_vm_get_bytes(vm, &str_len, sizeof(uint32_t));
             mt_buf = mt_buf_init((size_t) str_len);
             for (size_t i = 0; i < mt_buf->_size; i++) {
                 mt_buf->data[mt_buf->len++] = *mt_vm_cur_byte(vm)++;
             }
-            mt_vm_push(vm, mt_var_str(mt_str_init(mt_buf)));
+            mt_vm_push(vm, mt_var_buf(mt_buf));
+            break;
+        case mt_pfx(ISTR):
+            mt_vm_cur_byte(vm)++;
+            if (mt_vm_stack_type_cmp(vm, mt_pfx(BUFFER))) {
+                // @TODO handle error
+            }
+            mt_vm_cur_stack(vm) = mt_var_str(mt_str_init(mt_vm_cur_stack(vm).data.mt_buf));
+            break;
+        case mt_pfx(IHASH):
+            mt_vm_cur_byte(vm)++;
+            mt_vm_get_bytes(vm, &_bsize, sizeof(uint32_t));
+            mt_vm_push(vm, mt_var_hash(mt_hash_init(_bsize)));
+            break;
+        case mt_pfx(PHASH):
+            mt_vm_cur_byte(vm)++;
+            if (mt_vm_prev_prev_stack(vm).type != mt_pfx(HASH)) {
+                // @TODO handle error
+            } else if (mt_vm_prev_stack(vm).type != mt_pfx(BUFFER)) {
+                // @TODO insert from str
+            }
+            mt_hash_insert(mt_vm_prev_prev_stack(vm).data.mt_hash, mt_vm_prev_stack(vm).data.mt_buf, mt_vm_cur_stack(vm));
+            mt_vm_dec_stack_atomic(vm);
+            mt_vm_dec_stack_atomic(vm);
             break;
         mt_vm_math_case(vm, MUL, *=);
         case mt_pfx(REM):
@@ -174,6 +197,7 @@ static void mt_run_op(mt_vm* const vm) {
         mt_vm_math_case(vm, ADD, +=);
         mt_vm_math_case(vm, SUB, -=);
         case mt_pfx(EQ):
+            mt_vm_cur_byte(vm)++;
             if (mt_vm_stack_type_cmp(vm, mt_pfx(BOOL))) {
                mt_vm_eq_op(vm, mt_bool, mt_bool);
             } else if (mt_vm_stack_type_cmp(vm, mt_pfx(INT))) {

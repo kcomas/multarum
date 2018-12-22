@@ -114,18 +114,26 @@ static inline void mt_cgen_fill_if_jmps(mt_cgen_state* const state, mt_mod* cons
         mt_var_write_bytes(mod, &tm(ast->node.value.target)); \
         break
 
+static inline void mt_cgen_ibuf(const mt_buf* const buf, mt_mod* const mod) {
+    mt_write_byte(mod, mt_pfx(IBUF));
+    uint32_t str_len = (uint32_t) buf->len;
+    mt_write_bytes(mod, &str_len, sizeof(uint32_t));
+    mt_write_bytes(mod, buf->data, buf->len);
+}
+
 static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, mt_mod* const mod, const mt_ast_sym_table* const tbl) {
     if (ast == NULL) {
         return mt_var_bool(true);
     }
     mt_ast_op_list* ops;
     mt_ast_if_cond* conds;
+    mt_ast_hash_list* hash_list;
     mt_var rst;
     mt_op op;
     uint8_t mt_f = 0;
     uint16_t mt_al;
     uint8_t* jmp_hdl = NULL;
-    uint32_t str_len; // in bytes
+    uint32_t _bsize; // in bytes
     switch (ast->type) {
         case mt_ast(FN):
             mt_cgen_set_locals(ast, mod, AL, mt_al);
@@ -183,10 +191,21 @@ static mt_var mt_cgen_walk(mt_cgen_state* const state, const mt_ast* const ast, 
         mt_cgen_quic_push(mod, INT, mt_var_int, mt_int);
         mt_cgen_quic_push(mod, BOOL, mt_var_bool, mt_bool);
         case mt_ast(STR):
+            mt_cgen_ibuf(ast->node.value.mt_str, mod);
             mt_write_byte(mod, mt_pfx(ISTR));
-            str_len = (uint32_t) ast->node.value.mt_str->len;
-            mt_write_bytes(mod, &str_len, sizeof(uint32_t));
-            mt_write_bytes(mod, ast->node.value.mt_str->data, ast->node.value.mt_str->len);
+            break;
+        case mt_ast(HASH):
+            mt_write_byte(mod, mt_pfx(IHASH));
+            _bsize = ast->node.hash->_bsize;
+            mt_write_bytes(mod, &_bsize, sizeof(uint32_t));
+            hash_list = ast->node.hash->hash_head;
+            while (hash_list != NULL) {
+                mt_cgen_ibuf(hash_list->key, mod);
+                rst = mt_cgen_walk(state, hash_list->value, mod, ast->node.hash->sym_table);
+                mt_cgen_ck_err(rst);
+                mt_write_byte(mod, mt_pfx(PHASH));
+                hash_list = hash_list->next;
+            }
             break;
         case mt_ast(IF):
             conds = ast->node.if_smt->head;

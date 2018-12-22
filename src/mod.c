@@ -77,6 +77,14 @@ static size_t mt_mod_op16(const mt_mod* const mod, size_t i) {
     return i;
 }
 
+static size_t mt_mod_op32(const mt_mod* const mod, size_t i) {
+    uint32_t mt_32 = 0;
+    uint8_t op = mod->bytes[i];
+    i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &mt_32);
+    printf("%s %d\n", mt_op_str(op), mt_32);
+    return i;
+}
+
 static inline void mt_mod_space_bytes(size_t i, size_t count_total) {
     for (size_t count = mt_mod_num_len(i); count < count_total; count++) {
         putchar(' ');
@@ -92,7 +100,7 @@ static size_t mt_mod_single_byte_cmd(const mt_mod* mod, size_t i) {
 
 static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_total) {
     int8_t char_conts;
-    uint32_t mt_jmp, str_len;
+    uint32_t str_len;
     int64_t mt_int;
     double mt_float;
     mt_char mt_char_parts = mt_char_init(0, 0, 0, 0);
@@ -104,6 +112,8 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
             i = mt_mod_op16(mod, i);
             break;
         case mt_pfx(NOP):
+        case mt_pfx(PHASH):
+        case mt_pfx(ISTR):
         case mt_pfx(MUL):
         case mt_pfx(ADD):
         case mt_pfx(SUB):
@@ -179,9 +189,9 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
                     break;
             }
             break;
-        case mt_pfx(ISTR):
+        case mt_pfx(IBUF):
             i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &str_len);
-            printf("ISTR %d ", str_len);
+            printf("IBUF %d ", str_len);
             for (size_t x = 0; x < str_len; x++, i++) {
                 switch (mod->bytes[i]) {
                     case '\\':
@@ -200,13 +210,10 @@ static size_t mt_print_next_op(const mt_mod* const mod, size_t i, size_t count_t
             }
             printf("\n");
             break;
+        case mt_pfx(IHASH):
         case mt_pfx(JMP):
-            i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &mt_jmp);
-            printf("JMP %d\n", mt_jmp);
-            break;
         case mt_pfx(JMPF):
-            i = mt_mod_op_w_data(mod, i, sizeof(uint32_t), &mt_jmp);
-            printf("JMPF %d\n", mt_jmp);
+            i = mt_mod_op32(mod, i);
             break;
         case mt_pfx(LD_FN):
         case mt_pfx(LD_ARG):

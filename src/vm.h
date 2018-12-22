@@ -58,6 +58,8 @@ typedef struct {
 
 #define mt_vm_prev_stack(vm) vm->stack[vm->s_len - 2]
 
+#define mt_vm_prev_prev_stack(vm) vm->stack[vm->s_len - 3]
+
 #define mt_vm_math_op(vm, op, v_data) \
     mt_vm_prev_stack(vm).data.v_data op mt_vm_cur_stack(vm).data.v_data; \
     mt_vm_dec_stack(vm); \
@@ -77,8 +79,7 @@ typedef struct {
 #define mt_vm_eq_op(vm, target, v_data) \
     target = mt_vm_prev_stack(vm).data.v_data == mt_vm_cur_stack(vm).data.v_data; \
     mt_vm_dec_stack(vm); \
-    mt_vm_dec_stack(vm); \
-    mt_vm_cur_byte(vm)++
+    mt_vm_dec_stack(vm)
 
 void mt_vm_init(mt_vm* const vm, mt_ctx* const ctx, mt_mod* const mod);
 
