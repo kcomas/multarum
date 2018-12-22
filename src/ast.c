@@ -100,6 +100,8 @@ static void mt_ast_free_walk(mt_ast* const ast) {
     mt_ast_op_list* tmp;
     mt_ast_if_cond* conds;
     mt_ast_if_cond* conds_tmp;
+    mt_ast_hash_list* hash_items;
+    mt_ast_hash_list* hash_items_tmp;
     switch (ast->type) {
         case mt_ast(NULL):
             break;
@@ -109,12 +111,22 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             free(ast->node.fn);
             break;
         case mt_ast(VAR):
+            mt_buf_free(ast->node.value.mt_var);
+            break;
         case mt_ast(ARG):
         case mt_ast(BOOL):
         case mt_ast(INT):
             break;
         case mt_ast(STR):
             mt_buf_free(ast->node.value.mt_str);
+            break;
+        case mt_ast(HASH):
+            hash_items = ast->node.hash->hash_head;
+            while (hash_items != NULL) {
+                hash_items_tmp = hash_items;
+                hash_items = hash_items->next;
+                free(hash_items_tmp);
+            }
             break;
         mt_ast_free_bop_case(ast, ASSIGN);
         mt_ast_free_bop_case(ast, EQ);
@@ -224,6 +236,13 @@ static inline mt_ast_sym_table* mt_ast_get_sym(mt_ast* const ast) {
     }
 }
 
+static inline mt_var mt_ast_sub_done(mt_ast_state* const state, const mt_ast_state* const sub_state, mt_ast** const cur_tree) {
+    state->cur_token = sub_state->cur_token;
+    mt_ast_inc_token(state);
+    *cur_tree = sub_state->ast;
+    return mt_ast_next_token(state, cur_tree);
+}
+
 static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree) {
     mt_ast_if* if_smt = malloc(sizeof(mt_ast_if));
     if_smt->sym_table = mt_ast_get_sym(state->ast);
@@ -249,10 +268,7 @@ static mt_var mt_ast_build_if(mt_ast_state* const state, mt_ast** const cur_tree
                         mt_ast_inc_token_sub(sub_state);
                     }
                     if (sub_state.cur_token != NULL && sub_state.cur_token->type == mt_token(R_BRACKET)) {
-                        mt_ast_inc_token_sub(sub_state);
-                        state->cur_token = sub_state.cur_token;
-                        *cur_tree = sub_state.ast;
-                        return mt_var_bool(true);
+                        return mt_ast_sub_done(state, &sub_state, cur_tree);
                     }
                     sub_state.mode = mt_ast_state(IF_COND);
                     if_smt->tail->next = mt_ast_if_cond_init();
@@ -286,10 +302,7 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
         call->args_tail->op = sub_tree;
         call->arg_count++;
         if (sub_state.cur_token->type == mt_token(R_BRACE)) {
-            state->cur_token = sub_state.cur_token;
-            mt_ast_inc_token(state);
-            *cur_tree = sub_state.ast;
-            return mt_ast_next_token(state, cur_tree);
+            return mt_ast_sub_done(state, &sub_state, cur_tree);
         }
         call->args_tail->next = mt_ast_add_op_list();
         call->args_tail = call->args_tail->next;
@@ -314,6 +327,7 @@ static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
     while (sub_state.cur_token != NULL) {
         switch (sub_state.mode) {
             case mt_ast_state(HASH_KEY):
+                mt_ast_flush_nl(&sub_state);
                 if (sub_state.cur_token->type != mt_token(STR)) {
                     return mt_ast_token_invalid(sub_state.cur_token);
                 }
@@ -322,10 +336,22 @@ static mt_var mt_ast_build_hash(mt_ast_state* const state, mt_ast** cur_tree) {
                 sub_state.mode = mt_ast_state(HASH_VALUE);
                 break;
             case mt_ast_state(HASH_VALUE):
+                mt_ast_flush_nl(&sub_state);
                 if (hash->hash_tail->key == NULL) {
                     return mt_var_err(mt_err_ast_no_hash_key());
                 }
-                // @TODO load hash item value
+                mt_ast* sub_tree = NULL;
+                mt_var rst = mt_ast_next_token(&sub_state, &sub_tree);
+                if (mt_var_is_err(rst)) {
+                    return rst;
+                }
+                hash->hash_tail->value = sub_tree;
+                if (sub_state.cur_token->type == mt_token(R_SQUARE)) {
+                    return mt_ast_sub_done(state, &sub_state, cur_tree);
+                }
+                hash->hash_tail->next = mt_ast_add_hash_list();
+                hash->hash_tail = hash->hash_tail->next;
+                sub_state.mode = mt_ast_state(HASH_KEY);
                 break;
             default:
                 return mt_var_err(mt_err_ast_invalid_hash_state("Invalid State"));
@@ -480,6 +506,13 @@ static mt_var mt_ast_next_token(mt_ast_state* const state, mt_ast** const cur_tr
                 default:
                     return mt_ast_token_invalid(state->cur_token);
             }
+        case mt_token(R_SQUARE):
+            switch (state->mode) {
+                case mt_ast_state(HASH_VALUE):
+                    return mt_var_bool(true);
+                default:
+                    return mt_ast_token_invalid(state->cur_token);
+            }
         case mt_token(DOLLAR):
             if (!mt_ast_peek_token_is_type(state, L_BRACE)) {
                 return mt_ast_token_invalid(state->cur_token);
@@ -597,7 +630,8 @@ void mt_ast_debug_print(const mt_ast* const ast, uint32_t indent) {
                 printf("\n");
                 mt_ast_print_spaces(indent);
                 printf("V: ");
-                mt_ast_debug_print(hash_items->value, indent + 1);
+                mt_ast_debug_print(hash_items->value, indent);
+                printf("\n");
                 hash_items = hash_items->next;
             }
             break;

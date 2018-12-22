@@ -14,9 +14,6 @@ void mt_token_state_free(mt_token_state* const state) {
     while (t != NULL) {
         mt_token* cpy = t;
         t = t->next;
-        if (cpy->type == mt_token(VAR)) {
-            mt_buf_free(cpy->data.mt_var);
-        }
         free(cpy);
     }
     if (state->cur_data != NULL) {

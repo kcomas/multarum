@@ -7,8 +7,6 @@
 
 A scripting language written in C.
 
-I am targeting POSIX compatibility, but have not tested on a mac.
-
 Compile with
 
 ```c
