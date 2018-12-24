@@ -127,6 +127,7 @@ static void mt_ast_free_walk(mt_ast* const ast) {
                 mt_ast_free_walk(hash_items_tmp->value);
                 free(hash_items_tmp);
             }
+            free(ast->node.hash);
             break;
         mt_ast_free_bop_case(ast, ASSIGN);
         mt_ast_free_bop_case(ast, EQ);
