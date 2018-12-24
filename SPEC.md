@@ -7,7 +7,7 @@
 * C Char "s"
 * Y Symbol `something
 * S String "something"
-* V Vec [a;b;c]
+* L List [a;b;c]
 * H Hash [keys]![values]
 * F Function {[arg1;arg256]}
 * E Error

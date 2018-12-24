@@ -13,35 +13,37 @@ td en {
     TGV, // Variable
     TGN, // Number
     TGG, // Grouping
+    TGL, // List
+    TGF, // Function
     TGE, // End Statement
     _TGS // Size of group
-} tg; // token group
+} TG; // token group
 
 td st {
-    tg g; // the tokens group
+    TG g; // the tokens group
     C t; // the token value
-} tn; // token
+} TN; // token
 
 td st {
-    tg g;
+    TG g;
     I (*fn)(C);
-} tfs; // functions that group a token
+} TFS; // functions that group a token
 
-#define qtfns(g, f) (tfs) { g, f }
+#define qtfns(g, f) (TFS) { g, f }
 
-td st _tns {
+td st _TNS {
     ST i, bl, fnsi, fnsl; // the index in the buffer, buffer len, registerd fns, total fns
     S b; // the buffer to tokenize
-    tfs fns[];
-} *tns; // token state
+    TFS fns[];
+} *TNS; // token state
 
-tns tnsi(S b, ST bl, ST fnsl); // init token state
+TNS tnsi(S b, ST bl, ST fnsl); // init token state
 
-V tnsf(tns s); // token state free
+V tnsf(TNS s); // token state free
 
-I tnsnt(tns s, tn *t); // get next token return 0 on done
+I tnsnt(TNS s, TN *t); // get next token return 0 on done
 
-I tnsrf(tns s, tfs f); // register token fn
+I tnsrf(TNS s, TFS f); // register token fn
 
 I tnopfn(C t); // token operator fn
 
@@ -50,6 +52,10 @@ I tnvfn(C t); // token variable fn
 I tnnufn(C t); // token number fn
 
 I tngfn(C t); // token grouping
+
+I tnlfn(C t); // token list
+
+I tnffn(C t); // token fn
 
 I tnefn(C t); // token end statement
 
