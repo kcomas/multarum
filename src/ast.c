@@ -111,8 +111,6 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             free(ast->node.fn);
             break;
         case mt_ast(VAR):
-            mt_buf_free(ast->node.value.mt_var);
-            break;
         case mt_ast(ARG):
         case mt_ast(BOOL):
         case mt_ast(INT):
@@ -125,6 +123,8 @@ static void mt_ast_free_walk(mt_ast* const ast) {
             while (hash_items != NULL) {
                 hash_items_tmp = hash_items;
                 hash_items = hash_items->next;
+                mt_buf_free(hash_items_tmp->key);
+                mt_ast_free_walk(hash_items_tmp->value);
                 free(hash_items_tmp);
             }
             break;
