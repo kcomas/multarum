@@ -50,7 +50,7 @@ typedef struct {
 
 typedef struct {
     uint8_t arg_count;
-    bool anon; // we are calling a function on the stack
+    bool anon, bound; // we are calling a function on the stack, if this a a projection
     mt_ast_sym_table* sym_table;
     mt_buf* target; // null for self
     mt_ast_op_list* args_head;

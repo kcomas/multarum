@@ -288,6 +288,7 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
     mt_ast_call* call = (mt_ast_call*) malloc(sizeof(mt_ast_call));
     call->arg_count = 0;
     call->anon = anon;
+    call->bound = false;
     call->sym_table = mt_ast_get_sym(state->ast);
     call->target = target;
     call->args_head = mt_ast_add_op_list();
@@ -302,6 +303,12 @@ static mt_var mt_ast_build_call(mt_ast_state* const state, mt_ast** cur_tree, mt
         call->args_tail->op = sub_tree;
         call->arg_count++;
         if (sub_state.cur_token->type == mt_token(R_BRACE)) {
+            if (sub_tree == NULL && call->arg_count == 1 && call->bound == false) {
+                call->arg_count = 0;
+                free(call->args_head);
+                call->args_head = NULL;
+                call->args_tail = NULL;
+            }
             return mt_ast_sub_done(state, &sub_state, cur_tree);
         }
         call->args_tail->next = mt_ast_add_op_list();
