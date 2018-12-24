@@ -76,7 +76,7 @@ static void mt_vm_call(mt_vm* const vm, mt_mod* const new_mod, size_t new_idx, s
 }
 
 static void mt_vm_ret(mt_vm* const vm) {
-    if (mt_vm_cur_base(vm) != vm->s_len - 1) {
+    if (mt_vm_cur_base(vm) != vm->s_len - (mt_vm_cur_args(vm) == 0 ? 1 : 0)) {
         mt_var* mt_ret = &mt_vm_cur_stack(vm);
         mt_vm_dec_stack_atomic(vm);
         while (vm->s_len >= mt_vm_cur_base(vm)) {
