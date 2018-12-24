@@ -3,6 +3,10 @@
 
 TNS tnsi(S b, ST bl, ST fnsl) {
     TNS s = al(sz(st _TNS) + fnsl * sz(TFS));
+    s->g = TGI;
+    s->ri = 0;
+    s->rl = 20;
+    s->r = al(s->rl);
     s->bl = bl;
     s->b = b;
     s->fnsl = fnsl;
@@ -18,6 +22,30 @@ I tnsnt(TNS s, TN *t) {
             t->t = s->b[s->i++];
             R 1; }
     s->i++; } R 0; }
+
+static void rp(TNS s, TNG *tg) {
+    for (ST i = 0; i < s->ri; i++) putchar(s->r[i]);
+    pf("\n"); }
+    // for (ST i = 0; I < s->fnsi; i++) if (s->fns[i].g == s->g) R s->fns[i].gfn(s->r, s->ri, tg); }
+
+I tnsntg(TNS s, TNG *tg) {
+    TN t;
+    while (tnsnt(s, &t)) {
+        if (s->g == TGI) {
+            s->g = t.g;
+            s->r[s->ri++] = t.t;
+            cont; }
+        if (s->g != t.g) {
+            // parse r
+            rp(s, tg);
+            s->g = t.g;
+            s->ri = 0;
+            s->r[s->ri++] = t.t;
+            R 1; }
+        s->r[s->ri++] = t.t;
+        if (s->ri == s->rl) bk; }
+    rp(s, tg);
+    R 0; }
 
 I tnsrf(TNS s, TFS fs) {
     if (s->fnsi == s->fnsl) R 0;

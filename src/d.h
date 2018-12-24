@@ -15,6 +15,9 @@
 #define pf printf
 #define stat static
 #define ct const
+#define cont continue
+#define bk break
+#define un union
 #define R return
 
 td void V;
