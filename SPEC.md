@@ -36,7 +36,7 @@
 * ! Make Hash, Not
 * ? Call Safe
 * () Group
-* [] Call/Access
+* [] Call/Access, Create Vec
 * $() System List of statements
 * ; End Statment
 * _ Drop Cut, Floor
