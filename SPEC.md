@@ -2,41 +2,24 @@
 
 ## Data Types
 
-* Int 1
-* Float 1.0
-* Char "s"
-* Symbol `something
-* String "something"
-* Vec [a;b;c]
-* Hash [keys]![values]
-* Function {[arg1;arg256]}
-* Error
-* Module
-* File Descriptor
+* I Int 1
+* F Float 1.0
+* C Char "s"
+* Y Symbol `something
+* S String "something"
+* V Vec [a;b;c]
+* H Hash [keys]![values]
+* F Function {[arg1;arg256]}
+* E Error
+* M Module
+* D File Descriptor
 
 ## Operators
 
-* + Addition
-* - Subtraction, Negate
-* * Multiplication, First
+* \+ Addition
+* \- Subtraction, Negate
+* \* Multiplication, First
 * / Division, Square Root
 * % Remainder
 * : Assign
-* | Max, Reverse
-* & Min, Open Fd
-* # Take, Count
-* , Concat/Write, Enlist
-* // Comment
-* < Less
-* > More
-* = Equal
-* $ Cast, Call Self
-* ${cond;expr;cond;expr;expr}
-* " String or Char
-* ! Make Hash, Not
-* ? Call Safe
-* () Group
-* [] Call/Access, Create Vec
-* $() System List of statements
-* ; End Statment
-* _ Drop Cut, Floor
+* ; End Statement
