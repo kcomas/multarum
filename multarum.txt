@@ -13,7 +13,7 @@ Data Types:
 -1 Bool 8bit
 -2 Int 64bit 0-9
 -3 Float 64bit Int.Int
--4 Char 32bit utf8 "A-z"
+-4 Char 32bit utf8
 -5 File Descriptor
 -6 Function
 -7 Projection (Function[;])
@@ -21,6 +21,7 @@ Data Types:
 -9 Error
 -10 Thread
 11 Dict [Stings]![]
+100 Frame, Internal use only
 
 Operators (Dyadic, Monadic)
 () Grouping
@@ -76,9 +77,11 @@ Once we go 50 chars of no matches return error
 Grammar
 statement: expression*;
 expression: primary OP expression | OP expression | primary
-primary: NUMBER | VAR | STRING | CHAR | [primary;*?primary?] | { [VAR;]? statement;?+ } | ? {statement;+} | ( statement )
+primary: NUMBER | VAR | STRING | CHAR | [primary;*?primary?] | { [VAR;]? statement?+ } | ? { statement+ } | ( statement )
 
 Use recursive decent to convert tokens to an ast
+Vars will be placed into a symbol table
+Values will be given an id and placed into an array
 
 3 Code Generation
 
@@ -86,3 +89,5 @@ Traverse ast and create static byte code
 Each code will be 16bit
 
 4. Bytecode Execution
+
+Allocate a stack of vars and placed frames on stack
