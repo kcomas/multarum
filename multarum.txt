@@ -1,0 +1,82 @@
+Multarum
+
+A dynamic apl/lisp language
+Operator Precedence is none
+Collections are ref counted and passed by reference
+
+Atom types are denoted as negative numbers
+While collection of atoms types are positive
+0 denotes mixed vec
+
+Data Types:
+0 Vec []
+-1 Bool 8bit
+-2 Int 64bit 0-9
+-3 Float 64bit Int.Int
+-4 Char 32bit utf8 "A-z"
+-5 File Descriptor
+-6 Function
+-7 Projection (Function[;])
+-8 Module
+-9 Error
+-10 Thread
+11 Dict [Stings]![]
+
+Operators (Dyadic, Monadic)
+() Grouping
+[] ,Access/Call, Vec
+{ [] } Function [] are optional
+/* */ Comment
+" " String/Char
+` File
+: Assign
+= Equal
+!= Not Equal
+> Greater
+<< Read/Write
+>= Greater Equal
+< Less
+<= Less Equal
+! Zip, Not
+!! Throw Error
+& And/Min, Head
+| Or/Max, Tail
+, Concat, Enlist
+' Map, Unzip
+@ Filter, Type
+? Call w Catch, Cast
+^ Reduce, Length/Stat
++ Addition, Import
+- Subtraction, Negate
+* Multiplication, Dir List
+/ Division, Reverse
+$ Call Self, System
+$$ Call Tail
+_ Delete, Pop
+# Slice/Sort, Rand
+\ Built in (\cos)
+. Global Set, Global Get
+~ Thead Init, Join Thead
+; End Statement
+
+Control Flow
+?{cond;expr;condn;exprn;default}
+
+Implementation
+
+1. Tokenzie
+
+Load File into single string
+While stile has tokens, increase the start position and check if this current slice matches any tokens.
+Once it does not match take the last match and return it
+Once we go 50 chars of no matches return error
+
+2. Parse
+
+Grammar
+statement: expression*;
+expression: primary OP expression | OP primary | primary
+primary: NUMBER | VAR | STRING | CHAR | [primary;*?primary?] | { [VAR;]? statement;?+ } | ? {statement;+} | ( statement )
+
+3 Code Generation
+4. Bytecode Execution
