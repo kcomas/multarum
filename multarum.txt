@@ -43,7 +43,7 @@ Operators (Dyadic, Monadic)
 | Or/Max, Tail
 , Concat, Enlist
 ' Map, Unzip
-@ Filter, Type
+@ Filter/Regex, Type
 ? Call w Catch, Cast
 ^ Reduce, Length/Stat
 + Addition, Import
@@ -53,7 +53,7 @@ Operators (Dyadic, Monadic)
 $ Call Self, System
 $$ Call Tail
 _ Delete, Pop
-# Slice/Sort, Rand
+# Slice/Sort/Take, Rand
 \ Built in (\cos)
 . Global Set, Global Get
 ~ Thead Init, Join Thead
@@ -64,7 +64,7 @@ Control Flow
 
 Implementation
 
-1. Tokenzie
+1. Tokenize
 
 Load File into single string
 While stile has tokens, increase the start position and check if this current slice matches any tokens.
@@ -75,8 +75,14 @@ Once we go 50 chars of no matches return error
 
 Grammar
 statement: expression*;
-expression: primary OP expression | OP primary | primary
+expression: primary OP expression | OP expression | primary
 primary: NUMBER | VAR | STRING | CHAR | [primary;*?primary?] | { [VAR;]? statement;?+ } | ? {statement;+} | ( statement )
 
+Use recursive decent to convert tokens to an ast
+
 3 Code Generation
+
+Traverse ast and create static byte code
+Each code will be 16bit
+
 4. Bytecode Execution
