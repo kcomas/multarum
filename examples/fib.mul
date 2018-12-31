@@ -1,0 +1,9 @@
+
+total: 30;
+
+// Fibonacci numbers
+fib: { [n] ${n<2;n;$[n-1]+$[n-2]} };
+
+rst: fib[total];
+1 << rst;
+rst

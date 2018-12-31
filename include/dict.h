@@ -10,7 +10,7 @@ typedef struct _dict_node {
 } dict_node;
 
 typedef struct _dict {
-    size_t used, size;
+    size_t used, size; // used can be bigger then size
     dict_node buckets[];
 } *dict;
 
@@ -18,6 +18,10 @@ dict dict_init(size_t size);
 
 void dict_free(dict d);
 
-bool dict_insert(dict d, var* err, var key, var value);
+bool dict_concat(dict* d, var* err, dict x, dict y);
+
+bool dict_insert(dict* d, var* err, var key, var value);
+
+bool dict_remove(dict d, var* err, var key);
 
 #endif
