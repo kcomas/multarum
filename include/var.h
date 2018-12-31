@@ -10,6 +10,7 @@
 #include "str.h"
 #include "vec.h"
 #include "dict.h"
+#include "file.h"
 
 typedef struct _str *str;
 typedef struct _vec *vec;
@@ -32,5 +33,7 @@ typedef struct {
         dict d;
     } value;
 } var;
+
+#define var_err_c(c_str) (var) { .type = -9, .value = { .s = str_from_c(c_str) } }
 
 #endif

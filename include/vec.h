@@ -13,9 +13,9 @@ vec vec_init(size_t size);
 
 void vec_free(vec v);
 
-bool vec_push(vec* v, var* err, var value);
+void vec_push(vec* v, var value);
 
-bool vec_concat(vec* v, var* err, vec x, vec y);
+vec vec_concat(vec x, vec y);
 
 bool vec_pop(vec v, var* err, var value);
 

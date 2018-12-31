@@ -37,7 +37,7 @@ Operators (Dyadic, Monadic)
 = Equal
 != Not Equal
 > Greater
-<< Read/Write
+<< Read/Write (0 stdin 1 stdout 2 stderr, -1 -2 not to add newline)
 >= Greater Equal
 < Less
 <= Less Equal
@@ -46,7 +46,7 @@ Operators (Dyadic, Monadic)
 & And/Min, Head
 | Or/Max, Tail
 , Concat, Enlist
-' Map, Unzip
+' Map, Unzip/Debugger
 @ Filter/Regex, Type
 ? Call w Catch, Cast
 ^ Reduce, Length/Stat
@@ -59,6 +59,7 @@ _ Delete, Pop
 # Slice/Sort (stable)/Take, Rand
 \ Built in (\cos)
 . Global Set, Global Get
+.. Apply
 ~ Thead Init, Join Thead
 ; End Statement
 

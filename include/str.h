@@ -13,18 +13,30 @@ str str_init(size_t size);
 
 void str_free(str s);
 
-bool str_push(str* s, var* err, utf8 c);
+void str_push(str* s, utf8 c);
 
-bool str_concat(str* s, var* err, str x, str y);
+str str_concat(str x, str y);
 
-bool str_from_c(str* s, var* err, char* c_str);
+str str_from_c(char* c_str)
+
+/**
+ * Strict utf8 iter
+ * Check first byte for continuations
+ * From highest to lowest
+ * 0xxxxxxxx 127 value ascii compat
+ * 10xxxxxxx error
+ * 110xxxxxx 1 continuation 128 to 2047
+ * 1110xxxxx 2 continuation 2048 to 65535 excluding 55296 to 57343
+ * 11110xxxx 3 65536 to 1114111
+ * 11111xxxx error
+ */
 
 typedef struct {
     size_t idx;
     str s;
 } str_iter;
 
-bool str_iter_init(str_iter* si, var* err);
+bool str_iter_init(str_iter* si, var* err, str s);
 
 bool str_iter_peek(str_iter* si, utf8* c);
 
