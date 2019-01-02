@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 make tests
 
@@ -8,13 +8,13 @@ for TEST in *_test
 do
     echo "RUNNING $TEST"
     ./$TEST
-    if [[ $? -ne 0 ]]
+    if [ $? -ne 0 ]
     then
         echo "TEST $TEST FAILED"
         exit 1
     fi
     valgrind --leak-check=full --error-exitcode=12 ./$TEST
-    if [[ $? -eq 12 ]]
+    if [ $? -eq 12 ]
     then
         echo "TEST $TEST HAS MEMORY LEAKS"
         exit 1
