@@ -17,7 +17,10 @@ utf8 utf8_from_c(char c) {
 }
 
 size_t utf8_len(utf8 c) {
-    for (size_t i = 4; i > 0; i--) if (c.b[i] > 0) return i;
+    if ((c.b[0] & 0x80) == 0) return 1;
+    if ((c.b[0] & 0xe0) == 0xc0) return 2;
+    if ((c.b[0] & 0xf0) == 0xe0) return 3;
+    if ((c.b[0] & 0xf8) == 0xf0) return 4;
     return 0;
 }
 
