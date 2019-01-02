@@ -16,7 +16,7 @@ do
     valgrind --leak-check=full --error-exitcode=12 ./$TEST
     if [ $? -eq 12 ]
     then
-        echo "TEST $TEST HAS MEMORY LEAKS"
+        echo "TEST $TEST HAS MEMORY ERRORS"
         exit 1
     fi
 done

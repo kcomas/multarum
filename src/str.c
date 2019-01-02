@@ -13,10 +13,11 @@ void str_free(str s) {
 }
 
 void str_push(str* s, utf8 c) {
-    if ((*s)->size < utf8_len(c)) {
+    if ((*s)->size - (*s)->len < utf8_len(c)) {
         str new = str_init((*s)->size * 2);
         new->len = (*s)->len;
         memcpy(new->data, (*s)->data, new->len);
+        free(*s);
         *s = new;
     }
     size_t utf8len = utf8_len(c);
