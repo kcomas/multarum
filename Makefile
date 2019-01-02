@@ -6,26 +6,24 @@ SRC = src
 TEST = test
 OP = -g
 CFLAGS = -std=c99 $(OP) -Wall -Wextra -I $(INC)
+CTEST = $(CC) $(CFLAGS) -o $@
 
 dict.o = $(SRC)/dict.o
 file.o = $(SRC)/file.o
 str.o = $(SRC)/str.o
+strtest.o = $(TEST)/str.o
 utf8.o = $(SRC)/utf8.o
 utf8test.o = $(TEST)/utf8.o
 var.o = $(SRC)/var.o
 vec.o = $(SRC)/vec.o
 
-tests: utf8_test
+tests: str_test utf8_test
+
+str_test: $(strtest.o) $(str.o) $(utf8.o) $(INC)/test.h
+	$(CTEST) $(strtest.o) $(str.o) $(utf8.o)
 
 utf8_test: $(utf8test.o) $(utf8.o) $(INC)/test.h
-	$(CC) $(CFLAGS) -o $@  $(utf8test.o) $(utf8.o)
-
-$(dict.o): $(SRC)/dict.c $(INC)/dict.h
-$(file.o): $(SRC)/file.c $(INC)/file.h
-$(str.o): $(SRC)/str.c $(INC)/str.h
-$(utf8.o): $(SRC)/utf8.c $(INC)/utf8.h
-$(var.o): $(SRC)/var.c $(INC)/var.h
-$(vec.o): $(SRC)/vec.c $(INC)/vec.h
+	$(CTEST) $(utf8test.o) $(utf8.o)
 
 .SUFFIXES: .c .o
 	$(CC) $(CFLAGS) -c $@ $<

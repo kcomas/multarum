@@ -13,6 +13,12 @@ do
         echo "TEST $TEST FAILED"
         exit 1
     fi
+    valgrind --leak-check=full --error-exitcode=12 ./$TEST
+    if [[ $? -eq 12 ]]
+    then
+        echo "TEST $TEST HAS MEMORY LEAKS"
+        exit 1
+    fi
 done
 
 echo "ALL TESTS PASSED"

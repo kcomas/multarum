@@ -16,12 +16,17 @@ utf8 utf8_from_c(char c) {
     return u;
 }
 
-size_t utf8_len(utf8 c) {
-    if ((c.b[0] & 0x80) == 0) return 1;
-    if ((c.b[0] & 0xe0) == 0xc0) return 2;
-    if ((c.b[0] & 0xf0) == 0xe0) return 3;
-    if ((c.b[0] & 0xf8) == 0xf0) return 4;
+
+size_t utf8_cont(uint8_t c) {
+    if ((c & 0x80) == 0) return 1;
+    if ((c & 0xe0) == 0xc0) return 2;
+    if ((c & 0xf0) == 0xe0) return 3;
+    if ((c & 0xf8) == 0xf0) return 4;
     return 0;
+}
+
+size_t utf8_len(utf8 c) {
+   return utf8_cont(c.b[0]);
 }
 
 int32_t utf8_value(utf8 c) {

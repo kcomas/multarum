@@ -2,7 +2,10 @@
 #ifndef STR_H
 #define STR_H
 
-#include "var.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include "utf8.h"
 
 typedef struct _str {
     size_t len, size;
@@ -38,10 +41,10 @@ typedef struct {
     str s;
 } str_iter;
 
-bool str_iter_init(str_iter* si, var* err, str s);
+void str_iter_init(str_iter* const si, str s);
 
-bool str_iter_peek(str_iter* si, utf8* c);
+bool str_iter_peek(str_iter* const si, utf8* c);
 
-bool str_iter_next(str_iter* si, utf8* c);
+bool str_iter_next(str_iter* const si, utf8* c);
 
 #endif
