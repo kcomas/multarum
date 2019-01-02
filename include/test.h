@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <assert.h>
 
-#define test(statement, left, CMP, right) \
+#define test(statement, CMP) \
     do { \
         printf("%s\n", statement); \
-        assert(left CMP right); \
+        assert(CMP); \
     } while (0)
 
 #endif

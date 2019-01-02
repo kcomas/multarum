@@ -16,6 +16,10 @@ utf8 utf8_from_c(char c) {
     return u;
 }
 
+bool utf8_cmp(utf8 a, utf8 b) {
+    for (size_t i = 0; i < 4; i++) if (a.b[i] != b.b[i]) return false;
+    return true;
+}
 
 size_t utf8_cont(uint8_t c) {
     if ((c & 0x80) == 0) return 1;

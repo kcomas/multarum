@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
     uint8_t b[4]; // byte
@@ -12,6 +13,8 @@ typedef struct {
 utf8 utf8_init(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
 
 utf8 utf8_from_c(char c);
+
+bool utf8_cmp(utf8 a, utf8 b);
 
 size_t utf8_cont(uint8_t c);
 

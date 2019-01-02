@@ -22,6 +22,8 @@ str str_concat(str x, str y);
 
 str str_from_c(const char* const c_str);
 
+bool str_cmp(const str x, const str y);
+
 void str_print(const str s);
 
 /**

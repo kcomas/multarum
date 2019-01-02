@@ -42,6 +42,16 @@ str str_from_c(const char* const c_str) {
     return s;
 }
 
+bool str_cmp(const str x, const str y) {
+    if (x->len != y->len) return false;
+    for (size_t i = 0; i < x->len; i++) if (x->data[i] != y->data[i]) return false;
+    return true;
+}
+
+void str_print(const str s) {
+    for (size_t i = 0; i < s->len; i++) putchar(s->data[i]);
+}
+
 static size_t str_next_c(str_iter* const si, utf8* c) {
     if (si->idx == si->s->len) return 0;
     size_t conts = utf8_cont(si->s->data[si->idx]);
@@ -55,10 +65,6 @@ static size_t str_next_c(str_iter* const si, utf8* c) {
     return conts;
 }
 
-void str_print(const str s) {
-    for (size_t i = 0; i < s->len; i++) putchar(s->data[i]);
-}
-
 void str_iter_init(str_iter* const si, str s) {
     si->idx = 0;
     si->s = s;
@@ -70,7 +76,7 @@ bool str_iter_peek(str_iter* const si, utf8* c) {
 }
 
 bool str_iter_next(str_iter* const si, utf8* c) {
-    size_t conts = str_iter_next(si, c);
+    size_t conts = str_next_c(si, c);
     if (conts == 0) return false;
     si->idx += conts;
     return true;
