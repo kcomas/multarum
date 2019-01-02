@@ -17,4 +17,6 @@ size_t utf8_len(utf8 c);
 
 int32_t utf8_value(utf8 c);
 
+void utf8_print(const utf8 c);
+
 #endif

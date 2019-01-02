@@ -24,4 +24,6 @@ void dict_insert(dict* d, var key, var value);
 
 bool dict_remove(dict d, var* err, var key);
 
+void dict_print(const dict d);
+
 #endif

@@ -20,3 +20,21 @@ size_t utf8_len(utf8 c) {
     for (size_t i = 4; i > 0; i--) if (c.b[i] > 0) return i;
     return 0;
 }
+
+int32_t utf8_value(utf8 c) {
+    if ((c.b[0] & 0x80) == 0) return (int32_t) c.b[0];
+    if ((c.b[0] & 0xe0) == 0xc0) return  ((c.b[0] & 0x1f) << 6) | c.b[1];
+    if ((c.b[0] & 0xf0) == 0xe0) {
+        uint32_t r = ((c.b[0] & 0x0f) << 12) | (c.b[1] << 6) | c.b[2];
+        if (r < 55296 || r > 57343) return (int32_t) r;
+    }
+    if ((c.b[0] & 0xf8) == 0xf0) {
+        uint32_t r = ((c.b[0] & 0x07) << 18) | (c.b[1] << 12) | (c.b[2] << 6) | c.b[3];
+        if (r <= 1114111) return (int32_t) r;
+    }
+    return -1;
+}
+
+void utf8_print(const utf8 c) {
+    for (size_t i = 0; i < utf8_len(c); i++) putchar(c.b[i]);
+}

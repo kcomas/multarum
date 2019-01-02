@@ -17,7 +17,9 @@ void str_push(str* s, utf8 c);
 
 str str_concat(str x, str y);
 
-str str_from_c(char* c_str)
+str str_from_c(const char* const c_str);
+
+void str_print(const str s);
 
 /**
  * Strict utf8 iter
