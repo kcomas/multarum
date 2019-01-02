@@ -15,6 +15,8 @@ utf8test.o = $(TEST)/utf8.o
 var.o = $(SRC)/var.o
 vec.o = $(SRC)/vec.o
 
+tests: utf8_test
+
 utf8_test: $(utf8test.o) $(utf8.o) $(INC)/test.h
 	$(CC) $(CFLAGS) -o $@  $(utf8test.o) $(utf8.o)
 

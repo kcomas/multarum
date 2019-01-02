@@ -26,7 +26,7 @@ size_t utf8_len(utf8 c) {
 
 int32_t utf8_value(utf8 c) {
     if ((c.b[0] & 0x80) == 0) return (int32_t) c.b[0];
-    if ((c.b[0] & 0xe0) == 0xc0) return  ((c.b[0] & 0x1f) << 6) | c.b[1];
+    if ((c.b[0] & 0xe0) == 0xc0) return  (int32_t) ((c.b[0] & 0x1f) << 6) | c.b[1];
     if ((c.b[0] & 0xf0) == 0xe0) {
         uint32_t r = ((c.b[0] & 0x0f) << 12) | (c.b[1] << 6) | c.b[2];
         if (r < 55296 || r > 57343) return (int32_t) r;
