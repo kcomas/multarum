@@ -34,6 +34,12 @@ str str_concat(str x, str y) {
     return s;
 }
 
+str str_copy(str s) {
+    str new = str_init(s->len);
+    memcpy(new, s, sizeof(struct _str) + s->len * sizeof(uint8_t));
+    return new;
+}
+
 str str_from_c(const char* const c_str) {
     size_t size = strlen(c_str);
     str s = str_init(size);

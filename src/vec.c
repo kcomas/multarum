@@ -23,3 +23,21 @@ void vec_push(vec* v, var value) {
     }
     (*v)->data[(*v)->len++] = value;
 }
+
+vec vec_concat(vec x, vec y) {
+    size_t len = x->len + y->len;
+    vec v = vec_init(len * 2);
+    v->len = len;
+    memcpy(v->data, x->data, x->len);
+    memcpy(v->data + x->len, y->data, y->len);
+    return v;
+}
+
+bool vec_pop(vec v, var* err, var* value) {
+    if (v->len == 0) {
+        *err = var_err_c("Cannot Pop From Empty Vec");
+        return false;
+    }
+    *value = vec->data[--vec->len];
+    return true;
+}

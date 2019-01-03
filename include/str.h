@@ -20,6 +20,8 @@ void str_push(str* s, utf8 c);
 
 str str_concat(str x, str y);
 
+str str_copy(str s);
+
 str str_from_c(const char* const c_str);
 
 bool str_cmp(const str x, const str y);

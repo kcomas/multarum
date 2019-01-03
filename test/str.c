@@ -42,5 +42,9 @@ int main(void) {
     test("Last next is sigma", utf8_cmp(c, utf8_init(0xce, 0xa3, 0, 0)) == true);
     test("No more chars", str_iter_peek(&si, &c) == false);
     test("No more chars", str_iter_next(&si, &c) == false);
+    str ic = str_copy(i);
+    test("i and ic are the same string", str_cmp(i, ic) == true);
+    test("i and ic are different pointers", i != ic);
+    str_free(ic);
     str_free(i);
 }
