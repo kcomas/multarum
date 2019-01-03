@@ -21,7 +21,7 @@ typedef struct {
     union {
         uint8_t fn_idx; // function index in mod
     } meta;
-    uint16_t ref_count;
+    int16_t ref_count; // negative denotes non ref counted type
     union {
         bool b; // bool
         int64_t i; // int
@@ -34,6 +34,8 @@ typedef struct {
     } value;
 } var;
 
-#define var_err_c(c_str) (var) { .type = -9, .value = { .s = str_from_c(c_str) } }
+#define var_err_c(c_str) (var) { .type = -9, .ref_count = 1, .value = { .s = str_from_c(c_str) } }
+
+void var_free(var v);
 
 #endif

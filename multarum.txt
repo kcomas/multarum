@@ -33,7 +33,8 @@ Operators (Dyadic, Monadic)
 // Comment
 " " String/Char
 ` File
-: Assign
+: Assign (shallow copy vecs, dicts, projections)
+:: Deep Assign (deep copy vecs, dicts, projections, functions can only be shallow copied)
 = Equal
 != Not Equal
 > Greater
