@@ -9,6 +9,10 @@ Atom types are denoted as negative numbers
 While collection of atoms types are positive
 0 denotes mixed vec
 
+Pass by reference
+Operators are in place
+Comparisons are deep
+
 Data Types:
 0 Vec ()
 -1 Bool 8bit
@@ -33,9 +37,9 @@ Operators (Dyadic, Monadic)
 // Comment
 " " String/Char
 ` File
-: Assign (shallow copy vecs, dicts, projections)
-:: Deep Assign (deep copy vecs, dicts, projections, functions can only be shallow copied)
-= Equal (deep equal)
+: Assign
+:: Clone
+= Equal
 != Not Equal
 > Greater
 << Read/Write (0 stdin 1 stdout 2 stderr, -1 -2 not to add newline)
@@ -79,7 +83,7 @@ Once we go 50 chars of no matches return error
 2. Parse
 
 Grammar
-statement: expression;?*
+statement: expression;?+
 expression: primary OP expression | OP expression | primary
 primary: NUMBER | VAR | STRING | CHAR | ( statement{2,} ) | { [VAR;]? statement;?+ };? | ? { statement;+ };? | ( statement )
 

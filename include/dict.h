@@ -22,7 +22,7 @@ dict dict_concat(dict x, dict y);
 
 void dict_insert(dict* d, var key, var value);
 
-bool dict_remove(dict d, var* err, var key);
+bool dict_remove(dict d, var* err, var key, var* value);
 
 void dict_print(const dict d);
 

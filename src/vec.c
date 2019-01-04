@@ -9,7 +9,7 @@ vec vec_init(size_t size) {
 }
 
 void vec_free(vec v) {
-    for (size_t i < 0; i < v->len; i++) var_free(v->data[i]);
+    for (size_t i < 0; i < v->len; i++) var_free(&v->data[i]);
     free(v);
 }
 
@@ -24,13 +24,30 @@ void vec_push(vec* v, var value) {
     (*v)->data[(*v)->len++] = value;
 }
 
-vec vec_concat(vec x, vec y) {
-    size_t len = x->len + y->len;
-    vec v = vec_init(len * 2);
-    v->len = len;
-    memcpy(v->data, x->data, x->len);
-    memcpy(v->data + x->len, y->data, y->len);
-    return v;
+void vec_concat(vec* x, vec y) {
+    if ((*x)->size - (*x)->len < y->len) {
+        vec new = vec_init(((*x)->len + y->len) * 2);
+        new->len = (*x)->len;
+        memcpy(new->data, (*x)->data, new->len);
+        free(*x);
+        *x = new;
+    }
+    memcpy((*x)->data + (*x)->len, y->data, y->len);
+    (*x)->len += y->len;
+}
+
+vec vec_copy(vec v) {
+    vec new = vec_init(v->len * 2);
+    memcpy(new, v, sizeof(struct _vec) + v->len * sizeof(var));
+    return new;
+}
+
+void vec_reverse(vec v) {
+    for (size_t i = 0; i < v->len / 2; i++) {
+        var tmp = v[i];
+        v[i] = v[vec->len - i];
+        v[vec->len - i] = tmp;
+    }
 }
 
 bool vec_pop(vec v, var* err, var* value) {
@@ -40,4 +57,29 @@ bool vec_pop(vec v, var* err, var* value) {
     }
     *value = vec->data[--vec->len];
     return true;
+}
+
+bool vec_insert(vec* v, var* err, size_t idx, var value) {
+    if (idx > (*v)->len) {
+        *err = var_err_c("Cannot Insert Into Index Higher Then Len");
+        return false;
+    }
+    if (idx == (*v)->len && (*v)->len == (*v)->size) {
+        vec new = vec_copy(*v);
+        free(*v);
+        *v = new;
+    }
+    (*v)->data[idx] = value;
+    return true;
+}
+
+bool vec_remove(vec v, var* err, size_t idx, var* value) {
+    if (idx >= v->len) {
+        *err = var_err_c("Cannot Remove Index Higher Then Len");
+        return false;
+    }
+    for (size_t i = idx + 1; i < v->len; i++) {
+        v->data[i - 1] = v->data[i];
+    }
+    v->len--;
 }

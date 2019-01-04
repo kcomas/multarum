@@ -18,7 +18,7 @@ void str_free(str s);
 
 void str_push(str* s, utf8 c);
 
-str str_concat(str x, str y);
+void str_concat(str* x, str y);
 
 str str_copy(str s);
 

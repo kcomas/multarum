@@ -17,10 +17,9 @@ int main(void) {
     str_push(&cs, utf8_from_c('c'));
     test("CS length is 5", cs->len == 7);
     print_name("CS", cs);
-    str csa = str_from_c("test");
+    str cs2 = str_from_c("test");
     str csb = str_from_c("abc");
-    str cs2 = str_concat(csa, csb);
-    str_free(csa);
+    str_concat(&cs2, csb);
     str_free(csb);
     test("CS2 == CS", str_cmp(cs, cs2) == true);
     print_name("CS2", cs2);

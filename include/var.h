@@ -36,6 +36,8 @@ typedef struct {
 
 #define var_err_c(c_str) (var) { .type = -9, .ref_count = 1, .value = { .s = str_from_c(c_str) } }
 
-void var_free(var v);
+void var_free(var* const v);
+
+void var_print(var v);
 
 #endif

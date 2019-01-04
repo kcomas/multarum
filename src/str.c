@@ -25,17 +25,20 @@ void str_push(str* s, utf8 c) {
     (*s)->len += utf8len;
 }
 
-str str_concat(str x, str y) {
-    size_t len = x->len + y->len;
-    str s = str_init(len * 2);
-    s->len = len;
-    memcpy(s->data, x->data, x->len);
-    memcpy(s->data + x->len, y->data, y->len);
-    return s;
+void str_concat(str* x, str y) {
+    if((*x)->size - (*x)->len < y->len) {
+        str new = str_init(((*x)->len + y->len) * 2);
+        new->len = (*x)->len;
+        memcpy(new->data, (*x)->data, new->len);
+        free(*x);
+        *x = new;
+    }
+    memcpy((*x)->data + (*x)->len, y->data, y->len);
+    (*x)->len += y->len;
 }
 
 str str_copy(str s) {
-    str new = str_init(s->len);
+    str new = str_init(s->len * 2);
     memcpy(new, s, sizeof(struct _str) + s->len * sizeof(uint8_t));
     return new;
 }
