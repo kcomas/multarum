@@ -16,13 +16,17 @@ utf8.o = $(SRC)/utf8.o
 utf8test.o = $(TEST)/utf8.o
 var.o = $(SRC)/var.o
 vec.o = $(SRC)/vec.o
+vectest.o = $(TEST)/vec.o
 
-tests: str_test utf8_test
+tests: vec_test str_test utf8_test
 
-str_test: $(strtest.o) $(str.o) $(utf8.o) $(INC)/test.h
+vec_test: $(vectest.o) $(vec.o) $(var.o) $(str.o) $(utf8.o)
+	$(CTEST) $(vectest.o) $(vec.o) $(var.o) $(str.o) $(utf8.o)
+
+str_test: $(strtest.o) $(str.o) $(utf8.o)
 	$(CTEST) $(strtest.o) $(str.o) $(utf8.o)
 
-utf8_test: $(utf8test.o) $(utf8.o) $(INC)/test.h
+utf8_test: $(utf8test.o) $(utf8.o)
 	$(CTEST) $(utf8test.o) $(utf8.o)
 
 .SUFFIXES: .c .o

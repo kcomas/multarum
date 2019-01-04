@@ -9,7 +9,7 @@ vec vec_init(size_t size) {
 }
 
 void vec_free(vec v) {
-    for (size_t i < 0; i < v->len; i++) var_free(&v->data[i]);
+    for (size_t i = 0; i < v->len; i++) var_free(&v->data[i]);
     free(v);
 }
 
@@ -44,9 +44,9 @@ vec vec_copy(vec v) {
 
 void vec_reverse(vec v) {
     for (size_t i = 0; i < v->len / 2; i++) {
-        var tmp = v[i];
-        v[i] = v[vec->len - i];
-        v[vec->len - i] = tmp;
+        var tmp = v->data[i];
+        v->data[i] = v->data[v->len - i];
+        v->data[v->len - i] = tmp;
     }
 }
 
@@ -55,7 +55,7 @@ bool vec_pop(vec v, var* err, var* value) {
         *err = var_err_c("Cannot Pop From Empty Vec");
         return false;
     }
-    *value = vec->data[--vec->len];
+    *value = v->data[--v->len];
     return true;
 }
 
@@ -75,11 +75,17 @@ bool vec_insert(vec* v, var* err, size_t idx, var value) {
 
 bool vec_remove(vec v, var* err, size_t idx, var* value) {
     if (idx >= v->len) {
-        *err = var_err_c("Cannot Remove Index Higher Then Len");
+        *err = var_err_c("Cannot Remove Index Higher Then Len - 1");
         return false;
     }
+    *value = v->data[idx];
     for (size_t i = idx + 1; i < v->len; i++) {
         v->data[i - 1] = v->data[i];
     }
     v->len--;
+    return true;
+}
+
+void vec_print(const vec v) {
+    for (size_t i = 0; i < v->len; i++) var_print(v->data[i]);
 }

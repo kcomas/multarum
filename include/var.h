@@ -8,9 +8,6 @@
 #include <stdint.h>
 #include "utf8.h"
 #include "str.h"
-#include "vec.h"
-#include "dict.h"
-#include "file.h"
 
 typedef struct _str *str;
 typedef struct _vec *vec;
@@ -25,7 +22,7 @@ typedef struct {
     union {
         bool b; // bool
         int64_t i; // int
-        double b; // float
+        double f; // float
         utf8 c; // char
         str s;
         int fd; // file descriptor
@@ -34,10 +31,14 @@ typedef struct {
     } value;
 } var;
 
+#include "vec.h"
+#include "dict.h"
+#include "file.h"
+
 #define var_err_c(c_str) (var) { .type = -9, .ref_count = 1, .value = { .s = str_from_c(c_str) } }
 
 void var_free(var* const v);
 
-void var_print(var v);
+void var_print(const var v);
 
 #endif
