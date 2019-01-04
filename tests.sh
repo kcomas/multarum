@@ -6,8 +6,8 @@ bold() {
     echo "\e[1m$1\e[0m"
 }
 
-bold_blue() {
-    echo "\e[1;34m$1\e[0m"
+bold_cyan() {
+    echo "\e[1;36m$1\e[0m"
 }
 
 bold_green() {
@@ -22,7 +22,7 @@ bold "RUNNING TESTS"
 
 for TEST in *_test
 do
-    bold_blue "RUNNING $TEST"
+    bold_cyan "RUNNING $TEST"
     ./$TEST
     if [ $? -ne 0 ]
     then
