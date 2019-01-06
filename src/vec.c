@@ -3,13 +3,15 @@
 
 vec vec_init(size_t size) {
     vec v = (vec) malloc(sizeof(struct _vec) + size * sizeof(var));
+    v->ref_count = 1;
     v->size = size;
     v->len = 0;
     return v;
 }
 
 void vec_free(vec v) {
-    for (size_t i = 0; i < v->len; i++) var_free(&v->data[i]);
+    if (--v->ref_count > 0) return;
+    for (size_t i = 0; i < v->len; i++) var_free(v->data[i]);
     free(v);
 }
 

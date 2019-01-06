@@ -5,6 +5,7 @@
 #include "var.h"
 
 typedef struct _dict_node {
+    uint16_t ref_count;
     struct _dict_node* next;
     var data;
 } dict_node;

@@ -5,6 +5,7 @@
 #include "var.h"
 
 typedef struct _vec {
+    uint16_t ref_count;
     size_t len, size;
     var data[];
 } *vec;

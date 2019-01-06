@@ -18,7 +18,6 @@ typedef struct {
     union {
         uint8_t fn_idx; // function index in mod
     } meta;
-    int16_t ref_count; // negative denotes non ref counted type
     union {
         bool b; // bool
         int64_t i; // int
@@ -35,19 +34,17 @@ typedef struct {
 #include "dict.h"
 #include "file.h"
 
-#define var_noref(TYPE, VALUE) (var) { .type = TYPE, .ref_count = -1, .value = VALUE }
+#define var_bool(VALUE) (var) { .type = -1, .value = { .b = VALUE } }
 
-#define var_bool(VALUE) var_noref(-1, { .b = VALUE })
+#define var_int(VALUE) (var) { .type = -2, .value = { .i = VALUE } }
 
-#define var_int(VALUE) var_noref(-2, { .i = VALUE })
+#define var_float(VALUE) (var) { .type = -3, .value = { .f = VALUE } }
 
-#define var_float(VALUE) var_noref(-3, { .f = VALUE })
+#define var_utf8(VALUE) (var) { .type = - 4, .value = { .c = VALUE } }
 
-#define var_utf8(VALUE) var_noref(-4, { .c = VALUE })
+#define var_err_c(c_str) (var) { .type = -9, .value = { .s = str_from_c(c_str) } }
 
-#define var_err_c(c_str) (var) { .type = -9, .ref_count = 1, .value = { .s = str_from_c(c_str) } }
-
-void var_free(var* const v);
+void var_free(var v);
 
 bool var_cmp(var x, var y);
 

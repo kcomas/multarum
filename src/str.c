@@ -3,12 +3,14 @@
 
 str str_init(size_t size) {
     str s = (str) malloc(sizeof(struct _str) + size * sizeof(uint8_t)); // redundant but shows size
+    s->ref_count = 1;
     s->len = 0;
     s->size = size;
     return s;
 }
 
 void str_free(str s) {
+    if (--s->ref_count > 0) return;
     free(s);
 }
 

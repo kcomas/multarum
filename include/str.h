@@ -8,6 +8,7 @@
 #include "utf8.h"
 
 typedef struct _str {
+    uint16_t ref_count;
     size_t len, size;
     uint8_t data[];
 } *str;
