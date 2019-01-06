@@ -54,7 +54,7 @@ void vec_reverse(vec v) {
     size_t end = v->len - 1;
     while (start < end) {
         var tmp = v->data[start];
-        v->data[start--] = v->data[end];
+        v->data[start++] = v->data[end];
         v->data[end--] = tmp;
     }
 }
