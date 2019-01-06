@@ -13,11 +13,18 @@ void vec_free(vec v) {
     free(v);
 }
 
+static inline vec vec_resize_copy(vec v, size_t multipler) {
+    vec new = vec_init(v->size * multipler);
+    new->len = v->len;
+    for (size_t i = 0; i < new->len; i++) {
+        new->data[i] = v->data[i];
+    }
+    return new;
+}
+
 void vec_push(vec* v, var value) {
     if ((*v)->len == (*v)->size) {
-        vec new = vec_init((*v)->size * 2);
-        new->len = (*v)->len;
-        memcpy(new->data, (*v)->data, new->len);
+        vec new = vec_resize_copy(*v, 2);
         free(*v);
         *v = new;
     }
@@ -26,27 +33,27 @@ void vec_push(vec* v, var value) {
 
 void vec_concat(vec* x, vec y) {
     if ((*x)->size - (*x)->len < y->len) {
-        vec new = vec_init(((*x)->len + y->len) * 2);
-        new->len = (*x)->len;
-        memcpy(new->data, (*x)->data, new->len);
+        vec new = vec_resize_copy(*x, 2);
         free(*x);
         *x = new;
     }
-    memcpy((*x)->data + (*x)->len, y->data, y->len);
+    for (size_t i = 0; i < y->len; i++) {
+        (*x)->data[(*x)->len + i] = y->data[i];
+    }
     (*x)->len += y->len;
 }
 
 vec vec_copy(vec v) {
-    vec new = vec_init(v->len * 2);
-    memcpy(new, v, sizeof(struct _vec) + v->len * sizeof(var));
-    return new;
+    return vec_resize_copy(v, 1);
 }
 
 void vec_reverse(vec v) {
-    for (size_t i = 0; i < v->len / 2; i++) {
-        var tmp = v->data[i];
-        v->data[i] = v->data[v->len - i];
-        v->data[v->len - i] = tmp;
+    size_t start = 0;
+    size_t end = v->len - 1;
+    while (start < end) {
+        var tmp = v->data[start];
+        v->data[start--] = v->data[end];
+        v->data[end--] = tmp;
     }
 }
 
@@ -86,6 +93,15 @@ bool vec_remove(vec v, var* err, size_t idx, var* value) {
     return true;
 }
 
+bool vec_cmp(vec x, vec y) {
+    if (x->len != y->len) return false;
+    for (size_t i = 0; i < x->len; i++) if (!var_cmp(x->data[i], y->data[i])) return false;
+    return true;
+}
+
 void vec_print(const vec v) {
-    for (size_t i = 0; i < v->len; i++) var_print(v->data[i]);
+    for (size_t i = 0; i < v->len; i++) {
+        var_print(v->data[i]);
+        putchar(' ');
+    }
 }

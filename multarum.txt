@@ -14,7 +14,7 @@ Operators are in place
 Comparisons are deep
 
 Data Types:
-0 Vec ()
+0 Vec () internally it is always 0, calculated when you get the type
 -1 Bool 8bit
 -2 Int 64bit 0-9
 -3 Float 64bit Int.Int

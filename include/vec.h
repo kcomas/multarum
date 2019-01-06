@@ -27,6 +27,8 @@ bool vec_insert(vec* v, var* err, size_t idx, var value);
 
 bool vec_remove(vec v, var* err, size_t idx, var* value);
 
+bool vec_cmp(vec x, vec y);
+
 void vec_print(const vec v);
 
 #endif

@@ -15,6 +15,26 @@ void var_free(var* v) {
     }
 }
 
+bool var_cmp(var x, var y) {
+    if (x.type != y.type) return false;
+    switch (x.type) {
+        case 0:
+            return vec_cmp(x.value.v, y.value.v);
+        case -1:
+            return x.value.b == y.value.b;
+        case -2:
+            return x.value.i == y.value.i;
+        case -3:
+            return x.value.f == y.value.f;
+        case -4:
+            return utf8_cmp(x.value.c, y.value.c);
+        case 4:
+            return str_cmp(x.value.s, y.value.s);
+        default:
+            return false;
+    }
+}
+
 void var_print(const var v) {
     switch (v.type) {
         case 0:

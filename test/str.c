@@ -21,7 +21,7 @@ int main(void) {
     str csb = str_from_c("abc");
     str_concat(&cs2, csb);
     str_free(csb);
-    test("CS2 == CS", str_cmp(cs, cs2) == true);
+    test("CS2 == CS", str_cmp(cs, cs2));
     print_name("CS2", cs2);
     str_free(cs2);
     str_free(cs);
@@ -30,19 +30,19 @@ int main(void) {
     str_push(&i, utf8_init(0xce, 0xa3, 0, 0));
     str_iter si;
     str_iter_init(&si, i);
-    test("First peek", str_iter_peek(&si, &c) == true);
-    test("First peek is a", utf8_cmp(c, utf8_from_c('a')) == true);
+    test("First peek", str_iter_peek(&si, &c));
+    test("First peek is a", utf8_cmp(c, utf8_from_c('a')));
     str_iter_next(&si, &c); // a
     str_iter_next(&si, &c); // b
     str_iter_next(&si, &c); // c
-    test("Last peek", str_iter_peek(&si, &c) == true);
-    test("Last peek is sigma", utf8_cmp(c, utf8_init(0xce, 0xa3, 0, 0)) == true);
-    test("Last next", str_iter_next(&si, &c) == true);
-    test("Last next is sigma", utf8_cmp(c, utf8_init(0xce, 0xa3, 0, 0)) == true);
+    test("Last peek", str_iter_peek(&si, &c));
+    test("Last peek is sigma", utf8_cmp(c, utf8_init(0xce, 0xa3, 0, 0)));
+    test("Last next", str_iter_next(&si, &c));
+    test("Last next is sigma", utf8_cmp(c, utf8_init(0xce, 0xa3, 0, 0)));
     test("No more chars", str_iter_peek(&si, &c) == false);
     test("No more chars", str_iter_next(&si, &c) == false);
     str ic = str_copy(i);
-    test("i and ic are the same string", str_cmp(i, ic) == true);
+    test("i and ic are the same string", str_cmp(i, ic));
     test("i and ic are different pointers", i != ic);
     str_free(ic);
     str_free(i);

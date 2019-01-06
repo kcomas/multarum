@@ -1,7 +1,5 @@
 #!/bin/sh
 
-make tests
-
 bold() {
     echo "\e[1m$1\e[0m"
 }
@@ -17,6 +15,14 @@ bold_green() {
 bold_red() {
     echo "\e[1;31m$1\e[0m"
 }
+
+make tests
+
+if [ $? -ne 0 ]
+then
+    bold_red "MAKE FAILED"
+    exit 1
+fi
 
 bold "RUNNING TESTS"
 
