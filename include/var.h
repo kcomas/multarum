@@ -46,7 +46,7 @@ typedef struct {
 
 void var_free(var v);
 
-void var_inc(var v);
+void var_inc_ref(var v);
 
 bool var_cmp(var x, var y);
 

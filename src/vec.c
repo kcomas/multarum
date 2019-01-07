@@ -19,15 +19,17 @@ static inline vec vec_resize_copy(vec v, size_t multipler) {
     vec new = vec_init(v->size * multipler);
     new->len = v->len;
     for (size_t i = 0; i < new->len; i++) {
+        var_inc_ref(v->data[i]);
         new->data[i] = v->data[i];
     }
     return new;
 }
 
 void vec_push(vec* v, var value) {
+    var_inc_ref(value);
     if ((*v)->len == (*v)->size) {
         vec new = vec_resize_copy(*v, 2);
-        free(*v);
+        vec_free(*v);
         *v = new;
     }
     (*v)->data[(*v)->len++] = value;
@@ -36,10 +38,11 @@ void vec_push(vec* v, var value) {
 void vec_concat(vec* x, vec y) {
     if ((*x)->size - (*x)->len < y->len) {
         vec new = vec_resize_copy(*x, 2);
-        free(*x);
+        vec_free(*x);
         *x = new;
     }
     for (size_t i = 0; i < y->len; i++) {
+        var_inc_ref(y->data[i]);
         (*x)->data[(*x)->len + i] = y->data[i];
     }
     (*x)->len += y->len;
@@ -69,6 +72,7 @@ bool vec_pop(vec v, var* err, var* value) {
 }
 
 bool vec_insert(vec* v, var* err, size_t idx, var value) {
+    var_inc_ref(value);
     if (idx > (*v)->len) {
         *err = var_err_c("Cannot Insert Into Index Higher Then Len");
         return false;

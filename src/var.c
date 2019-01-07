@@ -14,7 +14,7 @@ void var_free(var v) {
     }
 }
 
-void var_inc(var v) {
+void var_inc_ref(var v) {
     switch (v.type) {
         case 0:
             v.value.v->ref_count++;

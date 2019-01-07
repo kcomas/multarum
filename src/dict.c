@@ -11,6 +11,8 @@ dict dict_init(size_t size) {
 }
 
 static inline dict_node dict_node_init(str key, var value) {
+    key->ref_count++;
+    var_inc_ref(value);
     dict_node n = (dict_node) malloc(sizeof(struct _dict_node));
     n->key = key;
     n->value = value;
@@ -40,7 +42,22 @@ static inline size_t dict_hash_key(str key) {
     return hash;
 }
 
+static inline void dict_grow_rehash(dict* d) {
+    dict new = dict_init((*d)->size * 2);
+    for (size_t i = 0; i < (*d)->size; i++) {
+        if ((*d)->buckets[i] == NULL) continue;
+        dict_node n = (*d)->buckets[i];
+        while (n != NULL) {
+            dict_insert(&new, n->key, n->value);
+            n = n->next;
+        }
+    }
+    dict_free(*d);
+    *d = new;
+}
+
 void dict_insert(dict* d, str key, var value) {
+    if ((*d)->used == (*d)->size) dict_grow_rehash(d);
     size_t pos = dict_hash_key(key) % (*d)->size;
     if ((*d)->buckets[pos] == NULL) {
         (*d)->buckets[pos] = dict_node_init(key, value);
