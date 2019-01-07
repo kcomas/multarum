@@ -53,13 +53,13 @@ Operators (Dyadic, Monadic)
 , Concat, Enlist
 ' Map, Unzip/Debugger
 @ Filter/Regex, Type
-? Call w Catch, Cast (casting ref counted types to ints converts them to a pointer number)
+? ,Call w Catch, Cast (casting ref counted types to ints converts them to a pointer id)
 ^ Reduce, Length/Stat
 + Addition, Import
 - Subtraction, Negate
 * Multiplication, Dir List
 / Division, Reverse
-$ Call Self, System
+$ ,Call Self, System
 _ Delete, Pop
 # Slice/Sort (stable)/Take, Rand
 \ Built in (\cos)

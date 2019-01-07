@@ -5,7 +5,7 @@ dict dict_init(size_t size) {
     dict d = (dict) malloc(sizeof(struct _dict) + size * sizeof(dict_node));
     d->ref_count = 1;
     d->used = 0;
-    d->size = 0;
+    d->size = size;
     for (size_t i = 0; i < d->size; i++) d->buckets[i] = NULL;
     return d;
 }
@@ -16,6 +16,7 @@ static inline dict_node dict_node_init(str key, var value) {
     dict_node n = (dict_node) malloc(sizeof(struct _dict_node));
     n->key = key;
     n->value = value;
+    n->next = NULL;
     return n;
 }
 
@@ -23,8 +24,8 @@ static inline void dict_node_free(dict_node n) {
     while (n != NULL) {
         dict_node tmp = n;
         n = n->next;
-        str_free(n->key);
-        var_free(n->value);
+        str_free(tmp->key);
+        var_free(tmp->value);
         free(tmp);
     }
 }
@@ -111,7 +112,6 @@ bool dict_remove(dict d, var* err, str key, var* value) {
 
 void dict_print(const dict d) {
     for (size_t i = 0; i < d->size; i++) {
-        if (d->buckets[i] == NULL) continue;
         dict_node n = d->buckets[i];
         while (n != NULL) {
             str_print(n->key);

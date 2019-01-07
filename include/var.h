@@ -40,7 +40,9 @@ typedef struct {
 
 #define var_float(VALUE) (var) { .type = -3, .value = { .f = VALUE } }
 
-#define var_utf8(VALUE) (var) { .type = - 4, .value = { .c = VALUE } }
+#define var_utf8(VALUE) (var) { .type = -4, .value = { .c = VALUE } }
+
+#define var_vec(VALUE) (var) { .type = 0, .value = { .v = VALUE } }
 
 #define var_err_c(c_str) (var) { .type = -9, .value = { .s = str_from_c(c_str) } }
 
