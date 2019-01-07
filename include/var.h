@@ -44,33 +44,9 @@ typedef struct {
 
 #define var_err_c(c_str) (var) { .type = -9, .value = { .s = str_from_c(c_str) } }
 
-inline void var_free(var v) {
-    switch (v.type) {
-        case 0:
-            vec_free(v.value.v);
-            break;
-        case 4:
-            str_free(v.value.s);
-            break;
-        default:
-            break;
-    }
-}
+void var_free(var v);
 
-inline void var_inc(var v) {
-    switch (v.type) {
-        case 0:
-            v.value.v->ref_count++;
-            break;
-        case 4:
-            v.value.s->ref_count++;
-            break;
-        case 11:
-            v.value.d->ref_count++;
-        default:
-            break;
-    }
-}
+void var_inc(var v);
 
 bool var_cmp(var x, var y);
 

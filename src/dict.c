@@ -6,23 +6,23 @@ dict dict_init(size_t size) {
     d->ref_count = 1;
     d->used = 0;
     d->size = 0;
-    memset(d->buckets, NULL, d->size);
+    for (size_t i = 0; i < d->size; i++) d->buckets[i] = NULL;
     return d;
 }
 
-static inline dict_node_init(str key, var value) {
-    dict_node n = (dict_node) = malloc(sizeof(struct _dict_node));
+static inline dict_node dict_node_init(str key, var value) {
+    dict_node n = (dict_node) malloc(sizeof(struct _dict_node));
     n->key = key;
     n->value = value;
     return n;
 }
 
-static inline dict_node_free(dict_node n) {
+static inline void dict_node_free(dict_node n) {
     while (n != NULL) {
         dict_node tmp = n;
         n = n->next;
         str_free(n->key);
-        var_free(n->data);
+        var_free(n->value);
         free(tmp);
     }
 }
@@ -41,12 +41,12 @@ static inline size_t dict_hash_key(str key) {
 }
 
 void dict_insert(dict* d, str key, var value) {
-    size_t pos = dict_hash_key(key) % d->size;
-    if (dict->buckets[pos] == NULL) {
-        dict->buckets[pos] = dict_node_init(key, value);
+    size_t pos = dict_hash_key(key) % (*d)->size;
+    if ((*d)->buckets[pos] == NULL) {
+        (*d)->buckets[pos] = dict_node_init(key, value);
         return;
     }
-    dict_node pnode = dict->buckets[pos];
+    dict_node pnode = (*d)->buckets[pos];
     for (;;) {
         if (str_cmp(pnode->key, key)) {
             pnode->value = value;
@@ -62,14 +62,14 @@ void dict_insert(dict* d, str key, var value) {
 
 bool dict_remove(dict d, var* err, str key, var* value) {
     size_t pos = dict_hash_key(key) % d->size;
-    dict_node pnode = dict->buckets[pos];
+    dict_node pnode = d->buckets[pos];
     if (pnode == NULL) {
         *err = var_err_c("Key Not Found");
         return false;
     }
     if (str_cmp(pnode->key, key)) {
         *value = pnode->value;
-        dict->buckets[pos] = pnode->next;
+        d->buckets[pos] = pnode->next;
         str_free(pnode->key);
         free(pnode);
         return true;
@@ -97,7 +97,11 @@ void dict_print(const dict d) {
         if (d->buckets[i] == NULL) continue;
         dict_node n = d->buckets[i];
         while (n != NULL) {
-
+            str_print(n->key);
+            printf(" | ");
+            var_print(n->value);
+            putchar('\n');
+            n = n->next;
         }
     }
 }

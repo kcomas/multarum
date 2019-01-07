@@ -7,7 +7,7 @@
 typedef struct _dict_node {
     str key;
     struct _dict_node* next;
-    var data;
+    var value;
 } *dict_node;
 
 typedef struct _dict {
