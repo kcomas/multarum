@@ -1,6 +1,6 @@
 Multarum
 
-A dynamic apl/lisp language
+A dynamic apl/lisp language influenced by k
 Operator Precedence is none
 Collections are ref counted and passed by reference
 All vars and operators must be ascii, strings are utf8

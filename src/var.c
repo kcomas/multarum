@@ -1,19 +1,6 @@
 
 #include "var.h"
 
-void var_free(var v) {
-    switch (v.type) {
-        case 0:
-            vec_free(v.value.v);
-            break;
-        case 4:
-            str_free(v.value.s);
-            break;
-        default:
-            break;
-    }
-}
-
 bool var_cmp(var x, var y) {
     if (x.type != y.type) return false;
     switch (x.type) {
