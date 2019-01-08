@@ -59,9 +59,12 @@ Operators (Dyadic, Monadic)
 - Subtraction, Negate
 * Multiplication, Dir List
 / Division, Reverse
+% Remainder
 $ ,Call Self, System
 _ Delete, Pop
 # Slice/Sort (stable)/Take, Rand
+<> Split At
+>< Join With
 \ Built in (\cos)
 . Global Set, Global Get
 .. Apply
