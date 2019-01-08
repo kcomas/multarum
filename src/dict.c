@@ -43,10 +43,9 @@ static inline size_t dict_hash_key(str key) {
     return hash;
 }
 
-static inline void dict_grow_rehash(dict* d) {
-    dict new = dict_init((*d)->size * 2);
+static inline void dict_grow_rehash(dict* d, size_t new_size) {
+    dict new = dict_init(new_size);
     for (size_t i = 0; i < (*d)->size; i++) {
-        if ((*d)->buckets[i] == NULL) continue;
         dict_node n = (*d)->buckets[i];
         while (n != NULL) {
             dict_insert(&new, n->key, n->value);
@@ -57,11 +56,23 @@ static inline void dict_grow_rehash(dict* d) {
     *d = new;
 }
 
+void dict_concat(dict* x, dict y) {
+    if ((*x)->used + y->used > (*x)->size) dict_grow_rehash(x, ((*x)->size + y->used) * 2);
+    for (size_t i = 0; i < y->used; i++) {
+        dict_node n = y->buckets[i];
+        while (n != NULL) {
+            dict_insert(x, n->key, n->value);
+            n = n->next;
+        }
+    }
+}
+
 void dict_insert(dict* d, str key, var value) {
-    if ((*d)->used == (*d)->size) dict_grow_rehash(d);
+    if ((*d)->used == (*d)->size) dict_grow_rehash(d, (*d)->size * 2);
     size_t pos = dict_hash_key(key) % (*d)->size;
     if ((*d)->buckets[pos] == NULL) {
         (*d)->buckets[pos] = dict_node_init(key, value);
+        (*d)->used++;
         return;
     }
     dict_node pnode = (*d)->buckets[pos];
@@ -72,6 +83,7 @@ void dict_insert(dict* d, str key, var value) {
         }
         if (pnode->next == NULL) {
             pnode->next = dict_node_init(key, value);
+            (*d)->used++;
             return;
         }
         pnode = pnode->next;

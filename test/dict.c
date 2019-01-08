@@ -1,5 +1,6 @@
 
 #include "dict.h"
+#include "test.h"
 
 int main(void) {
     dict d = dict_init(1);
@@ -12,6 +13,7 @@ int main(void) {
     str vb = str_from_c("Some Value");
     dict_insert(&d, keyb, var_str(vb));
     dict_print(d);
+    test("D has 2 items", d->used == 2);
     str_free(keya);
     str_free(keyb);
     str_free(vb);

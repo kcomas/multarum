@@ -20,7 +20,7 @@ dict dict_init(size_t size);
 
 void dict_free(dict d);
 
-dict dict_concat(dict x, dict y);
+void dict_concat(dict* x, dict y);
 
 void dict_insert(dict* d, str key, var value);
 
