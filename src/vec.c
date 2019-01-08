@@ -40,6 +40,7 @@ bool vec_get(vec v, var* err, size_t idx, var* value) {
         *err = var_err_c("Index Is Higher Then Len");
         return false;
     }
+    var_inc_ref(v->data[idx]);
     *value = v->data[idx];
     return true;
 }

@@ -56,6 +56,21 @@ static inline void dict_grow_rehash(dict* d, size_t new_size) {
     *d = new;
 }
 
+bool dict_get(dict d, var* err, str key, var* value) {
+    size_t pos = dict_hash_key(key) % d->size;
+    dict_node n = d->buckets[pos];
+    while (n != NULL) {
+        if (str_cmp(n->key, key)) {
+            var_inc_ref(n->value);
+            *value = n->value;
+            return true;
+        }
+        n = n->next;
+    }
+    *err = var_err_c("Key Not Found");
+    return false;
+}
+
 void dict_concat(dict* x, dict y) {
     if ((*x)->used + y->used > (*x)->size) dict_grow_rehash(x, ((*x)->size + y->used) * 2);
     for (size_t i = 0; i < y->used; i++) {
