@@ -117,6 +117,7 @@ bool dict_remove(dict d, var* err, str key, var* value) {
         d->buckets[pos] = pnode->next;
         str_free(pnode->key);
         free(pnode);
+        d->used--;
         return true;
     }
     dict_node prev = pnode;
@@ -128,6 +129,7 @@ bool dict_remove(dict d, var* err, str key, var* value) {
             *value = tmp->value;
             str_free(tmp->key);
             free(tmp);
+            d->used--;
             return true;
         }
         prev = next;
