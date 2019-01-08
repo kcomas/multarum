@@ -16,6 +16,8 @@ void vec_free(vec v);
 
 void vec_push(vec* v, var value);
 
+bool vec_get(vec v, var* err, size_t idx, var* value);
+
 void vec_concat(vec* x, vec y);
 
 vec vec_copy(vec v);

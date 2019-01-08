@@ -35,6 +35,15 @@ void vec_push(vec* v, var value) {
     (*v)->data[(*v)->len++] = value;
 }
 
+bool vec_get(vec v, var* err, size_t idx, var* value) {
+    if (idx >= v->len) {
+        *err = var_err_c("Index Is Higher Then Len");
+        return false;
+    }
+    *value = v->data[idx];
+    return true;
+}
+
 void vec_concat(vec* x, vec y) {
     if ((*x)->size - (*x)->len < y->len) {
         vec new = vec_resize_copy(*x, 2);
