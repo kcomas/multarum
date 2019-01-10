@@ -53,6 +53,13 @@ str str_from_c(const char* const c_str) {
     return s;
 }
 
+char* str_to_c(const str s) {
+    char* c = (char*) malloc(sizeof(char) * s->len + 1);
+    memcpy(c, s->data, s->len);
+    c[s->len] = '\0';
+    return c;
+}
+
 bool str_cmp(const str x, const str y) {
     if (x->len != y->len) return false;
     for (size_t i = 0; i < x->len; i++) if (x->data[i] != y->data[i]) return false;

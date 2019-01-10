@@ -46,4 +46,9 @@ int main(void) {
     test("i and ic are different pointers", i != ic);
     str_free(ic);
     str_free(i);
+    str a = str_from_c("abc");
+    char* b = str_to_c(a);
+    test("B is a c str of length 3", strlen(b) == a->len);
+    str_free(a);
+    free(b);
 }
