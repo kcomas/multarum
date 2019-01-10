@@ -10,6 +10,7 @@
 
 typedef struct _vfd {
     int fd;
+    struct stat st;
     uint16_t ref_count;
 } *vfd;
 
