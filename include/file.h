@@ -9,9 +9,9 @@
 #include "var.h"
 
 typedef struct _vfd {
-    int fd;
-    struct stat st;
     uint16_t ref_count;
+    int fd;
+    str pathname;
 } *vfd;
 
 bool file_init(str pathname, int flags, var* err, vfd* fd);
@@ -19,5 +19,7 @@ bool file_init(str pathname, int flags, var* err, vfd* fd);
 void file_free(vfd fd);
 
 bool file_to_str(str pathname, var* err, str* s);
+
+bool file_stat(vfd file, var* err, struct stat* s);
 
 #endif
