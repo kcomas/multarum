@@ -21,11 +21,11 @@ vectest.o = $(TEST)/vec.o
 
 tests: dict_test vec_test str_test utf8_test
 
-dict_test_deps = $(dicttest.o) $(dict.o) $(vec.o) $(var.o) $(str.o) $(utf8.o)
+dict_test_deps = $(dicttest.o) $(dict.o) $(vec.o) $(var.o) $(file.o) $(str.o) $(utf8.o)
 dict_test: $(dict_test_deps)
 	$(CTEST) $(dict_test_deps)
 
-vec_test_deps = $(vectest.o) $(vec.o) $(var.o) $(str.o) $(utf8.o)
+vec_test_deps = $(vectest.o) $(vec.o) $(var.o) $(file.o) $(str.o) $(utf8.o)
 vec_test: $(vec_test_deps)
 	$(CTEST) $(vec_test_deps)
 
