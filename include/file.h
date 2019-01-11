@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <dirent.h>
 #include "var.h"
 
 typedef struct _vfd {
@@ -21,5 +22,7 @@ void file_free(vfd fd);
 bool file_to_str(str pathname, var* err, str* s);
 
 bool file_stat(vfd file, var* err, struct stat* s);
+
+bool file_dir_list(str pathname, var* err, vec* v);
 
 #endif

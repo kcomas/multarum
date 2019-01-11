@@ -63,3 +63,24 @@ bool file_stat(vfd file, var* err, struct stat* st) {
     free(p);
     return true;
 }
+
+bool file_dir_list(str pathname, var* err, vec* v) {
+    DIR *dirp;
+    char* p = str_to_c(pathname);
+    if ((dirp = opendir(p)) == NULL) {
+        free(p);
+        *err = var_err_c("Failed To Open Directory");
+        return false;
+    }
+    free(p);
+    struct dirent *dp;
+    (*v) = vec_init(5);
+    while ((dp = readdir(dirp)) != NULL) {
+        vec_push(v, var_str(str_from_c(dp->d_name)));
+    }
+    if (closedir(dirp) == -1) {
+        *err = var_err_c("Failed To Close Directory");
+        return false;
+    }
+    return true;
+}

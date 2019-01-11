@@ -12,6 +12,8 @@ void var_free(var v) {
         case -5:
             file_free(v.value.fd);
             break;
+        case 11:
+            dict_free(v.value.d);
         default:
             break;
     }
