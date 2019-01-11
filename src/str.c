@@ -53,11 +53,9 @@ str str_from_c(const char* const c_str) {
     return s;
 }
 
-char* str_to_c(const str s) {
-    char* c = (char*) malloc(sizeof(char) * s->len + 1);
-    memcpy(c, s->data, s->len);
-    c[s->len] = '\0';
-    return c;
+void str_to_c(const str s, char* const c, size_t clen) {
+    memset(c, '\0', clen);
+    memcpy(c, s->data, clen - 1);
 }
 
 bool str_cmp(const str x, const str y) {

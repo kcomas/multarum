@@ -21,7 +21,7 @@ void file_free(vfd fd);
 
 bool file_to_str(str pathname, var* err, str* s);
 
-bool file_stat(vfd file, var* err, struct stat* s);
+bool file_stat(vfd file, var* err, dict* d);
 
 bool file_dir_list(str pathname, var* err, vec* v);
 

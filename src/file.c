@@ -1,14 +1,17 @@
 
 #include "file.h"
 
+#define file_to_c_sub(s) \
+    char p[256]; \
+    str_to_c(s, p, 256)
+
 bool file_init(str pathname, int flags, var* err, vfd* fd) {
-    char* p = str_to_c(pathname);
+    file_to_c_sub(pathname);
     (*fd) = (vfd) malloc(sizeof(struct _vfd));
     (*fd)->ref_count = 1;
     (*fd)->fd  = open(p, flags);
     (*fd)->pathname = pathname;
     pathname->ref_count++;
-    free(p);
     if ((*fd)->fd == -1) {
         free(*fd);
         *err = var_err_c("Failed To Open File");
@@ -29,22 +32,19 @@ void file_free(vfd fd) {
     do { \
         if ((stat(p, st)) == -1) { \
             *err = var_err_c("Failed To Lookup File"); \
-            free(p); \
             return false; \
         } \
     } while (0)
 
 bool file_to_str(str pathname, var* err, str* s) {
     struct stat st;
-    char* p = str_to_c(pathname);
+    file_to_c_sub(pathname);
     file_stat_sub(p, &st);
     int fd;
     if  ((fd = open(p, O_RDWR | O_CREAT)) == -1) {
-        free(p);
         *err = var_err_c("Failed To Open File");
         return false;
     }
-    free(p);
     (*s) = str_init(st.st_size);
     if (read(fd, (*s)->data, st.st_size) < 0) {
         *err = var_err_c("Failed To Read File");
@@ -57,22 +57,20 @@ bool file_to_str(str pathname, var* err, str* s) {
     return true;
 }
 
-bool file_stat(vfd file, var* err, struct stat* st) {
-    char* p = str_to_c(file->pathname);
-    file_stat_sub(p, st);
-    free(p);
+bool file_stat(vfd file, var* err, dict* d) {
+    struct stat st;
+    file_to_c_sub(file->pathname);
+    file_stat_sub(p, &st);
     return true;
 }
 
 bool file_dir_list(str pathname, var* err, vec* v) {
     DIR *dirp;
-    char* p = str_to_c(pathname);
+    file_to_c_sub(pathname);
     if ((dirp = opendir(p)) == NULL) {
-        free(p);
         *err = var_err_c("Failed To Open Directory");
         return false;
     }
-    free(p);
     struct dirent *dp;
     (*v) = vec_init(5);
     while ((dp = readdir(dirp)) != NULL) {

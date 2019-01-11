@@ -25,7 +25,7 @@ str str_copy(str s);
 
 str str_from_c(const char* const c_str);
 
-char* str_to_c(const str s);
+void str_to_c(const str s, char* const c, size_t clen);
 
 bool str_cmp(const str x, const str y);
 

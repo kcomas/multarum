@@ -47,8 +47,9 @@ int main(void) {
     str_free(ic);
     str_free(i);
     str a = str_from_c("abc");
-    char* b = str_to_c(a);
+    char b[4];
+    str_to_c(a, b, a->len + 1);
+    printf("%s\n", b);
     test("B is a c str of length 3", strlen(b) == a->len);
     str_free(a);
-    free(b);
 }
