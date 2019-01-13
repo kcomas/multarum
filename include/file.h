@@ -19,6 +19,12 @@ bool file_init(str pathname, int flags, var* err, vfd* fd);
 
 void file_free(vfd fd);
 
+bool file_read(vfd fd, var* err, str* s);
+
+bool file_write(vfd fd, var* err, str s);
+
+bool file_delete(str pathname, var* err);
+
 bool file_to_str(str pathname, var* err, str* s);
 
 bool file_stat(vfd file, var* err, dict* d);
