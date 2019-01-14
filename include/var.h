@@ -14,6 +14,26 @@ typedef struct _vec *vec;
 typedef struct _dict *dict;
 typedef struct _rfd *rfd;
 
+typedef enum {
+    VEC = 0,
+    BOOL = -1,
+    INT = -2,
+    FLOAT = -3,
+    UTF8 = -4,
+    STR = 4,
+    FD = -5,
+    FN = -6,
+    PROJECTION = -7,
+    MOD = -8,
+    ERR = -9,
+    THREAD = 10,
+    TIME = -11,
+    DATE = -12,
+    DATETIME = -13,
+    DICT = 40,
+    VOID = 60
+} var_types;
+
 typedef struct {
     int8_t type; // positive denotes vector of type, negative is atom
     union {

@@ -3,16 +3,16 @@
 
 void var_free(var v) {
     switch (v.type) {
-        case 0:
+        case VEC:
             vec_free(v.value.v);
             break;
-        case 4:
+        case STR:
             str_free(v.value.s);
             break;
-        case -5:
+        case FD:
             file_free(v.value.fd);
             break;
-        case 11:
+        case DICT:
             dict_free(v.value.d);
         default:
             break;
@@ -21,16 +21,16 @@ void var_free(var v) {
 
 void var_inc_ref(var v) {
     switch (v.type) {
-        case 0:
+        case VEC:
             v.value.v->ref_count++;
             break;
-        case 4:
+        case STR:
             v.value.s->ref_count++;
             break;
-        case -5:
+        case FD:
             v.value.fd->ref_count++;
             break;
-        case 11:
+        case DICT:
             v.value.d->ref_count++;
             break;
         default:
@@ -41,19 +41,19 @@ void var_inc_ref(var v) {
 bool var_cmp(var x, var y) {
     if (x.type != y.type) return false;
     switch (x.type) {
-        case 0:
+        case VEC:
             return vec_cmp(x.value.v, y.value.v);
-        case -1:
+        case BOOL:
             return x.value.b == y.value.b;
-        case -2:
+        case INT:
             return x.value.i == y.value.i;
-        case -3:
+        case FLOAT:
             return x.value.f == y.value.f;
-        case -4:
+        case UTF8:
             return utf8_cmp(x.value.c, y.value.c);
-        case 4:
+        case STR:
             return str_cmp(x.value.s, y.value.s);
-        case -5:
+        case FD:
             return x.value.fd->fd == y.value.fd->fd;
         default:
             return false;
@@ -62,25 +62,25 @@ bool var_cmp(var x, var y) {
 
 void var_print(const var v) {
     switch (v.type) {
-        case 0:
+        case VEC:
             vec_print(v.value.v);
             break;
-        case -1:
+        case BOOL:
             printf(v.value.b == true ? "1b" : "0b");
             break;
-        case -2:
+        case INT:
             printf("%li", v.value.i);
             break;
-        case -3:
+        case FLOAT:
             printf("%lf", v.value.f);
             break;
-        case -4:
+        case UTF8:
             utf8_print(v.value.c);
             break;
-        case 4:
+        case STR:
             str_print(v.value.s);
             break;
-        case -5:
+        case FD:
             printf("File %d", v.value.fd->fd);
             break;
         default:

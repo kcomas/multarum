@@ -26,8 +26,11 @@ Data Types:
 -8 Module
 -9 Error
 -10 Thread
-11 Dict (Stings)!()
-12 Null (Returned from functions with no return)
+-11 Time
+-12 Date
+-13 Datetime
+40 Dict (Stings)!()
+60 Void (Returned from functions with no return)
 100 Frame, Internal use only
 
 Operators (Dyadic, Monadic)
