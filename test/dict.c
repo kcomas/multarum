@@ -23,11 +23,12 @@ int main(void) {
     str key3 = str_from_c("3");
     dict_insert(&d, key3, var_utf8(utf8_from_c('z')));
     dict_concat(&d, d2);
-    test("D has 3 items", d->used == 3);
+    dict_insert_c(&d, "woot", var_int(4));
+    test("D has 3 items", d->used == 4);
     dict_print(d);
     var removed;
     dict_remove(d, &err, keya, &removed);
-    test("D has 2 itmes", d->used == 2);
+    test("D has 2 itmes", d->used == 3);
     test("Removed item was v", var_cmp(removed, var_vec(v)));
     dict_print(d);
     var_free(removed);

@@ -36,9 +36,7 @@ void dict_free(dict d) {
 
 static inline size_t dict_hash_key(str key) {
     size_t hash = 5381;
-    for (size_t i = 0; i < key->len; i++) {
-        hash = ((hash << 5) + hash) + key->data[i];
-    }
+    for (size_t i = 0; i < key->len; i++) hash = ((hash << 5) + hash) + key->data[i];
     return hash;
 }
 
@@ -102,6 +100,12 @@ void dict_insert(dict* d, str key, var value) {
         }
         pnode = pnode->next;
     }
+}
+
+void dict_insert_c(dict* d, char* const ckey, var value) {
+    str key = str_from_c(ckey);
+    dict_insert(d, key, value);
+    str_free(key);
 }
 
 bool dict_remove(dict d, var* err, str key, var* value) {

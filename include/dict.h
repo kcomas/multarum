@@ -26,6 +26,8 @@ void dict_concat(dict* x, dict y);
 
 void dict_insert(dict* d, str key, var value);
 
+void dict_insert_c(dict* d, char* const ckey, var value);
+
 bool dict_remove(dict d, var* err, str key, var* value);
 
 void dict_print(const dict d);
