@@ -54,6 +54,14 @@ bool file_read(rfd fd, var* err, str* s) {
     return true;
 }
 
+bool file_seek(rfd fd, var* err, off_t offset, int whence) {
+    if (lseek(fd->fd, offset, whence) == -1) {
+        *err = var_err_c("Unable To Seek File");
+        return false;
+    }
+    return true;
+}
+
 bool file_write(rfd fd, var* err, str s) {
     if (write(fd->fd, s->data, s->len) == -1) {
         *err = var_err_c("Failed To Write File");

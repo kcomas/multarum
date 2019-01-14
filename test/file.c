@@ -12,14 +12,12 @@ int main(void) {
     test("File Init", file_init(n, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, &err, &f));
     test("F is valid file", f->fd != -1);
     test("File Write", file_write(f, &err, s));
-    file_free(f);
+    test("File Seek", file_seek(f, &err, 0, SEEK_SET));
     str r;
-    rfd f2;
-    test("File Init 2", file_init(n, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, &err, &f2));
-    test("File Read", file_read(f2, &err, &r));
+    test("File Read", file_read(f, &err, &r));
     test("File read back in is same", str_cmp(s, r));
-    test("File Delete", file_delete(f2->pathname, &err));
-    file_free(f2);
+    test("File Delete", file_delete(f->pathname, &err));
+    file_free(f);
     str_free(n);
     str_free(s);
     str_free(r);

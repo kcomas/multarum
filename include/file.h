@@ -21,6 +21,8 @@ void file_free(rfd fd);
 
 bool file_read(rfd fd, var* err, str* s);
 
+bool file_seek(rfd fd, var* err, off_t offset, int whence);
+
 bool file_write(rfd fd, var* err, str s);
 
 bool file_delete(str pathname, var* err);
