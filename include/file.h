@@ -9,25 +9,25 @@
 #include <dirent.h>
 #include "var.h"
 
-typedef struct _vfd {
+typedef struct _rfd {
     uint16_t ref_count;
     int fd;
     str pathname;
-} *vfd;
+} *rfd;
 
-bool file_init(str pathname, int flags, var* err, vfd* fd);
+bool file_init(str pathname, int flags, mode_t mode, var* err, rfd* fd);
 
-void file_free(vfd fd);
+void file_free(rfd fd);
 
-bool file_read(vfd fd, var* err, str* s);
+bool file_read(rfd fd, var* err, str* s);
 
-bool file_write(vfd fd, var* err, str s);
+bool file_write(rfd fd, var* err, str s);
 
 bool file_delete(str pathname, var* err);
 
 bool file_to_str(str pathname, var* err, str* s);
 
-bool file_stat(vfd file, var* err, dict* d);
+bool file_stat(rfd file, var* err, dict* d);
 
 bool file_dir_list(str pathname, var* err, vec* v);
 

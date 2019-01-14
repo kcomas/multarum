@@ -6,6 +6,7 @@ str str_init(size_t size) {
     s->ref_count = 1;
     s->len = 0;
     s->size = size;
+    memset(s->data, '\0', s->size);
     return s;
 }
 

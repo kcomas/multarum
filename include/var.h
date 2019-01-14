@@ -12,7 +12,7 @@
 typedef struct _str *str;
 typedef struct _vec *vec;
 typedef struct _dict *dict;
-typedef struct _vfd *vfd;
+typedef struct _rfd *rfd;
 
 typedef struct {
     int8_t type; // positive denotes vector of type, negative is atom
@@ -25,7 +25,7 @@ typedef struct {
         double f; // float
         utf8 c; // char
         str s;
-        vfd fd; // file descriptor
+        rfd fd; // file descriptor
         vec v;
         dict d;
     } value;
