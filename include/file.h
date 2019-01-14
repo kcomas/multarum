@@ -29,7 +29,7 @@ bool file_delete(str pathname, var* err);
 
 bool file_to_str(str pathname, var* err, str* s);
 
-bool file_stat(rfd file, var* err, dict* d);
+bool file_stat(rfd fd, var* err, dict* d);
 
 bool file_dir_list(str pathname, var* err, vec* v);
 

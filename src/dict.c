@@ -68,6 +68,13 @@ bool dict_get(dict d, var* err, str key, var* value) {
     return false;
 }
 
+bool dict_get_c(dict d, var* err, char* const ckey, var* value) {
+    str key = str_from_c(ckey);
+    bool ret = dict_get(d, err, key, value);
+    str_free(key);
+    return ret;
+}
+
 void dict_concat(dict* x, dict y) {
     if ((*x)->used + y->used > (*x)->size) dict_grow_rehash(x, ((*x)->size + y->used) * 2);
     for (size_t i = 0; i < y->used; i++) {

@@ -13,10 +13,17 @@ int main(void) {
     test("F is valid file", f->fd != -1);
     test("File Write", file_write(f, &err, s));
     test("File Seek", file_seek(f, &err, 0, SEEK_SET));
+    dict d;
+    test("File Stat", file_stat(f, &err, &d));
+    dict_print(d);
+    var size;
+    dict_get_c(d, &err, "size", &size);
+    test("File is 18 bytes", var_cmp(size, var_int(18)));
     str r;
     test("File Read", file_read(f, &err, &r));
     test("File read back in is same", str_cmp(s, r));
     test("File Delete", file_delete(f->pathname, &err));
+    dict_free(d);
     file_free(f);
     str_free(n);
     str_free(s);

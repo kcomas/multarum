@@ -25,6 +25,9 @@ int main(void) {
     dict_concat(&d, d2);
     dict_insert_c(&d, "woot", var_int(4));
     test("D has 3 items", d->used == 4);
+    var get;
+    dict_get_c(d, &err, "woot", &get);
+    test("D of woot is 4", var_cmp(get, var_int(4)));
     dict_print(d);
     var removed;
     dict_remove(d, &err, keya, &removed);

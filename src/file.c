@@ -96,11 +96,20 @@ bool file_to_str(str pathname, var* err, str* s) {
     return true;
 }
 
-bool file_stat(rfd file, var* err, dict* d) {
+bool file_stat(rfd fd, var* err, dict* d) {
     struct stat st;
-    file_to_c_sub(file->pathname);
+    file_to_c_sub(fd->pathname);
     file_stat_sub(p, &st);
     (*d) = dict_init(15);
+    dict_insert_c(d, "pathname", var_str(fd->pathname));
+    dict_insert_c(d, "dev", var_int(st.st_dev));
+    dict_insert_c(d, "ino", var_int(st.st_ino));
+    dict_insert_c(d, "mode", var_int(st.st_mode));
+    dict_insert_c(d, "nlink", var_int(st.st_nlink));
+    dict_insert_c(d, "uid", var_int(st.st_uid));
+    dict_insert_c(d, "gid", var_int(st.st_gid));
+    dict_insert_c(d, "size", var_int(st.st_size));
+    // @TODO add time fields
     return true;
 }
 

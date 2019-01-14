@@ -22,6 +22,8 @@ void dict_free(dict d);
 
 bool dict_get(dict d, var* err, str key, var* value);
 
+bool dict_get_c(dict d, var* err, char* const ckey, var* value);
+
 void dict_concat(dict* x, dict y);
 
 void dict_insert(dict* d, str key, var value);
