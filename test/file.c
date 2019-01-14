@@ -28,5 +28,13 @@ int main(void) {
     str_free(n);
     str_free(s);
     str_free(r);
+    str p = str_from_c("./examples");
+    vec v;
+    test("List files in dir", file_dir_list(p, &err, &v));
+    test("More then 0 files", v->len > 0);
+    vec_print(v);
+    str_free(p);
+    vec_free(v);
+    printf("\n");
     return 0;
 }

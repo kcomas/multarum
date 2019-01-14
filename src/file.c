@@ -122,7 +122,8 @@ bool file_dir_list(str pathname, var* err, vec* v) {
     }
     struct dirent *dp;
     (*v) = vec_init(5);
-    while ((dp = readdir(dirp)) != NULL) vec_push(v, var_str(str_from_c(dp->d_name)));
+    while ((dp = readdir(dirp)) != NULL)
+        if (strcmp(".", dp->d_name) != 0 && strcmp("..", dp->d_name) != 0) vec_push(v, var_str(str_from_c(dp->d_name)));
     if (closedir(dirp) == -1) {
         *err = var_err_c("Failed To Close Directory");
         return false;
