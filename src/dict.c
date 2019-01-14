@@ -11,10 +11,9 @@ dict dict_init(size_t size) {
 }
 
 static inline dict_node dict_node_init(str key, var value) {
-    key->ref_count++;
     var_inc_ref(value);
     dict_node n = (dict_node) malloc(sizeof(struct _dict_node));
-    n->key = key;
+    n->key = str_copy(key);
     n->value = value;
     n->next = NULL;
     return n;
