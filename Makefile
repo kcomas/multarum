@@ -17,10 +17,15 @@ strtest.o = $(TEST)/str.o
 utf8.o = $(SRC)/utf8.o
 utf8test.o = $(TEST)/utf8.o
 var.o = $(SRC)/var.o
+vartest.o = $(TEST)/var.o
 vec.o = $(SRC)/vec.o
 vectest.o = $(TEST)/vec.o
 
-tests: file_test dict_test vec_test str_test utf8_test
+tests: var_test file_test dict_test vec_test str_test utf8_test
+
+var_test_deps = $(vartest.o) $(file.o) $(var.o) $(dict.o) $(vec.o) $(str.o) $(utf8.o)
+var_test: $(var_test_deps)
+	$(CTEST) $(var_test_deps)
 
 file_test_deps = $(filetest.o) $(file.o) $(var.o) $(dict.o) $(vec.o) $(str.o) $(utf8.o)
 file_test: $(file_test_deps)
