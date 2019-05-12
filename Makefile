@@ -7,7 +7,7 @@ INC=src
 CC=gcc
 CFLAGS=-std=c99 -g -Wall -Wextra -I $(INC)
 
-OBJECTS=$(SRC)/main.o
+OBJECTS=$(SRC)/main.o $(SRC)/str.o $(SRC)/file.o
 
 all: multarum
 
