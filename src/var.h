@@ -15,6 +15,6 @@ typedef struct _var {
         bool b;
         int64_t i;
         double f;
-        int file;
+        int fd;
     } value;
 } *var;
