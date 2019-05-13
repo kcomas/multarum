@@ -8,6 +8,6 @@
 #include "str.h"
 #include "err.h"
 
-bool file_close(int fd, err *e);
+bool file_close(int fd, err *const e);
 
-str file_to_str(char *filename, err *e);
+str file_to_str(char *const filename, err *const e);
