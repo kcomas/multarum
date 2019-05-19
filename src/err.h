@@ -16,7 +16,7 @@ typedef struct {
 
 #define err_init(e) e.type = ERR_OK
 
-#define err_basic(e, type) e->type = type;
+#define err_basic(e, t) e->type = t;
 
 #define err_system(e) \
     e->type = ERR_SYSTEM; \

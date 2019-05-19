@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "var.h"
 #include "str.h"
+#include "err.h"
 
 typedef struct _hash_bucket {
     struct _hash_bucket *next;
@@ -25,3 +26,5 @@ void hash_free(hash h);
 hash hash_clone(hash h, size_t size);
 
 void hash_insert(hash *h, str key, var value);
+
+var hash_get(hash h, str key, err *e);

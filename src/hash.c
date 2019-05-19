@@ -48,8 +48,7 @@ hash hash_clone(hash h, size_t size) {
 
 static inline size_t hash_hash(str s) {
     size_t hash = 5381;
-    char* data = s->data;
-    while (*data) hash = ((hash << 5) + hash) + *data;
+    for (size_t i = 0; i < s->len; i++) hash = ((hash << 5) + hash) + s->data[i];
     return hash;
 }
 
@@ -71,4 +70,19 @@ void hash_insert(hash *h, str key, var value) {
         }
         pos = pos->next;
     }
+}
+
+var hash_get(hash h, str key, err *e) {
+    size_t idx = hash_hash(key) % h->size;
+    if (h->buckets[idx] == NULL) {
+        err_basic(e, ERR_KEY_NOT_IN_HASH);
+        return var_null;
+    }
+    hash_bucket b = h->buckets[idx];
+    while (b != NULL) {
+        if (strcmp(key->data, b->key->data) == 0) return b->value;
+        b = b->next;
+    }
+    err_basic(e, ERR_KEY_NOT_IN_HASH);
+    return var_null;
 }
