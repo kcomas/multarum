@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "str.h"
 
-typedef struct _hash *hash;
+typedef struct _hash hash;
 
 typedef struct _var {
     enum {
@@ -22,8 +22,8 @@ typedef struct _var {
         int64_t i;
         double f;
         int fd;
-        str s;
-        hash h;
+        str *s;
+        hash *h;
     } value;
 } var;
 

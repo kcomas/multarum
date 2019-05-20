@@ -9,10 +9,12 @@
 typedef struct _str {
     size_t size, len;
     char data[];
-} *str;
+} str;
 
-str str_init(size_t size);
+str *str_init(size_t size);
 
-void str_free(str s);
+void str_free(str *const s);
 
-str str_from_cstring(char *cstring);
+str* str_clone(const str *const s, size_t size);
+
+str *str_from_cstring(char *cstring);

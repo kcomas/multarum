@@ -10,4 +10,4 @@
 
 bool file_close(int fd, err *const e);
 
-str file_to_str(char *const filename, err *const e);
+str *file_to_str(char *const filename, err *const e);
