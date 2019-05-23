@@ -8,41 +8,40 @@ hash *hash_init(size_t size) {
     return h;
 }
 
-void hash_free(hash *const h) {
+void hash_free(hash *const h, bool free_vars) {
     for (size_t i = 0; i < h->size; i++) {
         if (h->buckets[i] == NULL) continue;
         hash_bucket *b = h->buckets[i];
         while (b != NULL) {
             hash_bucket *tmp = b->next;
             b = b->next;
-            str_free(tmp->key);
-            var_free(tmp->value);
+            if (free_vars) {
+                str_free(tmp->key);
+                var_free(tmp->value);
+            }
             free(tmp);
         }
     }
     free(h);
 }
 
-static inline hash_bucket *hash_bucket_clone(const hash_bucket *b) {
-    hash_bucket *clone = calloc(1, sizeof(struct _hash_bucket));
-    hash_bucket *tmp = clone;
-    while (b != NULL) {
-        // values must be cloned
-        tmp->value = b->value;
-        tmp->key = str_clone(b->key, b->key->size - 1);
-        tmp = tmp->next;
-        b = b->next;
-    }
-    return clone;
-}
-
-hash *hash_clone(const hash *const h, size_t size) {
+hash *hash_copy(const hash *const h, size_t size, bool clone_vars) {
     hash *clone = hash_init(size);
     clone->size = size;
     clone->used = h->used;
     for (size_t i = 0; i < h->size; i++) {
         if (h->buckets[i] != NULL) continue;
-        clone->buckets[i] = hash_bucket_clone(h->buckets[i]);
+        hash_bucket *b = h->buckets[i];
+        while (b != NULL) {
+            str *key = b->key;
+            var value = b->value;
+            if (clone_vars) {
+                key = str_copy(key, key->len - 1);
+                value = var_copy(value);
+            }
+            hash_insert(&clone, key, value);
+            b = b->next;
+        }
     }
     return clone;
 }
@@ -55,15 +54,15 @@ static inline size_t hash_hash(const str const* s) {
 
 void hash_insert(hash **const h, str *const key, var value) {
     if ((*h)->used == (*h)->size) {
-        hash *clone = hash_clone(*h, (*h)->size * HASH_GROW_MULTIPLIER);
-        hash_free(*h);
+        hash *clone = hash_copy(*h, (*h)->size* HASH_GROW_MULTIPLIER, false);
+        hash_free(*h, false);
         *h = clone;
     }
     size_t idx = hash_hash(key) % (*h)->size;
     hash_bucket *b = calloc(1, sizeof(struct _hash_bucket));
     // does not clone values
     b->key = key;
-    b->value = value; // TODO var clone
+    b->value = value;
     hash_bucket *pos = (*h)->buckets[idx];
     while (pos != NULL) {
         if (pos->next == NULL) {

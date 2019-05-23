@@ -15,6 +15,6 @@ str *str_init(size_t size);
 
 void str_free(str *const s);
 
-str* str_clone(const str *const s, size_t size);
+str* str_copy(const str *const s, size_t size);
 
 str *str_from_cstring(char *cstring);

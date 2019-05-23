@@ -13,7 +13,7 @@ void str_free(str *const s) {
     free(s);
 }
 
-str* str_clone(const str *const s, size_t size) {
+str* str_copy(const str *const s, size_t size) {
     str *clone = str_init(size);
     clone->len = s->len;
     memcpy(clone->data, s->data, s->len);

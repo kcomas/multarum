@@ -19,11 +19,11 @@ typedef struct _hash {
 
 hash *hash_init(size_t size);
 
-void hash_free(hash *const h);
+void hash_free(hash *const h, bool free_vars);
 
 #define HASH_GROW_MULTIPLIER 2
 
-hash *hash_clone(const hash *const  h, size_t size);
+hash *hash_copy(const hash *const  h, size_t size, bool clone_vars);
 
 void hash_insert(hash **const h, str *const key, var value);
 
