@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 typedef enum {
     TOKEN(NONE),
@@ -44,8 +46,8 @@ typedef struct _token_state {
     const char *str;
 } token_state;
 
-token_state *tokenize_str(const char *str, size_t len, char *err);
+token_state *tokenize_str(const char *str, size_t len, char **const err);
 
-token_state *tokenize_file(const char *filename, char *err);
+token_state *tokenize_file(const char *filename, char **const err);
 
 bool next_token(token_state *state, token *t, char *err);
