@@ -1,10 +1,11 @@
 
 #pragma once
 
-#define TOKEN(NAME) TOKEN_NAME
+#define TOKEN(NAME) TOKEN_##NAME
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef enum {
     TOKEN(NONE),
@@ -25,6 +26,8 @@ typedef enum {
     TOKEN(LESS_THAN),
     TOKEN(EQUAL),
     TOKEN(OR),
+    TOKEN(ADD),
+    TOKEN(SUB),
     TOKEN(END)
 } token_type;
 
