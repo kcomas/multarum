@@ -49,7 +49,7 @@ static token_state *set_token_hash(token_state *ts, char **const err) {
         char c;
         size_t hash = 5381;
         while ((c = *w++)) hash = ((hash << 5) + hash) + c;
-        hash %= TOKEN_WORD_HASH_LEN;
+        hash %= TOKEN_WORD_HASH_SIZE;
         if (ts->token_word_hash[hash] != 0) {
             free(ts);
             *err = "Token Hash Collision";

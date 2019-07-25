@@ -42,13 +42,13 @@ typedef struct _token {
 
 #define TOKEN_WORD_LEN 6
 
-#define TOKEN_WORD_HASH_LEN TOKEN_WORD_LEN * 4
+#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * 4
 
 typedef struct _token_state {
     token_type last_match_type;
     size_t last_match_start_idx, last_match_end_idx;
     size_t line_idx, char_idx, str_len;
-    token_type token_word_hash[TOKEN_WORD_HASH_LEN];
+    token_type token_word_hash[TOKEN_WORD_HASH_SIZE];
     char str[];
 } token_state;
 
