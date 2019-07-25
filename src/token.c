@@ -43,6 +43,24 @@ static const token_type token_word_type[] = {
     TOKEN(PRINT)
 };
 
+static token_state *set_token_hash(token_state *ts, char **const err) {
+    for (size_t i = 0; i < TOKEN_WORD_LEN; i++) {
+        const char *w = token_word[i];
+        char c;
+        size_t hash = 5381;
+        while ((c = *w++)) hash = ((hash << 5) + hash) + c;
+        hash %= TOKEN_WORD_HASH_LEN;
+        if (ts->token_word_hash[hash] != 0) {
+            free(ts);
+            *err = "Token Hash Collision";
+            return NULL;
+        }
+        ts->token_word_hash[hash] = token_word_type[i];
+    }
+    return ts;
+
+}
+
 token_state *tokenize_file(const char *filename, char **const err) {
     struct stat s;
     if (stat(filename, &s) == -1) {
@@ -60,18 +78,5 @@ token_state *tokenize_file(const char *filename, char **const err) {
         *err = "Unable To Read File";
         return NULL;
     }
-    for (size_t i = 0; i < TOKEN_WORD_LEN; i++) {
-        const char *w = token_word[i];
-        char c;
-        size_t hash = 5381;
-        while ((c = *w++)) hash = ((hash << 5) + hash) + c;
-        hash %= TOKEN_WORD_HASH_LEN;
-        if (ts->token_word_hash[hash] != 0) {
-            free(ts);
-            *err = "Token Hash Collision";
-            return NULL;
-        }
-        ts->token_word_hash[hash] = token_word_type[i];
-    }
-    return ts;
+    return set_token_hash(ts, err);
 }
