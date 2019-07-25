@@ -78,5 +78,6 @@ token_state *tokenize_file(const char *filename, char **const err) {
         *err = "Unable To Read File";
         return NULL;
     }
+    ts->str_len = s.st_size;
     return set_token_hash(ts, err);
 }
