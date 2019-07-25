@@ -153,8 +153,16 @@ bool next_token(token_state *state, token *t, char **const err) {
             size_t idx = 0;
             while (token_word_type[idx] != tt) idx++;
             const char *name = token_word[idx];
+            // TODO compare strings
             printf("%s\n", name);
             exit(1);
+        } else {
+            // TODO number match
+            // TODO name match
+            state->last_match_end_idx--;
+            set_token(state, t);
+            inc_pos(state);
+            return true;
         }
     }
     return false;
