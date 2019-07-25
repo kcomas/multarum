@@ -102,6 +102,7 @@ token_state *tokenize_file(const char *filename, char **const err) {
         return NULL;
     }
     ts->str_len = s.st_size;
+    close(fd);
     return set_token_hash(ts, err);
 }
 
