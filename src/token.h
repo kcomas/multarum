@@ -37,8 +37,10 @@ typedef enum {
 typedef struct _token {
     token_type type;
     size_t line_idx, char_idx, value_len;
-    const char *value;
+    char *value;
 } token;
+
+void print_token(token *t);
 
 #define TOKEN_WORD_LEN 6
 
@@ -54,4 +56,4 @@ typedef struct _token_state {
 
 token_state *tokenize_file(const char *filename, char **const err);
 
-bool next_token(token_state *state, token *t, char *err);
+bool next_token(token_state *state, token *t, char **const err);
