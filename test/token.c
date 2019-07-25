@@ -8,5 +8,6 @@ int main(void) {
         printf("%s\n", err);
         return 1;
     }
+    printf("%s\n", ts->str);
     return 0;
 }

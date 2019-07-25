@@ -58,7 +58,6 @@ static token_state *set_token_hash(token_state *ts, char **const err) {
         ts->token_word_hash[hash] = token_word_type[i];
     }
     return ts;
-
 }
 
 token_state *tokenize_file(const char *filename, char **const err) {
@@ -72,7 +71,7 @@ token_state *tokenize_file(const char *filename, char **const err) {
         *err = "Cannot Open File";
         return NULL;
     }
-    token_state *ts = calloc(1, sizeof(token_state) + sizeof(char) * s.st_size);
+    token_state *ts = calloc(1, sizeof(token_state) + sizeof(char) * s.st_size + 1);
     if (read(fd, ts->str, s.st_size) != s.st_size) {
         free(ts);
         *err = "Unable To Read File";
