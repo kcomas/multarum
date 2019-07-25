@@ -31,8 +31,7 @@ typedef enum {
     TOKEN(OR),
     TOKEN(ADD),
     TOKEN(SUB),
-    TOKEN(END),
-    TOKEN(_LEN)
+    TOKEN(END)
 } token_type;
 
 typedef struct _token {
