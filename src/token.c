@@ -248,7 +248,8 @@ bool next_token(token_state *state, token *t, char **const err) {
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_name; i++) {
             if ((state->str[i] < 'A' || state->str[i] > 'Z') &&
                     (state->str[i] < 'a' || state->str[i] > 'z') &&
-                    (state->str[i] < '0' || state->str[i] > '9')) is_name = false;
+                    (state->str[i] < '0' || state->str[i] > '9') &&
+                    (state->str[i] != '_')) is_name = false;
         }
         if (is_name) {
             state->last_match_type = TOKEN(NAME);
