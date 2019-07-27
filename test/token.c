@@ -15,5 +15,6 @@ int main(void) {
         printf("%s\n", err);
         return 1;
     }
+    free(ts);
     return 0;
 }

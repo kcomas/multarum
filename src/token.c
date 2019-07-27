@@ -31,7 +31,9 @@ static const char *token_word[] = {
     "elif",
     "else",
     "return",
-    "print"
+    "print",
+    "==",
+    "||"
 };
 
 static const token_type token_word_type[] = {
@@ -40,12 +42,14 @@ static const token_type token_word_type[] = {
     TOKEN(ELIF),
     TOKEN(ELSE),
     TOKEN(RETURN),
-    TOKEN(PRINT)
+    TOKEN(PRINT),
+    TOKEN(EQUAL),
+    TOKEN(OR)
 };
 
 void print_token(token *t) {
     printf("%s,", token_name[t->type]);
-    printf(" l: %lu, c: %lu, ", t->line_idx, t->char_idx);
+    printf(" line: %lu, char: %lu, len: %lu, ", t->line_idx, t->char_idx, t->value_len);
     for (size_t i = 0; i < t->value_len; i++) {
         switch (t->value[i]) {
             case '\n':
@@ -57,6 +61,22 @@ void print_token(token *t) {
         }
     }
     putchar('\n');
+}
+
+static bool is_hash_ident(token_type tt) {
+    switch (tt) {
+        case TOKEN(FN):
+        case TOKEN(IF):
+        case TOKEN(ELIF):
+        case TOKEN(ELSE):
+        case TOKEN(RETURN):
+        case TOKEN(PRINT):
+        case TOKEN(EQUAL):
+        case TOKEN(OR):
+            return true;
+    default:
+        return false;
+    }
 }
 
 static inline size_t token_hash_fn(size_t hash, char c) {
@@ -125,11 +145,45 @@ static inline void set_token(token_state *state, token *t) {
     t->value_len = state->last_match_end_idx - state->last_match_start_idx;
 }
 
+static inline bool set_single_char(token_state* state, token *t, token_type type, char **const err) {
+    if (state->last_match_type != TOKEN(NONE)) {
+        state->last_match_end_idx--;;
+        state->last_match_start_idx = state->last_match_end_idx;
+        set_token(state, t);
+        inc_pos(state);
+        return true;
+    }
+    if (state->last_match_type == TOKEN(NONE) && state->last_match_end_idx - state->last_match_start_idx > 1) {
+        *err = "Invalid Token Found";
+        return false;
+    }
+    state->last_match_type = type;
+    set_token(state, t);
+    inc_pos(state);
+    return true;
+}
+
+static inline bool found_token(token_state *state, token *t) {
+    state->last_match_end_idx--;
+    set_token(state, t);
+    inc_pos(state);
+    return true;
+}
+
 bool next_token(token_state *state, token *t, char **const err) {
     state->last_match_type = TOKEN(NONE);
     while (state->last_match_start_idx < state->str_len) {
         state->last_match_end_idx++;
         if (state->last_match_end_idx - state->last_match_start_idx == 1) {
+            if (state->str[state->last_match_start_idx] >= '0' && state->str[state->last_match_start_idx] <= '9') {
+                state->last_match_type = TOKEN(INTEGER);
+                continue;
+            }
+            if ((state->str[state->last_match_start_idx] >= 'a' && state->str[state->last_match_start_idx] <= 'z') ||
+                (state->str[state->last_match_start_idx] >= 'A' && state->str[state->last_match_start_idx] <= 'Z')) {
+                state->last_match_type = TOKEN(NAME);
+                continue;
+            }
             switch (state->str[state->last_match_start_idx]) {
                 case ' ':
                     inc_pos(state);
@@ -139,11 +193,26 @@ bool next_token(token_state *state, token *t, char **const err) {
                     set_token(state, t);
                     inc_line(state);
                     return true;
+                case '(': return set_single_char(state, t, TOKEN(RBRACE), err);
+                case ')': return set_single_char(state, t, TOKEN(LBRACE), err);
+                case '{': return set_single_char(state, t, TOKEN(RBRACKET), err);
+                case '}': return set_single_char(state, t, TOKEN(LBRACKET), err);
+                case ':': return set_single_char(state, t, TOKEN(COLON), err);
+                case '<': return set_single_char(state, t, TOKEN(LESS_THAN), err);
+                case '+': return set_single_char(state, t, TOKEN(ADD), err);
+                case '-': return set_single_char(state, t, TOKEN(SUB), err);
                 default:
                     break;
             }
+            continue;
         }
-        state->last_match_end_idx++;
+        if (state->str[state->last_match_end_idx - 1] == ' ') {
+            if (state->last_match_type == TOKEN(NONE)) {
+                *err = "Invalid Token Found";
+                return false;
+            }
+            return found_token(state, t);
+        }
         size_t hash = TOKEN_HASH_BASE;
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx; i++) {
             hash = token_hash_fn(hash, state->str[i]);
@@ -154,17 +223,38 @@ bool next_token(token_state *state, token *t, char **const err) {
             size_t idx = 0;
             while (token_word_type[idx] != tt) idx++;
             const char *name = token_word[idx];
-            // TODO compare strings
-            printf("%s\n", name);
-            exit(1);
-        } else {
-            // TODO number match
-            // TODO name match
-            state->last_match_end_idx--;
-            set_token(state, t);
-            inc_pos(state);
-            return true;
+            bool match = true;
+            size_t i = state->last_match_start_idx;
+            char c;
+            while ((c = *name++) && match) {
+                if (c != state->str[i]) match = false;
+                i++;
+            }
+            if (match) {
+                state->last_match_type = tt;
+                continue;
+            }
+            if (!match && is_hash_ident(state->last_match_type)) return found_token(state, t);
         }
+        bool is_int = true;
+        for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_int; i++) {
+            if (!(state->str[i] >= '0' && state->str[i] <= '9')) is_int = false;
+        }
+        bool is_name = true;
+        if (is_int) {
+            state->last_match_type = TOKEN(INTEGER);
+            continue;
+        }
+        for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_name; i++) {
+            if ((state->str[i] < 'A' || state->str[i] > 'Z') &&
+                    (state->str[i] < 'a' || state->str[i] > 'z') &&
+                    (state->str[i] < '0' || state->str[i] > '9')) is_name = false;
+        }
+        if (is_name) {
+            state->last_match_type = TOKEN(NAME);
+            continue;
+        }
+        if (state->last_match_type != TOKEN(NONE)) return found_token(state, t);
     }
     return false;
 }

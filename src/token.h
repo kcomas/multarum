@@ -42,9 +42,9 @@ typedef struct _token {
 
 void print_token(token *t);
 
-#define TOKEN_WORD_LEN 6
+#define TOKEN_WORD_LEN 8
 
-#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * 4
+#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * 5
 
 typedef struct _token_state {
     token_type last_match_type;
