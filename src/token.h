@@ -34,7 +34,7 @@ typedef enum {
     TOKEN(END)
 } token_type;
 
-typedef struct _token {
+typedef struct {
     token_type type;
     size_t line_idx, char_idx, value_len;
     char *value;
@@ -46,7 +46,7 @@ void print_token(token *t);
 
 #define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * 5
 
-typedef struct _token_state {
+typedef struct {
     token_type last_match_type;
     size_t last_match_start_idx, last_match_end_idx;
     size_t line_idx, char_idx, str_len;
