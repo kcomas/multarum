@@ -12,12 +12,14 @@ static const char *token_name[] = {
     "RBRACKET",
     "LBRACKET",
     "COLON",
+    "COMMA",
     "IF",
     "ELIF",
     "ELSE",
     "RETURN",
     "PRINT",
     "LESS_THAN",
+    "LESS_THAN_EQUAL",
     "EQUAL",
     "OR",
     "ADD",
@@ -32,6 +34,7 @@ static const char *token_word[] = {
     "else",
     "return",
     "print",
+    "<=",
     "==",
     "||"
 };
@@ -43,6 +46,7 @@ static const token_type token_word_type[] = {
     TOKEN(ELSE),
     TOKEN(RETURN),
     TOKEN(PRINT),
+    TOKEN(LESS_THAN_EQUAL),
     TOKEN(EQUAL),
     TOKEN(OR)
 };
@@ -187,7 +191,10 @@ bool next_token(token_state *state, token *t, char **const err) {
                 case '{': return set_single_char(state, t, TOKEN(RBRACKET), err);
                 case '}': return set_single_char(state, t, TOKEN(LBRACKET), err);
                 case ':': return set_single_char(state, t, TOKEN(COLON), err);
-                case '<': return set_single_char(state, t, TOKEN(LESS_THAN), err);
+                case ',': return set_single_char(state, t, TOKEN(COMMA), err);
+                case '<':
+                    state->last_match_type = TOKEN(LESS_THAN);
+                    break;
                 case '+': return set_single_char(state, t, TOKEN(ADD), err);
                 case '-': return set_single_char(state, t, TOKEN(SUB), err);
                 default:
