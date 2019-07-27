@@ -63,20 +63,9 @@ void print_token(token *t) {
     putchar('\n');
 }
 
-static bool is_hash_ident(token_type tt) {
-    switch (tt) {
-        case TOKEN(FN):
-        case TOKEN(IF):
-        case TOKEN(ELIF):
-        case TOKEN(ELSE):
-        case TOKEN(RETURN):
-        case TOKEN(PRINT):
-        case TOKEN(EQUAL):
-        case TOKEN(OR):
-            return true;
-    default:
-        return false;
-    }
+static inline bool is_hash_ident(token_type tt) {
+   for (size_t i = 0; i < TOKEN_WORD_LEN; i++) if (tt == token_word_type[i]) return true;
+   return false;
 }
 
 static inline size_t token_hash_fn(size_t hash, char c) {
@@ -247,9 +236,9 @@ bool next_token(token_state *state, token *t, char **const err) {
         }
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_name; i++) {
             if ((state->str[i] < 'A' || state->str[i] > 'Z') &&
-                    (state->str[i] < 'a' || state->str[i] > 'z') &&
-                    (state->str[i] < '0' || state->str[i] > '9') &&
-                    (state->str[i] != '_')) is_name = false;
+                (state->str[i] < 'a' || state->str[i] > 'z') &&
+                (state->str[i] < '0' || state->str[i] > '9') &&
+                (state->str[i] != '_')) is_name = false;
         }
         if (is_name) {
             state->last_match_type = TOKEN(NAME);
