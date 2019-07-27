@@ -134,7 +134,7 @@ static inline void set_token(token_state *state, token *t) {
     t->value_len = state->last_match_end_idx - state->last_match_start_idx;
 }
 
-static inline bool set_single_char(token_state* state, token *t, token_type type, char **const err) {
+static bool set_single_char(token_state* state, token *t, token_type type, char **const err) {
     if (state->last_match_type != TOKEN(NONE)) {
         state->last_match_end_idx--;;
         state->last_match_start_idx = state->last_match_end_idx;
