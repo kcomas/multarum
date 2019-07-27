@@ -3,14 +3,18 @@
 
 #include "token.h"
 
+typedef struct _ast_node {
+
+} ast_node;
+
 typedef struct _parser_node parser_node;
 
-#define PARSER(NAME) PARSER_##NAME
+#define MATCHCHAIN(NAME) MATCHCHAIN_##NAME
 
 typedef struct {
     enum {
-        PARSER(TOKEN),
-        PARSER(PARSER_NODE)
+        MATCHCHAIN(TOKEN),
+        MATCHCHAIN(PARSER_NODE)
     } type;
     union {
         token_type tt;
@@ -18,6 +22,10 @@ typedef struct {
     } value;
 } match_chain_item;
 
+#define PARSER(NAME) PARSER_##NAME
+
 typedef struct _parser_node {
-    match_chain chain[];
+    enum {
+    } type;
+    match_chain_items item[];
 } parser_node;
