@@ -173,7 +173,8 @@ bool next_token(token_state *state, token *t, char **const err) {
                 continue;
             }
             if ((state->str[state->last_match_start_idx] >= 'a' && state->str[state->last_match_start_idx] <= 'z') ||
-                (state->str[state->last_match_start_idx] >= 'A' && state->str[state->last_match_start_idx] <= 'Z')) {
+                (state->str[state->last_match_start_idx] >= 'A' && state->str[state->last_match_start_idx] <= 'Z') ||
+                state->str[state->last_match_start_idx] == '_') {
                 state->last_match_type = TOKEN(NAME);
                 continue;
             }
