@@ -6,12 +6,22 @@
 #define AST(NAME) AST_##NAME
 
 typedef enum {
-
 } ast_node_type;
 
 typedef struct _ast_node {
+    ast_node_type type;
+    union {
 
+    } value;
 } ast_node;
+
+typedef struct {
+
+} ast_fn;
+
+typedef struct {
+
+} ast_module;
 
 typedef struct _parser_node parser_node;
 
