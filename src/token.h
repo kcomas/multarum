@@ -12,6 +12,7 @@
 
 typedef enum {
     TOKEN(NONE),
+    TOKEN(TYPE_INT),
     TOKEN(FN),
     TOKEN(NAME),
     TOKEN(INTEGER),
@@ -44,9 +45,9 @@ typedef struct {
 
 void print_token(token *t);
 
-#define TOKEN_WORD_LEN 8
+#define TOKEN_WORD_LEN 9
 
-#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * 5
+#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * TOKEN_WORD_LEN
 
 typedef struct {
     token_type last_match_type;

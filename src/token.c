@@ -3,6 +3,7 @@
 
 static const char *token_name[] = {
     "NONE",
+    "TYPE_INT",
     "FN",
     "NAME",
     "INTEGER",
@@ -28,6 +29,7 @@ static const char *token_name[] = {
 };
 
 static const char *token_word[] = {
+    "int",
     "fn",
     "if",
     "elif",
@@ -40,6 +42,7 @@ static const char *token_word[] = {
 };
 
 static const token_type token_word_type[] = {
+    TOKEN(TYPE_INT),
     TOKEN(FN),
     TOKEN(IF),
     TOKEN(ELIF),
