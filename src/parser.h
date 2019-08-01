@@ -6,6 +6,7 @@
 #define AST(NAME) AST_##NAME
 
 typedef enum {
+    AST(FN),
 } ast_node_type;
 
 typedef struct _ast_node {

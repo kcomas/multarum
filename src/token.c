@@ -25,6 +25,9 @@ static const char *token_name[] = {
     "OR",
     "ADD",
     "SUB",
+    "MUL",
+    "DIV",
+    "EXP",
     "END"
 };
 
@@ -38,7 +41,8 @@ static const char *token_word[] = {
     "print",
     "<=",
     "==",
-    "||"
+    "||",
+    "**"
 };
 
 static const token_type token_word_type[] = {
@@ -51,7 +55,8 @@ static const token_type token_word_type[] = {
     TOKEN(PRINT),
     TOKEN(LESS_THAN_EQUAL),
     TOKEN(EQUAL),
-    TOKEN(OR)
+    TOKEN(OR),
+    TOKEN(EXP)
 };
 
 void print_token(token *t) {
@@ -83,19 +88,30 @@ static inline size_t token_hash_fn(size_t hash, char c) {
     #define TOKEN_HASH_BASE 5381
 #endif
 
+#ifndef TOKEN_HASH_REHASH
+    #define TOKEN_HASH_REHASH (TOKEN_WORD_LEN / 2)
+#endif
+
+
 static token_state *set_token_hash(token_state *ts, char **const err) {
     for (size_t i = 0; i < TOKEN_WORD_LEN; i++) {
         const char *w = token_word[i];
         char c;
         size_t hash = TOKEN_HASH_BASE;
         while ((c = *w++)) hash = token_hash_fn(hash, c);
-        hash %= TOKEN_WORD_HASH_SIZE;
-        if (ts->token_word_hash[hash] != TOKEN(NONE)) {
+        bool found = false;
+        for (size_t rehash = 0; rehash < TOKEN_HASH_REHASH && !found; rehash++) {
+            size_t new_hash = (hash + rehash) % TOKEN_WORD_HASH_SIZE;
+            if (ts->token_word_hash[new_hash] == TOKEN(NONE)) {
+                ts->token_word_hash[new_hash] = token_word_type[i];
+                found = true;
+            }
+        }
+        if (!found) {
             free(ts);
             *err = "Token Hash Collision";
             return NULL;
         }
-        ts->token_word_hash[hash] = token_word_type[i];
     }
     return ts;
 }
@@ -141,18 +157,7 @@ static inline void set_token(token_state *state, token *t) {
     t->value_len = state->last_match_end_idx - state->last_match_start_idx;
 }
 
-static bool set_single_char(token_state* state, token *t, token_type type, char **const err) {
-    if (state->last_match_type != TOKEN(NONE)) {
-        state->last_match_end_idx--;
-        state->last_match_start_idx = state->last_match_end_idx;
-        set_token(state, t);
-        inc_pos(state);
-        return true;
-    }
-    if (state->last_match_type == TOKEN(NONE) && state->last_match_end_idx - state->last_match_start_idx > 1) {
-        *err = "Invalid Token Found";
-        return false;
-    }
+static bool set_single_char(token_state* state, token *t, token_type type) {
     state->last_match_type = type;
     set_token(state, t);
     inc_pos(state);
@@ -185,57 +190,58 @@ bool next_token(token_state *state, token *t, char **const err) {
                 case ' ':
                     inc_pos(state);
                     break;
+                case ';':
                 case '\n':
                     state->last_match_type = TOKEN(END);
                     set_token(state, t);
                     inc_line(state);
                     return true;
-                case '(': return set_single_char(state, t, TOKEN(RBRACE), err);
-                case ')': return set_single_char(state, t, TOKEN(LBRACE), err);
-                case '{': return set_single_char(state, t, TOKEN(RBRACKET), err);
-                case '}': return set_single_char(state, t, TOKEN(LBRACKET), err);
-                case ':': return set_single_char(state, t, TOKEN(COLON), err);
-                case ',': return set_single_char(state, t, TOKEN(COMMA), err);
+                case '(': return set_single_char(state, t, TOKEN(RBRACE));
+                case ')': return set_single_char(state, t, TOKEN(LBRACE));
+                case '{': return set_single_char(state, t, TOKEN(RBRACKET));
+                case '}': return set_single_char(state, t, TOKEN(LBRACKET));
+                case ':': return set_single_char(state, t, TOKEN(COLON));
+                case ',': return set_single_char(state, t, TOKEN(COMMA));
                 case '<':
                     state->last_match_type = TOKEN(LESS_THAN);
                     break;
-                case '+': return set_single_char(state, t, TOKEN(ADD), err);
-                case '-': return set_single_char(state, t, TOKEN(SUB), err);
+                case '+': return set_single_char(state, t, TOKEN(ADD));
+                case '-': return set_single_char(state, t, TOKEN(SUB));
+                case '*':
+                    state->last_match_type = TOKEN(MUL);
+                    break;
+                case '/':
+                    state->last_match_type = TOKEN(DIV);
+                    break;
                 default:
                     break;
             }
             continue;
         }
-        if (state->str[state->last_match_end_idx - 1] == ' ') {
-            if (state->last_match_type == TOKEN(NONE)) {
-                *err = "Invalid Token Found";
-                return false;
-            }
-            return found_token(state, t);
-        }
         size_t hash = TOKEN_HASH_BASE;
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx; i++) {
             hash = token_hash_fn(hash, state->str[i]);
         }
-        hash %= TOKEN_WORD_HASH_SIZE;
-        token_type tt = state->token_word_hash[hash];
-        if (tt != TOKEN(NONE)) {
-            size_t idx = 0;
-            while (token_word_type[idx] != tt) idx++;
-            const char *name = token_word[idx];
-            bool match = true;
-            size_t i = state->last_match_start_idx;
-            char c;
-            while ((c = *name++) && match) {
-                if (c != state->str[i]) match = false;
-                i++;
+        bool found = false;
+        for (size_t rehash = 0; rehash < TOKEN_HASH_REHASH && !found; rehash++) {
+            token_type tt = state->token_word_hash[(hash + rehash) % TOKEN_WORD_HASH_SIZE];
+            if (tt != TOKEN(NONE)) {
+                size_t idx = 0;
+                while (token_word_type[idx] != tt) idx++;
+                const char *name = token_word[idx];
+                size_t len = strlen(name) - 1;
+                size_t i = state->last_match_start_idx;
+                if (state->last_match_end_idx - i < len) continue;
+                bool match = true;
+                char c;
+                while ((c = *name++) && match) if (c != state->str[i++]) match = false;
+                if (match) {
+                    state->last_match_type = tt;
+                    found = true;
+                }
             }
-            if (match) {
-                state->last_match_type = tt;
-                continue;
-            }
-            if (!match && is_hash_ident(state->last_match_type)) return found_token(state, t);
         }
+        if (found) continue; else if (is_hash_ident(state->last_match_type)) return found_token(state, t);
         bool is_int = true;
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_int; i++) {
             if (!(state->str[i] >= '0' && state->str[i] <= '9')) is_int = false;
@@ -256,6 +262,10 @@ bool next_token(token_state *state, token *t, char **const err) {
             continue;
         }
         if (state->last_match_type != TOKEN(NONE)) return found_token(state, t);
+        if (state->last_match_end_idx - state->last_match_start_idx > 10) {
+            *err = "Invalid Token Found";
+            return false;
+        }
     }
     return false;
 }

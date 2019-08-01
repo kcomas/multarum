@@ -3,7 +3,7 @@
 
 int main(void) {
     char* err = NULL;
-    token_state *ts = tokenize_file("./examples/fib.mul", &err);
+    token_state *ts = tokenize_file("./examples/math.mul", &err);
     if (ts == NULL) {
         printf("%s\n", err);
         return 1;

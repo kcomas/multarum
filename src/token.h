@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #define TOKEN(NAME) TOKEN_##NAME
 
@@ -34,6 +35,9 @@ typedef enum {
     TOKEN(OR),
     TOKEN(ADD),
     TOKEN(SUB),
+    TOKEN(MUL),
+    TOKEN(DIV),
+    TOKEN(EXP),
     TOKEN(END)
 } token_type;
 
@@ -45,9 +49,9 @@ typedef struct {
 
 void print_token(token *t);
 
-#define TOKEN_WORD_LEN 9
+#define TOKEN_WORD_LEN 11
 
-#define TOKEN_WORD_HASH_SIZE TOKEN_WORD_LEN * TOKEN_WORD_LEN
+#define TOKEN_WORD_HASH_SIZE (TOKEN_WORD_LEN * 2)
 
 typedef struct {
     token_type last_match_type;
