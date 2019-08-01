@@ -211,8 +211,14 @@ bool next_token(token_state *state, token *t, char **const err) {
                     state->last_match_type = TOKEN(MUL);
                     break;
                 case '/':
-                    state->last_match_type = TOKEN(DIV);
-                    break;
+                    if (state->str[state->last_match_end_idx] == '/') {
+                        while (state->str[state->last_match_end_idx] != '\n') state->last_match_end_idx++;
+                        state->last_match_end_idx++;
+                        inc_line(state);
+                        break;
+                    } else {
+                        return set_single_char(state, t, TOKEN(DIV));
+                    }
                 default:
                     break;
             }
