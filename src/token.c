@@ -216,9 +216,8 @@ bool next_token(token_state *state, token *t, char **const err) {
                         state->last_match_end_idx++;
                         inc_line(state);
                         break;
-                    } else {
-                        return set_single_char(state, t, TOKEN(DIV));
                     }
+                    return set_single_char(state, t, TOKEN(DIV));
                 default:
                     break;
             }
