@@ -1,5 +1,16 @@
 
 #include "token.h"
+#ifndef TOKEN_HASH_BASE
+    #define TOKEN_HASH_BASE 5381
+#endif
+
+#ifndef TOKEN_HASH_REHASH
+    #define TOKEN_HASH_REHASH (TOKEN_WORD_LEN / 2)
+#endif
+
+#ifndef MAX_TOKEN_LEN
+    #define MAX_TOKEN_LEN 30
+#endif
 
 static const char *token_name[] = {
     "NONE",
@@ -83,15 +94,6 @@ static inline bool is_hash_ident(token_type tt) {
 static inline size_t token_hash_fn(size_t hash, char c) {
     return ((hash << 5) + hash) + c;
 }
-
-#ifndef TOKEN_HASH_BASE
-    #define TOKEN_HASH_BASE 5381
-#endif
-
-#ifndef TOKEN_HASH_REHASH
-    #define TOKEN_HASH_REHASH (TOKEN_WORD_LEN / 2)
-#endif
-
 
 static token_state *set_token_hash(token_state *ts, char **const err) {
     for (size_t i = 0; i < TOKEN_WORD_LEN; i++) {
@@ -267,7 +269,7 @@ bool next_token(token_state *state, token *t, char **const err) {
             continue;
         }
         if (state->last_match_type != TOKEN(NONE)) return found_token(state, t);
-        if (state->last_match_end_idx - state->last_match_start_idx > 10) {
+        if (state->last_match_end_idx - state->last_match_start_idx > MAX_TOKEN_LEN) {
             *err = "Invalid Token Found";
             return false;
         }
