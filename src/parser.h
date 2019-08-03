@@ -23,10 +23,13 @@ typedef struct {
     char value[];
 } ast_var;
 
-typedef struct _symtbl_hash_node {
-    ast_var *value;
-    struct  _symtbl_hash_node *next;
-} symtbl_hash_node;
+#define MAKE_LIST(NAME, TYPE) \
+    typedef struct _##NAME { \
+        TYPE *value; \
+        struct _##NAME *next; \
+    } NAME
+
+MAKE_LIST(symtbl_hash_node, ast_var);
 
 typedef struct hash_symtbl {
     size_t size, usued;
@@ -42,12 +45,6 @@ typedef enum {
     AST(VAR),
     AST(INTEGER)
 } ast_node_type;
-
-#define MAKE_LIST(NAME, TYPE) \
-    typedef struct _##NAME { \
-        TYPE *head; \
-        struct _##NAME *next; \
-    } NAME
 
 typedef struct _ast_node ast_node;
 
