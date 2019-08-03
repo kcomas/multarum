@@ -78,7 +78,7 @@ typedef struct _ast_node {
             ast_cond_list *if_elif;
             ast_cond *if_else;
         } if_cond;
-        ast_node *stmt;
+        ast_node *expr;
         ast_var var;
         int64_t integer;
     } value;

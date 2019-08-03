@@ -2,7 +2,7 @@
 // presedence parsing example
 
 fn math(x: int, y: int, z: int): int {
-    return x + y * z ** y / x - 20
+    return x + y * z ** y / x - 20 * (x + y - z)
 }
 
 print math(3, 4, 5)
