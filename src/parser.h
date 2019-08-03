@@ -1,8 +1,10 @@
 
 #pragma once
 
+#include <stdint.h>
 #include "token.h"
-#define AST_VAR AST_VAR_##NAME
+
+#define AST_VAR(NAME) AST_VAR_##NAME
 
 typedef enum {
     AST_VAR(UNKNOWN),
@@ -21,14 +23,14 @@ typedef struct {
     char value[];
 } ast_var;
 
-typedef struct symtbl_hash_node {
+typedef struct _symtbl_hash_node {
     ast_var *value;
-    struct _hash_symtbl_node *next;
+    struct  _symtbl_hash_node *next;
 } symtbl_hash_node;
 
 typedef struct hash_symtbl {
     size_t size, usued;
-    hash_symtbl_node *buckets[];
+    symtbl_hash_node *buckets[];
 } hash_symtbl;
 
 #define AST(NAME) AST_##NAME
@@ -43,8 +45,8 @@ typedef enum {
 
 #define MAKE_LIST(NAME, TYPE) \
     typedef struct _##NAME { \
-        TYPE *head \
-        struct _##NAME *next \
+        TYPE *head; \
+        struct _##NAME *next; \
     } NAME
 
 typedef struct _ast_node ast_node;
@@ -62,9 +64,9 @@ MAKE_LIST(ast_block_list, ast_block);
 typedef struct {
     ast_node *cond;
     ast_block *body;
-} ast_cond_block;
+} ast_cond;
 
-MAKE_LIST(ast_cond_list, ast_cond_block);
+MAKE_LIST(ast_cond_list, ast_cond);
 
 typedef struct _ast_node {
     ast_node_type type;
@@ -86,7 +88,7 @@ typedef struct _ast_node {
 } ast_node;
 
 typedef struct {
-    ast_var_type return_type;
-    ast_node *body;
+    ast_var_type export_type;
+    ast_block *body;
     ast_node_list *fns;
 } ast_module;

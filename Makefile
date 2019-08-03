@@ -7,7 +7,11 @@ TEST=./test
 CC=gcc
 CFLAGS=-std=c11 -g -Wall -Wextra -I $(SRC)
 
-TOKEN_TEST_FILES= $(TEST)/token.o $(SRC)/token.o
+PARSER_TEST_FILES=$(TEST)/parser.o $(SRC)/parser.o $(SRC)/token.o
+parser_test: $(PARSER_TEST_FILES)
+	$(CC) $(CFLAGS) -o $@ $(PARSER_TEST_FILES)
+
+TOKEN_TEST_FILES=$(TEST)/token.o $(SRC)/token.o
 token_test: $(TOKEN_TEST_FILES)
 	$(CC) $(CFLAGS) -o $@ $(TOKEN_TEST_FILES)
 
