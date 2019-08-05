@@ -29,11 +29,11 @@ typedef struct {
         struct _##NAME *next; \
     } NAME
 
-MAKE_LIST(symtbl_hash_node, ast_var);
+MAKE_LIST(hash_symtbl_node, ast_var);
 
-typedef struct hash_symtbl {
+typedef struct {
     size_t size, usued;
-    symtbl_hash_node *buckets[];
+    hash_symtbl_node *buckets[];
 } hash_symtbl;
 
 #define AST(NAME) AST_##NAME
@@ -41,7 +41,7 @@ typedef struct hash_symtbl {
 typedef enum {
     AST(FN),
     AST(IF),
-    AST(STMT),
+    AST(EXPR),
     AST(VAR),
     AST(INTEGER)
 } ast_node_type;
