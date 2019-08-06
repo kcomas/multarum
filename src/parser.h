@@ -23,6 +23,8 @@ typedef struct {
     char value[];
 } ast_var;
 
+ast_var *ast_var_init(ast_var_type type, size_t len, char *value);
+
 #define MAKE_LIST(NAME, TYPE) \
     typedef struct _##NAME { \
         TYPE *value; \
@@ -35,6 +37,8 @@ typedef struct {
     size_t size, usued;
     hash_symtbl_node *buckets[];
 } hash_symtbl;
+
+hash_symtbl *hash_symtbl_init(size_t size);
 
 #define AST(NAME) AST_##NAME
 
