@@ -45,7 +45,7 @@ hash_symtbl *hash_symtbl_init(size_t size);
 typedef enum {
     AST(FN),
     AST(IF),
-    AST(EXPR),
+    AST(STMT),
     AST(VAR),
     AST(INTEGER)
 } ast_node_type;
@@ -82,7 +82,7 @@ typedef struct _ast_node {
             ast_cond_list *if_elif;
             ast_cond *if_else;
         } if_cond;
-        ast_node *expr;
+        ast_node *stmt;
         ast_var var;
         int64_t integer;
     } value;
