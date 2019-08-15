@@ -253,11 +253,11 @@ bool next_token(token_state *state, token *t, char **const err) {
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_int; i++) {
             if (!(state->str[i] >= '0' && state->str[i] <= '9')) is_int = false;
         }
-        bool is_name = true;
         if (is_int) {
             state->last_match_type = TOKEN(INTEGER);
             continue;
         }
+        bool is_name = true;
         for (size_t i = state->last_match_start_idx; i < state->last_match_end_idx && is_name; i++) {
             if ((state->str[i] < 'A' || state->str[i] > 'Z') &&
                 (state->str[i] < 'a' || state->str[i] > 'z') &&
