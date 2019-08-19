@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "token.h"
 
-#define AST(NAME) AST_##NAME
+#define AST_NODE(NAME) AST_NODE_##NAME
 
 typedef enum {
 
