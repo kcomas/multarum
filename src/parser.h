@@ -27,9 +27,7 @@ typedef enum {
 typedef struct _parser_node {
     parser_node_type type;
     union {
-        struct {
-            token_type token_type;
-        } match;
+        token_type token_type;
         struct {
 
         } node;
